@@ -1,0 +1,31 @@
+.*
+
+# Latex
+*.aux
+*.out
+*.toc
+*.log
+*.bbl
+*.blg
+*Notes.bib
+
+# Documents
+*.pdf
+*.dvi
+*.ps
+
+# Python
+*.pyc
+
+# Images
+*.bmp
+*.tiff
+
+# Archives
+*.gz
+*.zip
+*.tar
+
+# Backup files
+*.backup
+*~
