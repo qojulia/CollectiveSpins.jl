@@ -1,16 +1,23 @@
-using cascadeddecay, quantumoptics, meanfield
-
+using quantumoptics, collectivespins
 
 const γ = 1.
 const e_dipole = [0,0,1.]
 const T = [0:0.05:5]
 
-atoms = Atom[Atom(position, e_dipole) for position=cube(0.15)]
-#atoms = Atom[Atom(position, e_dipole) for position=cube(0.627)]
-#atoms = Atom[Atom(position, e_dipole) for position=cube(0.5628)]
-#atoms = Atom[Atom(position, e_dipole) for position=cube(2.2925)]
-#atoms = Atom[Atom(position, e_dipole) for position=chain(0.7,8)]
-system = CascadedDecaySystem(atoms, γ)
+system = SpinCollection(geometry.chain(0.2, 3), e_dipole, γ)
+const N = length(system.spins)
+
+# Quantum: master equation
+Ψ₀ = collectivespins.quantum.blochstate(0,0,N)
+ρ₀ = Ψ₀⊗dagger(Ψ₀)
+@time tout, ρ_t = collectivespins.quantum.timeevolution(T, ρ₀, system)
+
+# Meanfield
+s0 = collectivespins.meanfield.blochstate(0,0,N)
+@time tout, s_t = collectivespins.meanfield.timeevolution(T, system, s0)
+
+@assert false
+
 basis_atom = atoms[1].basis
 
 

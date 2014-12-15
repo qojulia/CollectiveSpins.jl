@@ -2,7 +2,7 @@ module system
 
 using quantumoptics
 
-export System, Spin, SpinCollection, CavityMode, CavitySpinCollection
+export Spin, SpinCollection, CavityMode, CavitySpinCollection
 
 
 abstract System
