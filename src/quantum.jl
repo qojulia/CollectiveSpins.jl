@@ -5,6 +5,10 @@ using quantumoptics
 
 export Hamiltonian, Jump_operators
 
+basis(x::Spin) = spinbasis
+basis(x::SpinCollection) = CompositeBasis([basis(s) for s=x.spins]...)
+basis(x::CavityMode) = FockBasis(x.cutoff)
+basis(x::CavitySpinCollection) = compose(basis(x.spincollection), basis(x.cavity))
 
 function blochstate(phi, theta, spinnumber::Int=1)
     state_g = basis_ket(spinbasis, 1)
@@ -20,13 +24,14 @@ end
 function Hamiltonian(S::system.SpinCollection)
     spins = S.spins
     N = length(spins)
-    result = Operator(S.basis)
+    b = basis(S)
+    result = Operator(b)
     for i=1:N, j=1:N
         if i==j
             continue
         end
-        sigmap_i = embed(S.basis, i, sigmap)
-        sigmam_j = embed(S.basis, j, sigmam)
+        sigmap_i = embed(b, i, sigmap)
+        sigmam_j = embed(b, j, sigmam)
         result += interaction.Omega(spins[i].position, spins[j].position, S.polarization, S.gamma)*sigmap_i*sigmam_j
     end
     return result
@@ -35,6 +40,7 @@ end
 function Jump_operators(S::system.SpinCollection)
     spins = S.spins
     N = length(spins)
+    b = basis(S)
     Γ = zeros(Float64, N, N)
     for i=1:N, j=1:N
         Γ[i,j] = interaction.Gamma(spins[i].position, spins[j].position, S.polarization, S.gamma)
@@ -42,9 +48,9 @@ function Jump_operators(S::system.SpinCollection)
     λ, M = eig(Γ)
     J = Any[]
     for i=1:N
-        op = Operator(S.basis)
+        op = Operator(b)
         for j=1:N
-            op += M[j,i]*embed(S.basis, j, sigmam)
+            op += M[j,i]*embed(b, j, sigmam)
         end
         push!(J, sqrt(λ[i])*op)
     end

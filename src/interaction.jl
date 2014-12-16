@@ -1,5 +1,7 @@
 module interaction
 
+using ..system
+
 function F(ξ, θ)
     cosθpow2 = cos(θ)^2
     if ξ<1e-3
@@ -41,5 +43,27 @@ Omega(xi::Vector, xj::Vector, e::Vector, γ) = (xi==xj ? 0 : Omega(norm(xj-xi), 
 Gamma(a, θ, γ) = 3/2*γ*F(2*pi*a, θ)
 Gamma(xi::Vector, xj::Vector, e::Vector, γ) = (xi==xj ? γ : Gamma(norm(xj-xi), Theta(xi, xj, e), γ))
 
+function GammaMatrix(S::system.SpinCollection)
+    spins = S.spins
+    N = length(spins)
+    Γ = zeros(Float64, N, N)
+    for i=1:N, j=1:N
+        Γ[i,j] = interaction.Gamma(spins[i].position, spins[j].position, S.polarization, S.gamma)
+    end
+    return Γ
+end
+
+function OmegaMatrix(S::system.SpinCollection)
+    spins = S.spins
+    N = length(spins)
+    Ω = zeros(Float64, N, N)
+    for i=1:N, j=1:N
+        if i==j
+            continue
+        end
+        Ω[i,j] = interaction.Omega(spins[i].position, spins[j].position, S.polarization, S.gamma)
+    end
+    return Ω
+end
 
 end # module
