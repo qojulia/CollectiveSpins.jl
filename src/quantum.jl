@@ -57,7 +57,7 @@ function Jump_operators(S::system.SpinCollection)
     return J
 end
 
-function timeevolution(T, ρ₀::Operator, S::system.System; fout=nothing, kwargs...)
+function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
     H = Hamiltonian(S)
     J = Jump_operators(S)
     Hnh = H - 0.5im*sum([dagger(J[i])*J[i] for i=1:length(J)])
