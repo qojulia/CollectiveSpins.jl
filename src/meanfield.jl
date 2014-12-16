@@ -13,17 +13,26 @@ function blochstate(phi, theta, N::Int=1)
     return state
 end
 
-function splitstate(state::Vector{Float64})
+function dim(state::Vector{Float64})
     N, rem = divrem(length(state), 3)
     @assert rem==0
+    return N
+end
+
+function splitstate(state::Vector{Float64})
+    N = dim(state)
     return view(state, 0*N+1:1*N), view(state, 1*N+1:2*N), view(state, 2*N+1:3*N)
 end
 
-function timeevolution(T, system::SpinCollection, state0::Vector{Float64})
-    N = length(system.spins)
-    Ω = interaction.OmegaMatrix(system)
-    Γ = interaction.GammaMatrix(system)
-    γ = system.gamma
+sx(state::Vector{Float64}) = view(state, 1:dim(state))
+sy(state::Vector{Float64}) = view(state, dim(state)+1:2*dim(state))
+sz(state::Vector{Float64}) = view(state, 2*dim(state)+1:3*dim(state))
+
+function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
+    N = length(S.spins)
+    Ω = interaction.OmegaMatrix(S)
+    Γ = interaction.GammaMatrix(S)
+    γ = S.gamma
     function f(t, s::Vector{Float64}, ds::Vector{Float64})
         sx, sy, sz = splitstate(s)
         dsx, dsy, dsz = splitstate(ds)

@@ -10,6 +10,7 @@ include("effective_interaction.jl")
 include("effective_interaction_simple.jl")
 include("quantum.jl")
 include("meanfield.jl")
+include("meanfield2.jl")
 
 using .system
 
