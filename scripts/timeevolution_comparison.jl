@@ -5,7 +5,7 @@ const γ = 1.
 const e_dipole = [0,0,1.]
 const T = [0:0.05:5]
 
-const system = SpinCollection(geometry.chain(0.2, 3), e_dipole, γ)
+const system = SpinCollection(geometry.chain(0.3, 8), e_dipole, γ)
 const N = length(system.spins)
 
 # Initial state (Bloch state)
@@ -46,10 +46,15 @@ sx_cor = map(s->(collectivespins.meanfield2.sx(s)[1]), state_cor_t)
 sy_cor = map(s->(collectivespins.meanfield2.sy(s)[1]), state_cor_t)
 sz_cor = map(s->(collectivespins.meanfield2.sz(s)[1]), state_cor_t)
 
-rhop_t = map(x->ptrace(x, [2:N]), ρ_t)
-sx_master = expect(sigmax, rhop_t)
-sy_master = expect(sigmay, rhop_t)
-sz_master = expect(sigmaz, rhop_t)
+# rhop_t = ρ_t
+# for i=N:-1:2
+#     rhop_t = map(x->ptrace(x, [i]), rhop_t)
+# end
+
+embed(op::Operator) = quantumoptics.embed(collectivespins.quantum.basis(system), [1], [op])
+sx_master = map(ρ->expect(embed(sigmax), ρ), ρ_t)
+sy_master = map(ρ->expect(embed(sigmay), ρ), ρ_t)
+sz_master = map(ρ->expect(embed(sigmaz), ρ), ρ_t)
 
 
 # Visualization

@@ -75,7 +75,7 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
     function f(t, y::Vector{Float64}, dy::Vector{Float64})
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(dy)
-        for k=1:N
+        @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
             dsz[k] = γ*(1-sz[k])
@@ -88,7 +88,7 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
                 dsz[k] += Ω[k,j]*(Cxy[j,k]-Cxy[k,j]) + 0.5*Γ[k,j]*(Cxx[j,k] + Cyy[j,k])
             end
         end
-        for k=1:N, l=1:N
+        @inbounds for k=1:N, l=1:N
             if k==l
                 continue
             end

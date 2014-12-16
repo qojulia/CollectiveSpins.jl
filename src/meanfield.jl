@@ -36,7 +36,7 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
     function f(t, s::Vector{Float64}, ds::Vector{Float64})
         sx, sy, sz = splitstate(s)
         dsx, dsy, dsz = splitstate(ds)
-        for k=1:N
+        @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
             dsz[k] = γ*(1-sz[k])
