@@ -24,6 +24,20 @@ function splitstate(state::Vector{Float64})
     return view(state, 0*N+1:1*N), view(state, 1*N+1:2*N), view(state, 2*N+1:3*N)
 end
 
+function densityoperator(sx::Float64, sy::Float64, sz::Float64)
+    return 0.5*(I + σx*sigmax + σy*sigmay + σz*sigmaz)
+end
+
+function densityoperator(state::Vector{Float64})
+    N = dim(state)
+    sx, sy, sz = splitstate(state)
+    if N>1
+        return reduce(tensor, [densityoperator(sx[i], sy[i], sz[i]) for i=1:N])
+    else
+        return densityoperator(sx[i], sy[i], sz[i])
+    end
+end
+
 sx(state::Vector{Float64}) = view(state, 1:dim(state))
 sy(state::Vector{Float64}) = view(state, dim(state)+1:2*dim(state))
 sz(state::Vector{Float64}) = view(state, 2*dim(state)+1:3*dim(state))
