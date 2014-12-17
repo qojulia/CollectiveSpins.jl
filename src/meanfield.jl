@@ -25,7 +25,7 @@ function splitstate(state::Vector{Float64})
 end
 
 function densityoperator(sx::Float64, sy::Float64, sz::Float64)
-    return 0.5*(I + σx*sigmax + σy*sigmay + σz*sigmaz)
+    return 0.5*(identity(spinbasis) + sx*sigmax + sy*sigmay + sz*sigmaz)
 end
 
 function densityoperator(state::Vector{Float64})

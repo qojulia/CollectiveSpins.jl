@@ -5,7 +5,7 @@ const γ = 1.
 const e_dipole = [0,0,1.]
 const T = [0:0.05:5]
 
-const system = SpinCollection(geometry.chain(0.3, 8), e_dipole, γ)
+const system = SpinCollection(geometry.chain(0.3, 5), e_dipole, γ)
 const N = length(system.spins)
 
 # Initial state (Bloch state)
@@ -45,6 +45,13 @@ sz_mf = map(s->(collectivespins.meanfield.sz(s)[1]), state_mf_t)
 sx_cor = map(s->(collectivespins.meanfield2.sx(s)[1]), state_cor_t)
 sy_cor = map(s->(collectivespins.meanfield2.sy(s)[1]), state_cor_t)
 sz_cor = map(s->(collectivespins.meanfield2.sz(s)[1]), state_cor_t)
+
+
+# Trace distances
+ρmf_t = map(collectivespins.meanfield.densityoperator, state_mf_t)
+ρcor_t = map(collectivespins.meanfield2.densityoperator, state_cor_t)
+td_mf = [tracedistance(ρ_t[i],ρmf_t[i]) for i=1:length(T)]
+td_cor = [tracedistance(ρ_t[i],ρcor_t[i]) for i=1:length(T)]
 
 # rhop_t = ρ_t
 # for i=N:-1:2
@@ -99,13 +106,13 @@ plt.ylim(-1,1)
 plt.legend()
 #plt.savefig("images/$(name)_sigmay_timeevolution.pdf")
 
-# plt.figure(figsize=(6,4))
-# plt.plot(T, error_mf, lw=1.2, color="navy", label="Mean-field")
-# plt.plot(T, error_cor, lw=1.2, color="green", label="Correlation")
-# plt.xlabel("Time [\$\\gamma^{-1}\$]")
-# plt.ylabel("Error (Trace distance)")
-# plt.ylim(0,1)
-# plt.legend()
+plt.figure(figsize=(6,4))
+plt.plot(T, td_mf, lw=1.2, color="navy", label="Mean-field")
+plt.plot(T, td_cor, lw=1.2, color="green", label="Correlation")
+plt.xlabel("Time [\$\\gamma^{-1}\$]")
+plt.ylabel("Error (Trace distance)")
+plt.ylim(0,1)
+plt.legend()
 # plt.savefig("images/$(name)_error_timeevolution.pdf")
 
 plt.show()

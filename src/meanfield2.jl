@@ -2,7 +2,7 @@ module meanfield2
 
 using ArrayViews
 using quantumoptics
-using ..interaction, ..system
+using ..interaction, ..system, ..meanfield
 
 
 function blochstate(phi, theta, N::Int=1)
@@ -56,6 +56,51 @@ function splitstate(state::Vector{Float64})
     Cxz = view(state, 1*N+1:2*N, 1*N+1:2*N)
     Cyz = view(state, 2*N+1:3*N, 1*N+1:2*N)
     return sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz
+end
+
+function covarianceoperator(productstate::Vector{Operator}, operators::Vector{Operator}, indices::Vector{Int})
+    x = Operator[(i in indices ? operators[findfirst(indices, i)] : productstate[i]) for i=1:length(productstate)]
+    return reduce(tensor, x)
+end
+
+function correlation2covariance(corstate::Vector{Float64})
+    N = dim(corstate)
+    covstate = zeros(Float64, size(corstate)...)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(corstate)
+    covsx, covsy, covsz, Covxx, Covyy, Covzz, Covxy, Covxz, Covyz = splitstate(covstate)
+    for k=1:N
+        covsx[k] = sx[k]
+        covsy[k] = sy[k]
+        covsz[k] = sz[k]
+    end
+    for k=1:N, l=1:N
+        if k==l
+            continue
+        end
+        Covxx[k,l] = Cxx[k,l] - sx[k]*sx[l]
+        Covyy[k,l] = Cyy[k,l] - sy[k]*sy[l]
+        Covzz[k,l] = Czz[k,l] - sz[k]*sz[l]
+        Covxy[k,l] = Cxy[k,l] - sx[k]*sy[l]
+        Covxz[k,l] = Cxz[k,l] - sx[k]*sz[l]
+        Covyz[k,l] = Cyz[k,l] - sy[k]*sz[l]
+    end
+    return covstate
+end
+
+function densityoperator(state::Vector{Float64})
+    N = dim(state)
+    covstate = correlation2covariance(state)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(covstate)
+    productstate = Operator[meanfield.densityoperator(sx[k], sy[k], sz[k]) for k=1:N]
+    C(op1,op2,index1,index2) = covarianceoperator(productstate, [op1,op2], [index1,index2])
+    ρ = reduce(tensor, productstate)
+    for k=1:N, l=k+1:N
+        ρ += 0.25*(
+              Cxx[k,l]*C(sigmax,sigmax,k,l) + Cxy[l,k]*C(sigmay,sigmax,k,l) + Cxz[l,k]*C(sigmaz,sigmax,k,l)
+            + Cxy[k,l]*C(sigmax,sigmay,k,l) + Cyy[k,l]*C(sigmay,sigmay,k,l) + Cyz[l,k]*C(sigmaz,sigmay,k,l)
+            + Cxz[k,l]*C(sigmax,sigmaz,k,l) + Cyz[k,l]*C(sigmay,sigmaz,k,l) + Czz[k,l]*C(sigmaz,sigmaz,k,l))
+    end
+    return ρ
 end
 
 sx(state::Vector{Float64}) = begin N=dim(state); view(reshape(state, 3*N, 2*N+1), 0*N+1:1*N, 2*N+1) end
