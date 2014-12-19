@@ -23,7 +23,8 @@ function unescape_xml(s::AbstractString)
 end
 
 function git_commitid(path)
-    return readall(`git --work-tree $path rev-parse HEAD`)[1:end-1]
+    # return readall(`git --work-tree $path rev-parse HEAD`)[1:end-1]
+    return readall(`cat $(path)/../.git/refs/heads/master`)[1:end-1]
 end
 
 function git_commitdate(path)
@@ -32,10 +33,10 @@ end
 
 function write_gitinfo(f, tag, gitpath)
     ID = escape_xml(git_commitid(gitpath))
-    date = escape_xml(git_commitdate(gitpath))
+    #date = escape_xml(git_commitdate(gitpath))
     write(f, "<$(tag)>\n")
     write(f, "<commit-id>$(ID)</commit-id>\n")
-    write(f, "<commit-date>$(date)</commit-date>\n")
+    #write(f, "<commit-date>$(date)</commit-date>\n")
     write(f, "</$(tag)>\n")
 end
 
@@ -48,7 +49,7 @@ end
 
 function write_libraryinfo_quantumoptics(f)
     tag = "quantumoptics-library"
-    searchname = "julia-quantumoptics"
+    searchname = "quantumoptics-julia"
     for path in LOAD_PATH
         if contains(path, searchname)
             write_gitinfo(f, tag, path)
