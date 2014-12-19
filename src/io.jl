@@ -33,16 +33,17 @@ end
 function write_gitinfo(f, tag, gitpath)
     ID = escape_xml(git_commitid(gitpath))
     date = escape_xml(git_commitdate(gitpath))
-    writeln(f, "<$(tag)>")
-    writeln(f, "<commit-id>$(ID)</commit-id>")
-    writeln(f, "<commit-date>$(date)</commit-date>")
-    writeln(f, "</$(tag)>")
+    write(f, "<$(tag)>\n")
+    write(f, "<commit-id>$(ID)</commit-id>\n")
+    write(f, "<commit-date>$(date)</commit-date>\n")
+    write(f, "</$(tag)>\n")
 end
 
 function write_libraryinfo_julia(f)
-    writeln(f, "<julia>\n")
-    writeln(f, escape_xml(versioninfo()))
-    writeln(f, "</julia>")
+    write(f, "<julia>\n")
+    write(f, escape_xml(string(VERSION)))
+    write(f, "\n")
+    write(f, "</julia>\n")
 end
 
 function write_libraryinfo_quantumoptics(f)
@@ -66,30 +67,57 @@ function write_libraryinfo_collectivespins(f)
 end
 
 function write_libraryinfo(f)
-    writeln(f, "<libraries>")
+    write(f, "<libraries>\n")
     write_libraryinfo_julia(f)
     write_libraryinfo_quantumoptics(f)
     write_libraryinfo_collectivespins(f)
-    writeln(f, "</libraries>")
+    write(f, "</libraries>\n")
 end
 
 function write_systemdescription(f, system)
-    writeln(f, "<systemdescription>")
-    writeln(f, escape_xml(string(system)))
-    writeln(f, "</systemdescription>")
+    write(f, "<systemdescription>\n")
+    write(f, escape_xml(string(system)))
+    write(f, "\n")
+    write(f, "</systemdescription>\n")
 end
 
-function write_state{T}(f, state::Vector{T}, parameter, statetype)
-    writetime = escape_xml(now())
+function write_simulationparameters(f, parameters)
+    write(f, "<simulationparameters>\n")
+    write(f, escape_xml(string(parameters)))
+    write(f, "\n")
+    write(f, "</simulationparameters>\n")
+end
+
+function write_starttime(f)
+    starttime = escape_xml(string(now()))
+    write(f, "<starttime>\n")
+    write(f, starttime)
+    write(f, "\n")
+    write(f, "</starttime>\n")
+end
+
+function write_head(f, system, parameters)
+    write(f, "<head>\n")
+    write_starttime(f)
+    write_libraryinfo(f)
+    write_systemdescription(f, system)
+    write_simulationparameters(f, parameters)
+    write(f, "</head>\n")
+end
+
+function write_state{T}(f, statetype, state::Vector{T}; parameter=nothing, time=true)
+    writetime = time ? " writetime = \"$(escape_xml(string(now())))\"" : ""
     statetype = escape_xml(statetype)
     datatype = escape_xml(string(T))
-    parameter = escape_xml(parameter)
-    writeln(f, "<state writetime=\"$(writetime)\" statetype=\"$(statetype)\" datatype=\"$(datatype)\", parameter=\"$(parameter)\"")
-    for x in state
-        writeln(f, string(x))
-        writeln(f, ',')
+    parameter = parameter!=nothing ? " parameter = \"$(escape_xml(parameter))\"" : ""
+    write(f, "<state statetype=\"$(statetype)\" datatype=\"$(datatype)\"$writetime$parameter>")
+    for (i, x) in enumerate(state)
+        if i!=1
+            write(f, ',')
+        end
+        write(f, string(x))
     end
-    writeln(f, "</state>")
+    write(f, "</state>\n")
 end
 
 function write_state_meanfield{T}(f, state::Vector{T}, parameter)
@@ -97,11 +125,21 @@ function write_state_meanfield{T}(f, state::Vector{T}, parameter)
 end
 
 function write_state_mpc{T}(f, state::Vector{T}, parameter)
-    write_state(f, state, parameter, "meanfield")
+    write_state(f, state, parameter, "mpc")
 end
 
 function write_state_densityoperator{T}(f, state::Matrix{T}, parameter)
-    write_state(f, state, parameter, "densityoperator")
+    write_state(f, vec(state.data), parameter, "densityoperator")
+end
+
+function save_timeevolution(path, system, time, states, statetype, parameters)
+    @assert length(time)==length(states)
+    f = open(path, "w")
+    write_head(f, system, parameters)
+    for i=1:length(time)
+        write_state(f, vec(states[i].data), "t=$(time[i])", statetype)
+    end
+    close(f)
 end
 
 end # module

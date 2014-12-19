@@ -5,7 +5,7 @@ const γ = 1.
 const e_dipole = [0,0,1.]
 const T = [0:0.05:5]
 
-const system = SpinCollection(geometry.chain(0.3, 5), e_dipole, γ)
+const system = SpinCollection(geometry.chain(0.5, 8), e_dipole, γ)
 const N = length(system.spins)
 
 # Initial state (Bloch state)
@@ -22,6 +22,8 @@ const sz0 = cos(theta)
 ρ₀ = Ψ₀⊗dagger(Ψ₀)
 @time tout, ρ_t = collectivespins.quantum.timeevolution(T, system, ρ₀)
 
+collectivespins.io.save_timeevolution("t2.dat", system, tout, ρ_t, "densityoperator", "")
+@assert false
 # Meanfield
 state0 = collectivespins.meanfield.blochstate(phi,theta,N)
 @time tout, state_mf_t = collectivespins.meanfield.timeevolution(T, system, state0)
