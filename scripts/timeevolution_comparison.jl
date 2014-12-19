@@ -28,9 +28,9 @@ state0 = collectivespins.meanfield.blochstate(phi,theta,N)
 @time tout, state_mf_t = collectivespins.meanfield.timeevolution(T, system, state0)
 
 # Meanfield + Correlations
-state0 = collectivespins.meanfield2.blochstate(phi,theta,N)
-@time tout, state_cor_t = collectivespins.meanfield2.timeevolution(T, system, state0)
-@time tout, state_cor_t = collectivespins.meanfield2.timeevolution(T, system, state0)
+state0 = collectivespins.mpc.blochstate(phi,theta,N)
+@time tout, state_cor_t = collectivespins.mpc.timeevolution(T, system, state0)
+@time tout, state_cor_t = collectivespins.mpc.timeevolution(T, system, state0)
 
 
 # Expectation values
@@ -42,14 +42,14 @@ sx_mf = map(s->(collectivespins.meanfield.sx(s)[1]), state_mf_t)
 sy_mf = map(s->(collectivespins.meanfield.sy(s)[1]), state_mf_t)
 sz_mf = map(s->(collectivespins.meanfield.sz(s)[1]), state_mf_t)
 
-sx_cor = map(s->(collectivespins.meanfield2.sx(s)[1]), state_cor_t)
-sy_cor = map(s->(collectivespins.meanfield2.sy(s)[1]), state_cor_t)
-sz_cor = map(s->(collectivespins.meanfield2.sz(s)[1]), state_cor_t)
+sx_cor = map(s->(collectivespins.mpc.sx(s)[1]), state_cor_t)
+sy_cor = map(s->(collectivespins.mpc.sy(s)[1]), state_cor_t)
+sz_cor = map(s->(collectivespins.mpc.sz(s)[1]), state_cor_t)
 
 
 # Trace distances
 ρmf_t = map(collectivespins.meanfield.densityoperator, state_mf_t)
-ρcor_t = map(collectivespins.meanfield2.densityoperator, state_cor_t)
+ρcor_t = map(collectivespins.mpc.densityoperator, state_cor_t)
 td_mf = [tracedistance(ρ_t[i],ρmf_t[i]) for i=1:length(T)]
 td_cor = [tracedistance(ρ_t[i],ρcor_t[i]) for i=1:length(T)]
 

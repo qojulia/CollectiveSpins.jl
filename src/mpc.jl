@@ -1,4 +1,4 @@
-module meanfield2
+module mpc
 
 using ArrayViews
 using quantumoptics
