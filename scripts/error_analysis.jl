@@ -37,12 +37,18 @@ const theta = float(parameters["theta"])
 # System geometry
 using quantumoptics, collectivespins
 const edipole = float(eval(parse(parameters["edipole"])))
+const geomN = int(parameters["N"])
+const d = float(parameters["d"])
 const geomstring = parameters["geometry"]
-const geomN = parameters["N"]
-const d = parameters["d"]
-const systemgeometry = eval(parse("collectivespins.geometry.$geomstring($d, $geomN)"))
-const system = SpinCollection(systemgeometry, edipole, γ)
+if geomstring=="chain"
+    const systemgeometry = collectivespins.geometry.chain(d, geomN)
+elseif geomstring=="square"
+    const systemgeometry = collectivespins.geometry.square(d; Nx=geomN, Ny=geomN)
+elseif geomstring=="cube"
+    const systemgeometry = collectivespins.geometry.cube(d)
+end
 
+const system = SpinCollection(systemgeometry, edipole, γ)
 const N = length(system.spins)
 
 
