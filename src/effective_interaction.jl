@@ -18,6 +18,15 @@ function Gamma(a, θ)
     end
 end
 
+function OmegaGamma(a, cosθpow2)
+    #cosθpow2 = cos(θ)^2
+    cosξ = cospi(2*a)
+    sinξ = sinpi(2*a)
+    omega = 0.75*((1.-3.*cosθpow2) * (sinξ+cosξ/(2*pi*a))/(2*pi*a)^2 - (1.-cosθpow2)*cosξ/(2*pi*a))
+    gamma = 1.5*((1-cosθpow2)*sinξ/(2*pi*a) + (1-3*cosθpow2) * (cosξ-sinξ/(2*pi*a))/(2*pi*a)^2)
+    return omega, gamma
+end
+
 function Omega_orthogonal(a)
     ξ = 2*pi*a
     cosξdξ = cos(ξ)/ξ
@@ -164,20 +173,23 @@ function cubiclattice_orthogonal(a::Float64, N::Int)
             for nz=1:N
                 nzpow2 = nz^2
                 d = a*sqrt(nrpow2+nzpow2)
-                θ = atan2(nr, nz)
-                omega_eff += multiplicity*Omega(d, θ)
-                gamma_eff += multiplicity*Gamma(d, θ)
+                cosθpow2 = nzpow2/(nrpow2+nzpow2)
+                om, ga = OmegaGamma(d, cosθpow2)
+                omega_eff += multiplicity*om
+                gamma_eff += multiplicity*ga
             end
         end
     end
     d::Float64 = 0.
     for nz=1:N
         d += a
-        omega_eff += 2*Omega(d, 0.)
-        gamma_eff += 2*Gamma(d, 0.)
+        om, ga = OmegaGamma(d, 1.)
+        omega_eff += 2*om
+        gamma_eff += 2*ga
     end
     return omega_eff, gamma_eff
 end
+
 
 function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
     omega_eff, gamma_eff = squarelattice_orthogonal(a, N)
