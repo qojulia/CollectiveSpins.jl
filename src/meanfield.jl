@@ -42,7 +42,7 @@ sx(state::Vector{Float64}) = view(state, 1:dim(state))
 sy(state::Vector{Float64}) = view(state, dim(state)+1:2*dim(state))
 sz(state::Vector{Float64}) = view(state, 2*dim(state)+1:3*dim(state))
 
-function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
+function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}; fout=nothing)
     N = length(S.spins)
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
@@ -65,15 +65,19 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
         end
     end
 
-    t_out = Float64[]
-    state_out = Vector{Float64}[]
-    function fout(t, y::Vector{Float64})
-        push!(t_out, t)
-        push!(state_out, deepcopy(y))
-    end
+    if fout==nothing
+        t_out = Float64[]
+        state_out = Vector{Float64}[]
+        function fout_(t, y::Vector{Float64})
+            push!(t_out, t)
+            push!(state_out, deepcopy(y))
+        end
 
-    quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
-    return t_out, state_out
+        quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
+        return t_out, state_out
+    else
+        return quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
+    end
 end
 
 end # module

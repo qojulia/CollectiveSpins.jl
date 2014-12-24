@@ -111,7 +111,7 @@ function correlation(s1::Float64, s2::Float64, s3::Float64, C12::Float64, C13::F
     return -2.*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
 end
 
-function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
+function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}; fout=nothing)
     N = length(S.spins)
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
@@ -179,15 +179,19 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
         end
     end
 
-    t_out = Float64[]
-    state_out = Vector{Float64}[]
-    function fout(t, state::Vector{Float64})
-        push!(t_out, t)
-        push!(state_out, deepcopy(state))
-    end
+    if fout==nothing
+        t_out = Float64[]
+        state_out = Vector{Float64}[]
+        function fout_(t, state::Vector{Float64})
+            push!(t_out, t)
+            push!(state_out, deepcopy(state))
+        end
 
-    quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
-    return t_out, state_out
+        quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
+        return t_out, state_out
+    else
+        return quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
+    end
 end
 
 
