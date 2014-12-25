@@ -80,4 +80,25 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}; fou
     end
 end
 
+function timeevolution_symmetric(T, state0::Vector{Float64}, Ωeff::Float64, Γeff::Float64, γ::Float64=1.0; fout=nothing)
+    @assert length(state0)==3
+    function f(t, s::Vector{Float64}, ds::Vector{Float64})
+        ds[1] =  Ωeff*s[2]*s[3] - 0.5*γ*s[1] - 0.5*Γeff*s[1]*s[3]
+        ds[2] = -Ωeff*s[1]*s[3] - 0.5*γ*s[2] - 0.5*Γeff*s[2]*s[3]
+        ds[3] = γ*(1-s[3]) + 0.5*Γeff*(s[1]^2+s[2]^2)
+    end
+    if fout==nothing
+        t_out = Float64[]
+        state_out = Vector{Float64}[]
+        function fout_(t, y::Vector{Float64})
+            push!(t_out, t)
+            push!(state_out, deepcopy(y))
+        end
+        quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
+        return t_out, state_out
+    else
+        return quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
+    end
+end
+
 end # module
