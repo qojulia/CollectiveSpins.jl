@@ -2,20 +2,32 @@ using collectivespins.effective_interaction
 using collectivespins.effective_interaction_simple
 
 const a = 0.3
+const b = 0.6
+const c = 0.4
 const eps = 1e-12
 
-Ωeff0, Γeff0 = effective_interaction_simple.triangle(a)
-Ωeff1, Γeff1 = effective_interaction.triangle(a)
+Ωeff0, Γeff0 = effective_interaction_simple.triangle_orthogonal(a)
+Ωeff1, Γeff1 = effective_interaction.triangle_orthogonal(a)
 @assert abs(Ωeff0-Ωeff1)<eps
 @assert abs(Γeff0-Γeff1)<eps
 
-Ωeff0, Γeff0 = effective_interaction_simple.square(a)
-Ωeff1, Γeff1 = effective_interaction.square(a)
+Ωeff0, Γeff0 = effective_interaction_simple.square_orthogonal(a)
+Ωeff1, Γeff1 = effective_interaction.square_orthogonal(a)
 @assert abs(Ωeff0-Ωeff1)<eps
 @assert abs(Γeff0-Γeff1)<eps
 
-Ωeff0, Γeff0 = effective_interaction_simple.cube(a)
-Ωeff1, Γeff1 = effective_interaction.cube(a)
+Ωeff0, Γeff0 = effective_interaction_simple.rectangle_orthogonal(a, b)
+Ωeff1, Γeff1 = effective_interaction.rectangle_orthogonal(a, b)
+@assert abs(Ωeff0-Ωeff1)<eps
+@assert abs(Γeff0-Γeff1)<eps
+
+Ωeff0, Γeff0 = effective_interaction_simple.cube_orthogonal(a)
+Ωeff1, Γeff1 = effective_interaction.cube_orthogonal(a)
+@assert abs(Ωeff0-Ωeff1)<eps
+@assert abs(Γeff0-Γeff1)<eps
+
+Ωeff0, Γeff0 = effective_interaction_simple.box_orthogonal(a, b, c)
+Ωeff1, Γeff1 = effective_interaction.box_orthogonal(a, b, c)
 @assert abs(Ωeff0-Ωeff1)<eps
 @assert abs(Γeff0-Γeff1)<eps
 

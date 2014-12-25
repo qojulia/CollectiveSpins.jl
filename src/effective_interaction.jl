@@ -27,6 +27,14 @@ function OmegaGamma(a, cosθpow2)
     return omega, gamma
 end
 
+function OmegaGamma_orthogonal(a)
+    cosξ = cospi(2*a)
+    sinξ = sinpi(2*a)
+    omega = 0.75*((sinξ+cosξ/(2*pi*a))/(2*pi*a)^2 - cosξ/(2*pi*a))
+    gamma = 1.5*(sinξ/(2*pi*a) + (cosξ-sinξ/(2*pi*a))/(2*pi*a)^2)
+    return omega, gamma
+end
+
 function Omega_orthogonal(a)
     ξ = 2*pi*a
     cosξdξ = cos(ξ)/ξ
@@ -51,27 +59,62 @@ function map_effectiveinteraction(a::Vector{Float64}, f::Function)
     return omega_list, gamma_list
 end
 
+
 # Finite symmetric systems
 
-function triangle(a::Float64)
+function triangle_orthogonal(a::Float64)
     omega_eff = 2*Omega_orthogonal(a)
     gamma_eff = 2*Gamma_orthogonal(a)
     return omega_eff, gamma_eff
 end
 
-function square(a::Float64)
+function square_orthogonal(a::Float64)
     omega_eff = 2*Omega_orthogonal(a) + Omega_orthogonal(sqrt(2.)*a)
     gamma_eff = 2*Gamma_orthogonal(a) + Gamma_orthogonal(sqrt(2.)*a)
     return omega_eff, gamma_eff
 end
 
-function cube(a::Float64)
-    omega_eff, gamma_eff = square(a)
+function rectangle_orthogonal(a::Float64, b::Float64)
+    d = sqrt(a^2 + b^2)
+    omega_eff, gamma_eff = OmegaGamma_orthogonal(a)
+    om, ga = OmegaGamma_orthogonal(b)
+    omega_eff += om; gamma_eff+=ga
+    om, ga = OmegaGamma_orthogonal(d)
+    omega_eff += om; gamma_eff+=ga
+    return omega_eff, gamma_eff
+end
+
+function cube_orthogonal(a::Float64)
+    omega_eff, gamma_eff = square_orthogonal(a)
     sqrt2 = sqrt(2.)
     sqrt3 = sqrt(3.)
     Θdiag = atan2(sqrt2, 1.)
     omega_eff += Omega(a, 0.) + 2*Omega(sqrt(2.)*a, pi/4.) + Omega(sqrt3*a, Θdiag)
     gamma_eff += Gamma(a, 0.) + 2*Gamma(sqrt(2.)*a, pi/4.) + Gamma(sqrt3*a, Θdiag)
+    return omega_eff, gamma_eff
+end
+
+function box_orthogonal(a::Float64, b::Float64, c::Float64)
+    omega_eff, gamma_eff = rectangle_orthogonal(a, b)
+
+    a2 = a^2
+    b2 = b^2
+    c2 = c^2
+
+    om, ga = OmegaGamma(c, 1.)
+    omega_eff += om; gamma_eff+=ga
+
+    dxz_pow2 = a2+c2
+    om, ga = OmegaGamma(sqrt(dxz_pow2), c2/dxz_pow2)
+    omega_eff += om; gamma_eff+=ga
+
+    dyz_pow2 = b2+c2
+    om, ga = OmegaGamma(sqrt(dyz_pow2), c2/dyz_pow2)
+    omega_eff += om; gamma_eff+=ga
+
+    dxyz_pow2 = a2+b2+c2
+    om, ga = OmegaGamma(sqrt(dxyz_pow2), c2/dxyz_pow2)
+    omega_eff += om; gamma_eff+=ga
     return omega_eff, gamma_eff
 end
 

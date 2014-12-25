@@ -16,19 +16,28 @@ function effective_interactions(S::SpinCollection)
     return omega_eff, gamma_eff
 end
 
-function triangle(a::Float64)
+
+# Finite symmetric systems
+
+function triangle_orthogonal(a::Float64)
     positions = Vector{Float64}[[a,0,0], [a/2, sqrt(3./4)*a,0]]
     S = SpinCollection(positions, e_z, gamma)
     return effective_interactions(S)
 end
 
-function square(a::Float64)
+function square_orthogonal(a::Float64)
     positions = Vector{Float64}[[a,0,0], [0,a,0], [a,a,0]]
     S = SpinCollection(positions, e_z, gamma)
     return effective_interactions(S)
 end
 
-function cube(a::Float64)
+function rectangle_orthogonal(a::Float64, b::Float64)
+    positions = Vector{Float64}[[a,0,0], [0,b,0], [a,b,0]]
+    S = SpinCollection(positions, e_z, gamma)
+    return effective_interactions(S)
+end
+
+function cube_orthogonal(a::Float64)
     positions = Vector{Float64}[]
     for ix=0:1, iy=0:1, iz=0:1
         if ix==0 && iy==0 && iz==0
@@ -39,6 +48,21 @@ function cube(a::Float64)
     S = SpinCollection(positions, e_z, gamma)
     return effective_interactions(S)
 end
+
+function box_orthogonal(a::Float64, b::Float64, c::Float64)
+   positions = Vector{Float64}[]
+    for ix=0:1, iy=0:1, iz=0:1
+        if ix==0 && iy==0 && iz==0
+            continue
+        end
+        push!(positions, [ix*a, iy*b, iz*c])
+    end
+    S = SpinCollection(positions, e_z, gamma)
+    return effective_interactions(S)
+end
+
+
+# Infinite 1D symmetric systems
 
 function chain(a::Float64, Θ, N::Int)
     positions = Vector{Float64}[]
@@ -63,6 +87,9 @@ function chain_orthogonal(a::Float64, N::Int)
     S = SpinCollection(positions, e_z, gamma)
     return effective_interactions(S)
 end
+
+
+# Infinite 2D symmetric systems
 
 function squarelattice_orthogonal(a::Float64, N::Int)
     positions = Vector{Float64}[]
@@ -101,6 +128,9 @@ function hexagonallattice_orthogonal(a::Float64, N::Int)
     S = SpinCollection(positions, e_z, gamma)
     return effective_interactions(S)
 end
+
+
+# Infinite 3D symmetric systems
 
 function cubiclattice_orthogonal(a::Float64, N::Int)
     positions = Vector{Float64}[]
