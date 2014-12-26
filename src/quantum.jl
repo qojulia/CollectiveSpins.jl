@@ -37,7 +37,9 @@ function Hamiltonian(S::system.SpinCollection)
     return result
 end
 
-function Jump_operators(S::system.SpinCollection)
+Jump_operators(S::system.SpinCollection) = Operator[embed(basis(S), i, sigmam) for i=1:length(S.spins)]
+
+function Jump_operators_diagonal(S::system.SpinCollection)
     spins = S.spins
     N = length(spins)
     b = basis(S)
@@ -57,13 +59,26 @@ function Jump_operators(S::system.SpinCollection)
     return J
 end
 
-function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
+function timeevolution_diagonal(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
     H = Hamiltonian(S)
-    J = Jump_operators(S)
+    J = Jump_operators_diagonal(S)
     Hnh = H - 0.5im*sum([dagger(J[i])*J[i] for i=1:length(J)])
     Hnh_sparse = operators_sparse.SparseOperator(Hnh)
     J_sparse = map(operators_sparse.SparseOperator, J)
     return quantumoptics.timeevolution.master_nh(T, ρ₀, Hnh_sparse, J_sparse, fout=fout; kwargs...)
+end
+
+function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
+    spins = S.spins
+    N = length(spins)
+    b = basis(S)
+    H = Hamiltonian(S)
+    H_sparse = operators_sparse.SparseOperator(H)
+
+    J = Jump_operators(S)
+    J_sparse = map(operators_sparse.SparseOperator, J)
+    Γ = interaction.GammaMatrix(S)
+    return quantumoptics.timeevolution.master_h(T, ρ₀, H_sparse, J_sparse, Gamma=Γ)
 end
 
 end # module
