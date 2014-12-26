@@ -78,7 +78,7 @@ function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwarg
     J = Jump_operators(S)
     J_sparse = map(operators_sparse.SparseOperator, J)
     Γ = interaction.GammaMatrix(S)
-    return quantumoptics.timeevolution.master_h(T, ρ₀, H_sparse, J_sparse, Gamma=Γ)
+    return quantumoptics.timeevolution.master_h(T, ρ₀, H_sparse, J_sparse, fout=fout, Gamma=Γ)
 end
 
 end # module
