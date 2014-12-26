@@ -60,7 +60,7 @@ end
 
 function covarianceoperator(productstate::Vector{Operator}, operators::Vector{Operator}, indices::Vector{Int})
     x = Operator[(i in indices ? operators[findfirst(indices, i)] : productstate[i]) for i=1:length(productstate)]
-    return reduce(tensor, x)
+    return tensor(x...)
 end
 
 function correlation2covariance(corstate::Vector{Float64})
