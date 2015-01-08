@@ -87,9 +87,9 @@ elseif method=="mpc"
 elseif method=="master"
     embed(op::Operator) = quantumoptics.embed(collectivespins.quantum.basis(system), [index_center], [op])
     function fout(t, rho::Operator)
-        push!(sx, abs(expect(embed(sigmax), rho)))
-        push!(sy, abs(expect(embed(sigmay), rho)))
-        push!(sz, abs(expect(embed(sigmaz), rho)))
+        push!(sx, real(expect(embed(sigmax), rho)))
+        push!(sy, real(expect(embed(sigmay), rho)))
+        push!(sz, real(expect(embed(sigmaz), rho)))
     end
     Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
