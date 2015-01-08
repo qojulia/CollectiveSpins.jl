@@ -58,7 +58,7 @@ end
 
 const system = SpinCollection(systemgeometry, edipole, γ)
 const N = length(system.spins)
-const index_center = (N+1)/2
+const index_center = int((N+1)/2)
 
 const method = parameters["method"]
 
@@ -84,12 +84,12 @@ elseif method=="mpc"
         push!(sz, collectivespins.mpc.sz(state)[index_center])
     end
     collectivespins.mpc.timeevolution(T, system, state0; fout=fout)
-elseif methof=="master"
+elseif method=="master"
     embed(op::Operator) = quantumoptics.embed(collectivespins.quantum.basis(system), [index_center], [op])
     function fout(t, rho::Operator)
-        push!(sx_master, abs(expect(embed(sigmax), rho)))
-        push!(sy_master, abs(expect(embed(sigmay), rho)))
-        push!(sz_master, abs(expect(embed(sigmaz), rho)))
+        push!(sx, abs(expect(embed(sigmax), rho)))
+        push!(sy, abs(expect(embed(sigmay), rho)))
+        push!(sz, abs(expect(embed(sigmaz), rho)))
     end
     Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
