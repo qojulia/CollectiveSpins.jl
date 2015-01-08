@@ -67,6 +67,7 @@ const sx = Float64[]
 const sy = Float64[]
 const sz = Float64[]
 
+tic()
 if method=="meanfield"
     state0 = collectivespins.meanfield.blochstate(phi,theta,N)
     function fout(t, state)
@@ -94,7 +95,7 @@ elseif methof=="master"
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
     collectivespins.quantum.timeevolution(T, system, ρ₀; fout=fout)
 end
-
+t = toc()
 
 keyparameters = Dict(
     "theta"=>parameters["theta"],
@@ -107,7 +108,9 @@ keyparameters = Dict(
 name = quantumoptics.io.dict2filename(keyparameters)
 f = open(joinpath(odir, name), "w")
 write(f, "# Time sx sy sz\n")
+write(f, "#calctime=$(t)\n")
 for i=1:length(T)
     write(f, "$(T[i]);$(sx[i]);$(sy[i]);$(sz[i])\n")
 end
+
 close(f)
