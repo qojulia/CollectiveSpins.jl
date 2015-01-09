@@ -22,8 +22,6 @@ const sz0 = cos(theta)
 ρ₀ = Ψ₀⊗dagger(Ψ₀)
 @time tout, ρ_t = collectivespins.quantum.timeevolution(T, system, ρ₀)
 
-collectivespins.io.save_timeevolution("t2.dat", system, tout, ρ_t, "densityoperator", "")
-@assert false
 # Meanfield
 state0 = collectivespins.meanfield.blochstate(phi,theta,N)
 @time tout, state_mf_t = collectivespins.meanfield.timeevolution(T, system, state0)
