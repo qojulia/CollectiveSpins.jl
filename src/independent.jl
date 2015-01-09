@@ -42,9 +42,9 @@ sx(state::Vector{Float64}) = view(state, 1:dim(state))
 sy(state::Vector{Float64}) = view(state, dim(state)+1:2*dim(state))
 sz(state::Vector{Float64}) = view(state, 2*dim(state)+1:3*dim(state))
 
-function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
-    N = length(S.spins)
-    γ = S.gamma
+function timeevolution(T, gamma::Float64, state0::Vector{Float64})
+    N = dim(state0)
+    γ = gamma
     function f(t, s::Vector{Float64}, ds::Vector{Float64})
         sx, sy, sz = splitstate(s)
         dsx, dsy, dsz = splitstate(ds)
@@ -65,5 +65,6 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64})
     quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
     return t_out, state_out
 end
+timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}) = timeevolution(T, S.gamma, state0)
 
 end # module
