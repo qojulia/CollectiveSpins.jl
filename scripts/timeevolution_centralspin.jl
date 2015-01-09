@@ -98,10 +98,12 @@ end
 t = toc()
 
 keyparameters = Dict(
+    "phi"=>parameters["phi"],
     "theta"=>parameters["theta"],
     "edipole"=>parameters["edipole"],
     "d"=>parameters["d"],
     "N"=>parameters["N"],
+    "T"=>parameters["T"],
     "method"=>parameters["method"]
     )
 
