@@ -2,7 +2,14 @@ module quantum
 
 using ..interaction, ..system
 using quantumoptics
-
+module Optim
+    try
+        require("Optim")
+        global optimize = Main.Optim.optimize
+    catch
+        println("Optim package not available. (Needed for calculation of squeezing parameter)")
+    end
+end
 export Hamiltonian, Jump_operators
 
 basis(x::Spin) = spinbasis
@@ -19,6 +26,10 @@ function blochstate(phi, theta, spinnumber::Int=1)
     else
         return state
     end
+end
+
+function dim(ρ::Operator)
+    return length(ρ.basis_l.bases)
 end
 
 function Hamiltonian(S::system.SpinCollection)
@@ -79,6 +90,64 @@ function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwarg
     J_sparse = map(operators_sparse.SparseOperator, J)
     Γ = interaction.GammaMatrix(S)
     return quantumoptics.timeevolution.master_h(T, ρ₀, H_sparse, J_sparse, fout=fout, Gamma=Γ)
+end
+
+function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Operator)
+    N = dim(ρ)
+    @assert length(rotationaxis)==3
+    @assert length(angles)==N
+    basis = ρ.basis_l
+    n = rotationaxis/norm(rotationaxis)
+    I = identity(basis)
+    for i=1:N
+        σ = map(op->embed(basis, i, op), [sigmax, sigmay, sigmaz])
+        nσ = n ⋅ σ
+        α = angles[i]
+        R = I*cos(α/2) - 1im*nσ*sin(α/2)
+        ρ = R*ρ*dagger(R)
+    end
+    return ρ
+end
+
+rotate(rotationaxis::Vector{Float64}, angle::Float64, ρ::Operator) = rotate(rotationaxis, ones(Float64, dim(ρ))*angle, ρ)
+
+function squeeze_sx(χT::Float64, ρ₀::Operator)
+    basis = ρ₀.basis_l
+    N = length(basis.bases)
+    totaloperator(op::Operator) = sum([embed(basis, i, op) for i=1:N])/N
+    sigmax_total = totaloperator(sigmax)
+    H = χT*sigmax_total^2
+    T = [0.,1.]
+    t, states = timeevolution_simple.master(T, ρ₀, H, [])
+    return states[end]
+end
+
+function orthogonal_vectors(n::Vector{Float64})
+    n = n/norm(n)
+    v = (n[1]<n[2] ? [1.,0.,0.] : [0.,1.,0.])
+    e1 = v - dot(n,v)*n
+    e1 = e1/norm(e1)
+    e2 = cross(n, e1)
+    e2 = e2/norm(e2)
+    return e1, e2
+end
+
+variance(op::Operator, state::Operator) = (expect(op^2, state) - expect(op, state)^2)
+
+function squeezingparameter(ρ::Operator)
+    basis = ρ.basis_l
+    N = length(basis.bases)
+    totaloperator(op::Operator) = sum([embed(basis, i, op) for i=1:N])/N
+    S = map(totaloperator, [sigmax, sigmay, sigmaz])
+    n = real([expect(s, ρ) for s=S])
+    e1, e2 = orthogonal_vectors(n)
+    function f(phi)
+        nphi = cos(phi)*e1 + sin(phi)*e2
+        Sphi = sum([nphi[i]*S[i] for i=1:3])
+        return real(variance(Sphi, ρ))
+    end
+    varSmin = Optim.optimize(f, 0., 2.pi).f_minimum
+    return sqrt(N*varSmin)/norm(n)
 end
 
 end # module

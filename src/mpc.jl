@@ -1,8 +1,16 @@
 module mpc
 
 using ArrayViews
+module Optim
+    try
+        require("Optim")
+        global optimize = Main.Optim.optimize
+    catch
+        println("Optim package not available. (Needed for calculation of squeezing parameter)")
+    end
+end
 using quantumoptics
-using ..interaction, ..system, ..meanfield
+using ..interaction, ..system, ..meanfield, ..quantum
 
 
 function blochstate(phi, theta, N::Int=1)
@@ -87,6 +95,30 @@ function correlation2covariance(corstate::Vector{Float64})
     return covstate
 end
 
+function covariance2correlation(covstate::Vector{Float64})
+    N = dim(covstate)
+    corstate = zeros(Float64, size(covstate)...)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(corstate)
+    covsx, covsy, covsz, Covxx, Covyy, Covzz, Covxy, Covxz, Covyz = splitstate(covstate)
+    for k=1:N
+        sx[k] = covsx[k]
+        sy[k] = covsy[k]
+        sz[k] = covsz[k]
+    end
+    for k=1:N, l=1:N
+        if k==l
+            continue
+        end
+        Cxx[k,l] = Covxx[k,l] + sx[k]*sx[l]
+        Cyy[k,l] = Covyy[k,l] + sy[k]*sy[l]
+        Czz[k,l] = Covzz[k,l] + sz[k]*sz[l]
+        Cxy[k,l] = Covxy[k,l] + sx[k]*sy[l]
+        Cxz[k,l] = Covxz[k,l] + sx[k]*sz[l]
+        Cyz[k,l] = Covyz[k,l] + sy[k]*sz[l]
+    end
+    return corstate
+end
+
 function densityoperator(state::Vector{Float64})
     N = dim(state)
     covstate = correlation2covariance(state)
@@ -101,6 +133,33 @@ function densityoperator(state::Vector{Float64})
             + Cxz[k,l]*C(sigmax,sigmaz,k,l) + Cyz[k,l]*C(sigmay,sigmaz,k,l) + Czz[k,l]*C(sigmaz,sigmaz,k,l))
     end
     return ρ
+end
+
+mpcstate(N::Int) = zeros(Float64, (3*N)*(2*N+1))
+
+function mpcstate(rho::Operator)
+    N = quantum.dim(rho)
+    basis = rho.basis_l
+    state = mpcstate(N)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
+    f(ind, op) = real(expect(embed(basis, ind, op), rho))
+    for k=1:N
+        sx[k] = f(k, sigmax)
+        sy[k] = f(k, sigmay)
+        sz[k] = f(k, sigmaz)
+        for l=1:N
+            if k==l
+                continue
+            end
+            Cxx[k,l] = f([k,l], [sigmax, sigmax])
+            Cyy[k,l] = f([k,l], [sigmay, sigmay])
+            Czz[k,l] = f([k,l], [sigmaz, sigmaz])
+            Cxy[k,l] = f([k,l], [sigmax, sigmay])
+            Cxz[k,l] = f([k,l], [sigmax, sigmaz])
+            Cyz[k,l] = f([k,l], [sigmay, sigmaz])
+        end
+    end
+    return state
 end
 
 sx(state::Vector{Float64}) = begin N=dim(state); view(reshape(state, 3*N, 2*N+1), 0*N+1:1*N, 2*N+1) end
@@ -194,5 +253,145 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}; fou
     end
 end
 
+# function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, state::Vector{Float64})
+#     N = dim(state)
+#     @assert length(rotationaxis)==3
+#     @assert length(angles)==N
+#     w = rotationaxis/norm(rotationaxis)
+#     covstate = correlation2covariance(state)
+#     sx, sy, sz, Covxx, Covyy, Covzz, Covxy, Covxz, Covyz = splitstate(covstate)
+#     for i=1:N
+#         v = [sx[i], sy[i], sz[i]]
+#         θ = angles[i]
+#         sx[i], sy[i], sz[i] = cos(θ)*v + sin(θ)*(w × v) + (1-cos(θ))*(w ⋅ v)*w
+#     end
+#     return covariance2correlation(covstate)
+# end
+
+function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, state::Vector{Float64})
+    N = dim(state)
+    @assert length(rotationaxis)==3
+    @assert length(angles)==N
+    w = rotationaxis/norm(rotationaxis)
+    S_total = splitstate(state)
+    rotstate = deepcopy(state)
+    S_total_rot = splitstate(rotstate)
+    pstate = zeros(Float64, (3*2)*(2*2+1))
+    S_2 = splitstate(pstate)
+    for k=1:N,l=1:N
+        if k==l
+            continue
+        end
+        for i=1:3
+            S_2[i][1] = S_total[i][k]
+            S_2[i][2] = S_total[i][l]
+        end
+        for i=4:9
+            S_2[i][1,2] = S_total[i][k,l]
+            S_2[i][2,1] = S_total[i][l,k]
+        end
+        rho_p = densityoperator(pstate)
+        rho_p_rot = quantum.rotate(rotationaxis, Float64[angles[k], angles[l]], rho_p)
+        pstate_rot = mpcstate(rho_p_rot)
+        S_2rot = splitstate(pstate_rot)
+        for i=1:3
+            S_total_rot[i][k] = S_2rot[i][1]
+            S_total_rot[i][l] = S_2rot[i][2]
+        end
+        for i=4:9
+            S_total_rot[i][k,l] = S_2rot[i][1,2]
+            S_total_rot[i][l,k] = S_2rot[i][2,1]
+        end
+    end
+    return rotstate
+end
+
+rotate(rotationaxis::Vector{Float64}, angle::Float64, state::Vector{Float64}) = rotate(rotationaxis, ones(Float64, dim(state))*angle, state)
+
+function squeeze_sx(χT::Float64, state0::Vector{Float64})
+    T = [0,1.]
+    N = dim(state0)
+    χeff = 4*χT/N^2
+    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+        sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(y)
+        dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(dy)
+        for k=1:N
+            dsx[k] = 0.
+            dsy[k] = 0.
+            dsz[k] = 0.
+            for j=1:N
+                if j==k
+                    continue
+                end
+                dsy[k] += -χeff*Cxz[j,k]
+                dsz[k] += χeff*Cxy[j,k]
+            end
+        end
+        for k=1:N, l=1:N
+            if k==l
+                continue
+            end
+            dCxx[k,l] = 0.
+            dCyy[k,l] = 0.
+            dCzz[k,l] = 0.
+            dCxy[k,l] = -χeff*sz[l]
+            dCxz[k,l] = χeff*sy[l]
+            dCyz[k,l] = 0.
+            for j=1:N
+                if j==l || j==k
+                    continue
+                end
+                Cxyx = correlation(sx[k], sy[l], sx[j], Cxy[k,l], Cxx[k,j], Cxy[j,l])
+                Cxzx = correlation(sx[k], sz[l], sx[j], Cxz[k,l], Cxx[k,j], Cxz[j,l])
+                Cyyx = correlation(sy[k], sy[l], sx[j], Cyy[k,l], Cxy[j,k], Cxy[j,l])
+                Cyzx = correlation(sy[k], sz[l], sx[j], Cyz[k,l], Cxy[j,k], Cxz[j,l])
+                Czyx = correlation(sz[k], sy[l], sx[j], Cyz[l,k], Cxz[j,k], Cxy[j,l])
+                Czzx = correlation(sz[k], sz[l], sx[j], Czz[k,l], Cxz[j,k], Cxz[j,l])
+
+                dCyy[k,l] += -χeff*(Czyx+Cyzx)
+                dCzz[k,l] += χeff*(Cyzx+Czyx)
+                dCxy[k,l] += -χeff*Cxzx
+                dCxz[k,l] += χeff*Cxyx
+                dCyz[k,l] += χeff*(Czzx-Cyyx)
+            end
+        end
+    end
+
+    state_out = Vector{Float64}[]
+    function fout_(t, state::Vector{Float64})
+        push!(state_out, deepcopy(state))
+    end
+
+    quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
+    return state_out[end]
+end
+
+function orthogonal_vectors(n::Vector{Float64})
+    n = n/norm(n)
+    v = (n[1]<n[2] ? [1.,0.,0.] : [0.,1.,0.])
+    e1 = v - dot(n,v)*n
+    e1 = e1/norm(e1)
+    e2 = cross(n, e1)
+    e2 = e2/norm(e2)
+    return e1, e2
+end
+
+function squeezingparameter(state::Vector{Float64})
+    N = dim(state)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = map(sum, splitstate(state))
+    n = 1./N*[sx, sy, sz]
+    e1, e2 = orthogonal_vectors(n)
+    function f(phi)
+        nphi = cos(phi)*e1 + sin(phi)*e2
+        nx = nphi[1]
+        ny = nphi[2]
+        nz = nphi[3]
+        Sphi2 = 1./N^2*(N+nx*nx*Cxx + ny*ny*Cyy + nz*nz*Czz +
+                2*nx*ny*Cxy + 2*nx*nz*Cxz + 2*ny*nz*Cyz)
+        return Sphi2
+    end
+    varSmin = Optim.optimize(f, 0., 2.pi).f_minimum
+    return sqrt(N*varSmin)/norm(n)
+end
 
 end # module
