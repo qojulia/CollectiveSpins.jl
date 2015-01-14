@@ -15,6 +15,9 @@ include("mpc.jl")
 include("io.jl")
 
 using .system
+using .quantum
+using .meanfield
+using .mpc
 
 end # module
 

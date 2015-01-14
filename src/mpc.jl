@@ -1,5 +1,7 @@
 module mpc
 
+export MPCState, densityoperator, rotate, squeeze_sx, squeezingparameter
+
 using ArrayViews
 module Optim
     try
@@ -10,137 +12,22 @@ module Optim
     end
 end
 using quantumoptics
-using ..interaction, ..system, ..meanfield, ..quantum
+using ..interaction, ..system
+import ..quantum: rotate, squeeze_sx, squeezingparameter
+import ..meanfield: densityoperator
 
-
-function blochstate(phi, theta, N::Int=1)
-    state = zeros(Float64, (3*N)*(2*N+1))
-    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
-    for i=1:N
-        sx[i] = cos(phi)*sin(theta)
-        sy[i] = sin(phi)*sin(theta)
-        sz[i] = cos(theta)
-    end
-    for i=1:N, j=1:N
-        if i==j
-            continue
-        end
-        Cxx[i,j] = sx[i]*sx[j]
-        Cyy[i,j] = sy[i]*sy[j]
-        Czz[i,j] = sz[i]*sz[j]
-        Cxy[i,j] = sx[i]*sy[j]
-        Cxz[i,j] = sx[i]*sz[j]
-        Cyz[i,j] = sy[i]*sz[j]
-    end
-    return vec(state)
+type MPCState
+    N::Int
+    data::Vector{Float64}
 end
 
-function integersqrt(N::Int)
-    n = sqrt(N)
-    if abs(int(n)-n)>10*eps(n)
-        error("N is not a square of an integer.")
-    end
-    return int(n)
-end
+MPCState(N::Int) = MPCState(N, zeros(Float64, (3*N)*(2*N+1)))
+MPCState(data::Vector{Float64}) = MPCState(dim(data), data)
 
-function dim(state::Vector{Float64})
-    x, rem = divrem(length(state), 3)
-    @assert rem==0
-    N, rem = divrem(-1 + integersqrt(1+8*x), 4)
-    @assert rem==0
-    return N
-end
-
-function splitstate(state::Vector{Float64})
-    N = dim(state)
-    state = reshape(state, 3*N, 2*N+1)
-    sx = view(state, 0*N+1:1*N, 2*N+1)
-    sy = view(state, 1*N+1:2*N, 2*N+1)
-    sz = view(state, 2*N+1:3*N, 2*N+1)
-    Cxx = view(state, 0*N+1:1*N, 0*N+1:1*N)
-    Cyy = view(state, 1*N+1:2*N, 0*N+1:1*N)
-    Czz = view(state, 2*N+1:3*N, 0*N+1:1*N)
-    Cxy = view(state, 0*N+1:1*N, 1*N+1:2*N)
-    Cxz = view(state, 1*N+1:2*N, 1*N+1:2*N)
-    Cyz = view(state, 2*N+1:3*N, 1*N+1:2*N)
-    return sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz
-end
-
-function covarianceoperator(productstate::Vector{Operator}, operators::Vector{Operator}, indices::Vector{Int})
-    x = Operator[(i in indices ? operators[findfirst(indices, i)] : productstate[i]) for i=1:length(productstate)]
-    return tensor(x...)
-end
-
-function correlation2covariance(corstate::Vector{Float64})
-    N = dim(corstate)
-    covstate = zeros(Float64, size(corstate)...)
-    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(corstate)
-    covsx, covsy, covsz, Covxx, Covyy, Covzz, Covxy, Covxz, Covyz = splitstate(covstate)
-    for k=1:N
-        covsx[k] = sx[k]
-        covsy[k] = sy[k]
-        covsz[k] = sz[k]
-    end
-    for k=1:N, l=1:N
-        if k==l
-            continue
-        end
-        Covxx[k,l] = Cxx[k,l] - sx[k]*sx[l]
-        Covyy[k,l] = Cyy[k,l] - sy[k]*sy[l]
-        Covzz[k,l] = Czz[k,l] - sz[k]*sz[l]
-        Covxy[k,l] = Cxy[k,l] - sx[k]*sy[l]
-        Covxz[k,l] = Cxz[k,l] - sx[k]*sz[l]
-        Covyz[k,l] = Cyz[k,l] - sy[k]*sz[l]
-    end
-    return covstate
-end
-
-function covariance2correlation(covstate::Vector{Float64})
-    N = dim(covstate)
-    corstate = zeros(Float64, size(covstate)...)
-    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(corstate)
-    covsx, covsy, covsz, Covxx, Covyy, Covzz, Covxy, Covxz, Covyz = splitstate(covstate)
-    for k=1:N
-        sx[k] = covsx[k]
-        sy[k] = covsy[k]
-        sz[k] = covsz[k]
-    end
-    for k=1:N, l=1:N
-        if k==l
-            continue
-        end
-        Cxx[k,l] = Covxx[k,l] + sx[k]*sx[l]
-        Cyy[k,l] = Covyy[k,l] + sy[k]*sy[l]
-        Czz[k,l] = Covzz[k,l] + sz[k]*sz[l]
-        Cxy[k,l] = Covxy[k,l] + sx[k]*sy[l]
-        Cxz[k,l] = Covxz[k,l] + sx[k]*sz[l]
-        Cyz[k,l] = Covyz[k,l] + sy[k]*sz[l]
-    end
-    return corstate
-end
-
-function densityoperator(state::Vector{Float64})
-    N = dim(state)
-    covstate = correlation2covariance(state)
-    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(covstate)
-    productstate = Operator[meanfield.densityoperator(sx[k], sy[k], sz[k]) for k=1:N]
-    C(op1,op2,index1,index2) = covarianceoperator(productstate, [op1,op2], [index1,index2])
-    ρ = reduce(tensor, productstate)
-    for k=1:N, l=k+1:N
-        ρ += 0.25*(
-              Cxx[k,l]*C(sigmax,sigmax,k,l) + Cxy[l,k]*C(sigmay,sigmax,k,l) + Cxz[l,k]*C(sigmaz,sigmax,k,l)
-            + Cxy[k,l]*C(sigmax,sigmay,k,l) + Cyy[k,l]*C(sigmay,sigmay,k,l) + Cyz[l,k]*C(sigmaz,sigmay,k,l)
-            + Cxz[k,l]*C(sigmax,sigmaz,k,l) + Cyz[k,l]*C(sigmay,sigmaz,k,l) + Czz[k,l]*C(sigmaz,sigmaz,k,l))
-    end
-    return ρ
-end
-
-mpcstate(N::Int) = zeros(Float64, (3*N)*(2*N+1))
-
-function mpcstate(rho::Operator)
-    N = quantum.dim(rho)
+function MPCState(rho::Operator)
     basis = rho.basis_l
-    state = mpcstate(N)
+    N = length(basis.bases)
+    state = MPCState(N)
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
     f(ind, op) = real(expect(embed(basis, ind, op), rho))
     for k=1:N
@@ -162,23 +49,147 @@ function mpcstate(rho::Operator)
     return state
 end
 
-sx(state::Vector{Float64}) = begin N=dim(state); view(reshape(state, 3*N, 2*N+1), 0*N+1:1*N, 2*N+1) end
-sy(state::Vector{Float64}) = begin N=dim(state); view(reshape(state, 3*N, 2*N+1), 1*N+1:2*N, 2*N+1) end
-sz(state::Vector{Float64}) = begin N=dim(state); view(reshape(state, 3*N, 2*N+1), 2*N+1:3*N, 2*N+1) end
+
+function blochstate(phi, theta, N::Int=1)
+    state = MPCState(N)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
+    for k=1:N
+        sx[k] = cos(phi)*sin(theta)
+        sy[k] = sin(phi)*sin(theta)
+        sz[k] = cos(theta)
+    end
+    for k=1:N, l=1:N
+        if k==l
+            continue
+        end
+        Cxx[k,l] = sx[k]*sx[l]
+        Cyy[k,l] = sy[k]*sy[l]
+        Czz[k,l] = sz[k]*sz[l]
+        Cxy[k,l] = sx[k]*sy[l]
+        Cxz[k,l] = sx[k]*sz[l]
+        Cyz[k,l] = sy[k]*sz[l]
+    end
+    return state
+end
+
+function integersqrt(N::Int)
+    n = sqrt(N)
+    if abs(int(n)-n)>10*eps(n)
+        error("N is not a square of an integer.")
+    end
+    return int(n)
+end
+
+function dim(state::Vector{Float64})
+    x, rem = divrem(length(state), 3)
+    @assert rem==0
+    N, rem = divrem(-1 + integersqrt(1+8*x), 4)
+    @assert rem==0
+    return N
+end
+
+function splitstate(N::Int, data::Vector{Float64})
+    data = reshape(data, 3*N, 2*N+1)
+    sx = view(data, 0*N+1:1*N, 2*N+1)
+    sy = view(data, 1*N+1:2*N, 2*N+1)
+    sz = view(data, 2*N+1:3*N, 2*N+1)
+    Cxx = view(data, 0*N+1:1*N, 0*N+1:1*N)
+    Cyy = view(data, 1*N+1:2*N, 0*N+1:1*N)
+    Czz = view(data, 2*N+1:3*N, 0*N+1:1*N)
+    Cxy = view(data, 0*N+1:1*N, 1*N+1:2*N)
+    Cxz = view(data, 1*N+1:2*N, 1*N+1:2*N)
+    Cyz = view(data, 2*N+1:3*N, 1*N+1:2*N)
+    return sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz
+end
+splitstate(state::MPCState) = splitstate(state.N, state.data)
+
+function covarianceoperator(productstate::Vector{Operator}, operators::Vector{Operator}, indices::Vector{Int})
+    x = Operator[(i in indices ? operators[findfirst(indices, i)] : productstate[i]) for i=1:length(productstate)]
+    return tensor(x...)
+end
+
+function correlation2covariance(corstate::MPCState)
+    N = corstate.N
+    covstate = MPCState(N)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(corstate)
+    covsx, covsy, covsz, Covxx, Covyy, Covzz, Covxy, Covxz, Covyz = splitstate(covstate)
+    for k=1:N
+        covsx[k] = sx[k]
+        covsy[k] = sy[k]
+        covsz[k] = sz[k]
+    end
+    for k=1:N, l=1:N
+        if k==l
+            continue
+        end
+        Covxx[k,l] = Cxx[k,l] - sx[k]*sx[l]
+        Covyy[k,l] = Cyy[k,l] - sy[k]*sy[l]
+        Covzz[k,l] = Czz[k,l] - sz[k]*sz[l]
+        Covxy[k,l] = Cxy[k,l] - sx[k]*sy[l]
+        Covxz[k,l] = Cxz[k,l] - sx[k]*sz[l]
+        Covyz[k,l] = Cyz[k,l] - sy[k]*sz[l]
+    end
+    return covstate
+end
+
+function covariance2correlation(covstate::MPCState)
+    N = covstate.N
+    corstate = MPCState(N)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(corstate)
+    covsx, covsy, covsz, Covxx, Covyy, Covzz, Covxy, Covxz, Covyz = splitstate(covstate)
+    for k=1:N
+        sx[k] = covsx[k]
+        sy[k] = covsy[k]
+        sz[k] = covsz[k]
+    end
+    for k=1:N, l=1:N
+        if k==l
+            continue
+        end
+        Cxx[k,l] = Covxx[k,l] + sx[k]*sx[l]
+        Cyy[k,l] = Covyy[k,l] + sy[k]*sy[l]
+        Czz[k,l] = Covzz[k,l] + sz[k]*sz[l]
+        Cxy[k,l] = Covxy[k,l] + sx[k]*sy[l]
+        Cxz[k,l] = Covxz[k,l] + sx[k]*sz[l]
+        Cyz[k,l] = Covyz[k,l] + sy[k]*sz[l]
+    end
+    return corstate
+end
+
+function densityoperator(state::MPCState)
+    N = state.N
+    covstate = correlation2covariance(state)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(covstate)
+    productstate = Operator[densityoperator(sx[k], sy[k], sz[k]) for k=1:N]
+    C(op1,op2,index1,index2) = covarianceoperator(productstate, [op1,op2], [index1,index2])
+    ρ = reduce(tensor, productstate)
+    for k=1:N, l=k+1:N
+        ρ += 0.25*(
+              Cxx[k,l]*C(sigmax,sigmax,k,l) + Cxy[l,k]*C(sigmay,sigmax,k,l) + Cxz[l,k]*C(sigmaz,sigmax,k,l)
+            + Cxy[k,l]*C(sigmax,sigmay,k,l) + Cyy[k,l]*C(sigmay,sigmay,k,l) + Cyz[l,k]*C(sigmaz,sigmay,k,l)
+            + Cxz[k,l]*C(sigmax,sigmaz,k,l) + Cyz[k,l]*C(sigmay,sigmaz,k,l) + Czz[k,l]*C(sigmaz,sigmaz,k,l))
+    end
+    return ρ
+end
+
+sx(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 2*x.N+1)
+sy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 2*x.N+1)
+sz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 2*x.N+1)
 
 function correlation(s1::Float64, s2::Float64, s3::Float64, C12::Float64, C13::Float64, C23::Float64)
     return -2.*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
 end
 
-function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}; fout=nothing)
+function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothing)
     N = length(S.spins)
+    @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
     γ = S.gamma
 
     function f(t, y::Vector{Float64}, dy::Vector{Float64})
-        sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(y)
-        dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(dy)
+        sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
+        dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
@@ -240,43 +251,27 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}; fou
 
     if fout==nothing
         t_out = Float64[]
-        state_out = Vector{Float64}[]
+        state_out = MPCState[]
         function fout_(t, state::Vector{Float64})
             push!(t_out, t)
-            push!(state_out, deepcopy(state))
+            push!(state_out, MPCState(N, deepcopy(state)))
         end
-
-        quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
+        quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
+        return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=x->fout(MPCState(N,x)))
     end
 end
 
-# function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, state::Vector{Float64})
-#     N = dim(state)
-#     @assert length(rotationaxis)==3
-#     @assert length(angles)==N
-#     w = rotationaxis/norm(rotationaxis)
-#     covstate = correlation2covariance(state)
-#     sx, sy, sz, Covxx, Covyy, Covzz, Covxy, Covxz, Covyz = splitstate(covstate)
-#     for i=1:N
-#         v = [sx[i], sy[i], sz[i]]
-#         θ = angles[i]
-#         sx[i], sy[i], sz[i] = cos(θ)*v + sin(θ)*(w × v) + (1-cos(θ))*(w ⋅ v)*w
-#     end
-#     return covariance2correlation(covstate)
-# end
-
-function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, state::Vector{Float64})
-    N = dim(state)
-    @assert length(rotationaxis)==3
+function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MPCState)
+    N = state.N
+    @assert length(axis)==3
     @assert length(angles)==N
-    w = rotationaxis/norm(rotationaxis)
+    w = axis/norm(axis)
     S_total = splitstate(state)
     rotstate = deepcopy(state)
     S_total_rot = splitstate(rotstate)
-    pstate = zeros(Float64, (3*2)*(2*2+1))
+    pstate = MPCState(2)
     S_2 = splitstate(pstate)
     for k=1:N,l=1:N
         if k==l
@@ -291,8 +286,8 @@ function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, state::V
             S_2[i][2,1] = S_total[i][l,k]
         end
         rho_p = densityoperator(pstate)
-        rho_p_rot = quantum.rotate(rotationaxis, Float64[angles[k], angles[l]], rho_p)
-        pstate_rot = mpcstate(rho_p_rot)
+        rho_p_rot = rotate(axis, Float64[angles[k], angles[l]], rho_p)
+        pstate_rot = MPCState(rho_p_rot)
         S_2rot = splitstate(pstate_rot)
         for i=1:3
             S_total_rot[i][k] = S_2rot[i][1]
@@ -306,15 +301,16 @@ function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, state::V
     return rotstate
 end
 
-rotate(rotationaxis::Vector{Float64}, angle::Float64, state::Vector{Float64}) = rotate(rotationaxis, ones(Float64, dim(state))*angle, state)
+rotate(axis::Vector{Float64}, angle::Float64, state::MPCState) = rotate(axis, ones(Float64, state.N)*angle, state)
 
-function squeeze_sx(χT::Float64, state0::Vector{Float64})
+
+function squeeze_sx(χT::Float64, state0::MPCState)
     T = [0,1.]
-    N = dim(state0)
+    N = state0.N
     χeff = 4*χT/N^2
     function f(t, y::Vector{Float64}, dy::Vector{Float64})
-        sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(y)
-        dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(dy)
+        sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
+        dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         for k=1:N
             dsx[k] = 0.
             dsy[k] = 0.
@@ -362,8 +358,8 @@ function squeeze_sx(χT::Float64, state0::Vector{Float64})
         push!(state_out, deepcopy(state))
     end
 
-    quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
-    return state_out[end]
+    quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
+    return MPCState(N, state_out[end])
 end
 
 function orthogonal_vectors(n::Vector{Float64})
@@ -376,8 +372,8 @@ function orthogonal_vectors(n::Vector{Float64})
     return e1, e2
 end
 
-function squeezingparameter(state::Vector{Float64})
-    N = dim(state)
+function squeezingparameter(state::MPCState)
+    N = state.N
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = map(sum, splitstate(state))
     n = 1./N*[sx, sy, sz]
     e1, e2 = orthogonal_vectors(n)
@@ -393,5 +389,6 @@ function squeezingparameter(state::Vector{Float64})
     varSmin = Optim.optimize(f, 0., 2.pi).f_minimum
     return sqrt(N*varSmin)/norm(n)
 end
+squeezingparameter(states::Vector{MPCState}) = Float64[squeezingparameter(state) for state=states]
 
 end # module

@@ -1,15 +1,41 @@
 module meanfield
 
+export MFState, densityoperator, rotate
+
 using ArrayViews
 using quantumoptics
 using ..interaction, ..system
+import ..quantum: rotate, squeeze_sx, squeezingparameter
 
+type MFState
+    N::Int
+    data::Vector{Float64}
+end
+MFState(N::Int) = MFState(N, zeros(Float64, 3*N))
+MFState(data::Vector{Float64}) = MFState(dim(N), data)
+
+function MFState(rho::Operator)
+    N = quantum.dim(rho)
+    basis = quantum.basis(N)
+    state = MFState(N)
+    sx, sy, sz = splitstate(s)
+    f(ind, op) = real(expect(embed(basis, ind, op), rho))
+    for k=1:N
+        sx[k] = f(k, sigmax)
+        sy[k] = f(k, sigmay)
+        sz[k] = f(k, sigmaz)
+    end
+    return state
+end
 
 function blochstate(phi, theta, N::Int=1)
-    state = zeros(Float64, 3*N)
-    state[0*N+1:1*N] = ones(Float64, N)*cos(phi)*sin(theta)
-    state[1*N+1:2*N] = ones(Float64, N)*sin(phi)*sin(theta)
-    state[2*N+1:3*N] = ones(Float64, N)*cos(theta)
+    state = MFState(N)
+    sx, sy, sz = splitstate(s)
+    for k=1:N
+        sx[k] = cos(phi)*sin(theta)
+        sy[k] = sin(phi)*sin(theta)
+        sz[k] = cos(theta)
+    end
     return state
 end
 
@@ -19,37 +45,35 @@ function dim(state::Vector{Float64})
     return N
 end
 
-function splitstate(state::Vector{Float64})
-    N = dim(state)
-    return view(state, 0*N+1:1*N), view(state, 1*N+1:2*N), view(state, 2*N+1:3*N)
-end
+splitstate(N::Int, data::Vector{Float64}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
+splitstate(state::MFState) = splitstate(state.N, state.data)
 
 function densityoperator(sx::Float64, sy::Float64, sz::Float64)
     return 0.5*(identity(spinbasis) + sx*sigmax + sy*sigmay + sz*sigmaz)
 end
 
-function densityoperator(state::Vector{Float64})
-    N = dim(state)
+function densityoperator(state::MFState)
     sx, sy, sz = splitstate(state)
-    if N>1
-        return reduce(tensor, [densityoperator(sx[i], sy[i], sz[i]) for i=1:N])
-    else
-        return densityoperator(sx[i], sy[i], sz[i])
+    rho = densityoperator(sx[1], sy[1], sz[1])
+    for i=2:state.N
+        rho = tensor(rho, densityoperator(sx[i], sy[i], sz[i]))
     end
+    return rho
 end
 
-sx(state::Vector{Float64}) = view(state, 1:dim(state))
-sy(state::Vector{Float64}) = view(state, dim(state)+1:2*dim(state))
-sz(state::Vector{Float64}) = view(state, 2*dim(state)+1:3*dim(state))
+sx(x::MFState) = view(x.data, 1:x.N)
+sy(x::MFState) = view(x.data, x.N+1:2*x.N)
+sz(x::MFState) = view(x.data, 2*x.N+1:3*x.N)
 
-function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}; fout=nothing)
+function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothing)
     N = length(S.spins)
+    @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
     γ = S.gamma
-    function f(t, s::Vector{Float64}, ds::Vector{Float64})
-        sx, sy, sz = splitstate(s)
-        dsx, dsy, dsz = splitstate(ds)
+    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+        sx, sy, sz = splitstate(N, y)
+        dsx, dsy, dsz = splitstate(N, dy)
         @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
@@ -67,21 +91,22 @@ function timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}; fou
 
     if fout==nothing
         t_out = Float64[]
-        state_out = Vector{Float64}[]
+        state_out = MFState[]
         function fout_(t, y::Vector{Float64})
             push!(t_out, t)
-            push!(state_out, deepcopy(y))
+            push!(state_out, MFState(N, deepcopy(y)))
         end
 
         quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
+        return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=x->fout(MFState(N,x)))
     end
 end
 
-function timeevolution_symmetric(T, state0::Vector{Float64}, Ωeff::Float64, Γeff::Float64, γ::Float64=1.0; fout=nothing)
-    @assert length(state0)==3
+function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Float64, γ::Float64=1.0; fout=nothing)
+    N = 3
+    @assert state0.N==N
     function f(t, s::Vector{Float64}, ds::Vector{Float64})
         ds[1] =  Ωeff*s[2]*s[3] - 0.5*γ*s[1] - 0.5*Γeff*s[1]*s[3]
         ds[2] = -Ωeff*s[1]*s[3] - 0.5*γ*s[2] - 0.5*Γeff*s[2]*s[3]
@@ -89,16 +114,35 @@ function timeevolution_symmetric(T, state0::Vector{Float64}, Ωeff::Float64, Γe
     end
     if fout==nothing
         t_out = Float64[]
-        state_out = Vector{Float64}[]
+        state_out = MFState[]
         function fout_(t, y::Vector{Float64})
             push!(t_out, t)
-            push!(state_out, deepcopy(y))
+            push!(state_out, MFState(N, deepcopy(y)))
         end
         quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
+        return quantumoptics.ode_dopri.ode(f, T, state0, fout=x->fout(MFState(N,x)))
     end
 end
+
+function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MFState)
+    @assert length(axis)==3
+    @assert length(angles)==state.N
+    w = axis/norm(axis)
+    sx, sy, sz = splitstate(state)
+    state_rot = MFState(state.N)
+    sx_rot, sy_rot, sz_rot = splitstate(state_rot)
+    v = zeros(Float64, 3)
+    for i=1:N
+        v[1], v[2], v[3] = sx[i], sy[i], sz[i]
+        θ = angles[i]
+        sx_rot[i], sy_rot[i], sz_rot[i] = cos(θ)*v + sin(θ)*(w × v) + (1-cos(θ))*(w ⋅ v)*w
+    end
+    return state_rot
+end
+
+rotate(axis::Vector{Float64}, angle::Float64, state::MFState) = rotate(axis, ones(Float64, state.N)*angle, state)
+rotate(axis::Vector{Float64}, angle::Float64, states::Vector{MFState}) = MFState[rotate(axis, ones(Float64, dim(state))*angle, state) for state=states]
 
 end # module

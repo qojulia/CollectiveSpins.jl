@@ -1,5 +1,7 @@
 module quantum
 
+export rotate, squeeze_sx, squeezingparameter
+
 using ..interaction, ..system
 using quantumoptics
 module Optim
@@ -14,6 +16,7 @@ export Hamiltonian, Jump_operators
 
 basis(x::Spin) = spinbasis
 basis(x::SpinCollection) = CompositeBasis([basis(s) for s=x.spins]...)
+basis(N::Int) = CompositeBasis([spinbasis for s=1:N]...)
 basis(x::CavityMode) = FockBasis(x.cutoff)
 basis(x::CavitySpinCollection) = compose(basis(x.spincollection), basis(x.cavity))
 
@@ -109,7 +112,10 @@ function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Oper
     return ρ
 end
 
-rotate(rotationaxis::Vector{Float64}, angle::Float64, ρ::Operator) = rotate(rotationaxis, ones(Float64, dim(ρ))*angle, ρ)
+rotate(axis::Vector{Float64}, angle::Float64, ρ::Operator) = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
+rotate{T}(axis::Vector{Float64}, angles, xlist::Vector{T}) = T[rotate(axis, angles, x) for x=xlist]
+rotate{T<:Number}(axis::Vector{T}, angles, x) = rotate(convert(Vector{Float64}, axis), angles, x)
+
 
 function squeeze_sx(χT::Float64, ρ₀::Operator)
     basis = ρ₀.basis_l
@@ -149,5 +155,6 @@ function squeezingparameter(ρ::Operator)
     varSmin = Optim.optimize(f, 0., 2.pi).f_minimum
     return sqrt(N*varSmin)/norm(n)
 end
+squeezingparameter(ρlist::Vector{Operator}) = Float64[squeezingparameter(ρ) for ρ=ρlist]
 
 end # module
