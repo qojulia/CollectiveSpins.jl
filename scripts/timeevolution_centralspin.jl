@@ -44,16 +44,22 @@ const theta = float(parameters["theta"])
 
 # System geometry
 using quantumoptics, collectivespins
+const cs = collectivespins
+
 const edipole = float(eval(parse(parameters["edipole"])))
 const geomN = int(parameters["N"])
 const d = float(parameters["d"])
 const geomstring = parameters["geometry"]
 if geomstring=="chain"
-    const systemgeometry = collectivespins.geometry.chain(d, 2*geomN+1)
+    const systemgeometry = cs.geometry.chain(d, 2*geomN+1)
 elseif geomstring=="square"
-    const systemgeometry = collectivespins.geometry.square(d; Nx=2*geomN+1, Ny=2*geomN+1)
+    const systemgeometry = cs.geometry.square(d; Nx=2*geomN+1, Ny=2*geomN+1)
+elseif geomstring=="hexagonal"
+    const systemgeometry = cs.geometry.hexagonal(d; Nr=geomN)
 elseif geomstring=="cube"
-    const systemgeometry = collectivespins.geometry.cube(d; Nx=2*geomN+1, Ny=2*geomN+1, Nz=2*geomN+1)
+    const systemgeometry = cs.geometry.cube(d; Nx=2*geomN+1, Ny=2*geomN+1, Nz=2*geomN+1)
+else
+    error("Unknown geometry: $(geomstring)")
 end
 
 const system = SpinCollection(systemgeometry, edipole, γ)
@@ -69,31 +75,31 @@ const sz = Float64[]
 
 tic()
 if method=="meanfield"
-    state0 = collectivespins.meanfield.blochstate(phi,theta,N)
+    state0 = cs.meanfield.blochstate(phi,theta,N)
     function fout(t, state)
-        push!(sx, collectivespins.meanfield.sx(state)[index_center])
-        push!(sy, collectivespins.meanfield.sy(state)[index_center])
-        push!(sz, collectivespins.meanfield.sz(state)[index_center])
+        push!(sx, cs.meanfield.sx(state)[index_center])
+        push!(sy, cs.meanfield.sy(state)[index_center])
+        push!(sz, cs.meanfield.sz(state)[index_center])
     end
-    collectivespins.meanfield.timeevolution(T, system, state0; fout=fout)
+    cs.meanfield.timeevolution(T, system, state0; fout=fout)
 elseif method=="mpc"
-    state0 = collectivespins.mpc.blochstate(phi,theta,N)
+    state0 = cs.mpc.blochstate(phi,theta,N)
     function fout(t, state)
-        push!(sx, collectivespins.mpc.sx(state)[index_center])
-        push!(sy, collectivespins.mpc.sy(state)[index_center])
-        push!(sz, collectivespins.mpc.sz(state)[index_center])
+        push!(sx, cs.mpc.sx(state)[index_center])
+        push!(sy, cs.mpc.sy(state)[index_center])
+        push!(sz, cs.mpc.sz(state)[index_center])
     end
-    collectivespins.mpc.timeevolution(T, system, state0; fout=fout)
+    cs.mpc.timeevolution(T, system, state0; fout=fout)
 elseif method=="master"
-    embed(op::Operator) = quantumoptics.embed(collectivespins.quantum.basis(system), [index_center], [op])
+    embed(op::Operator) = quantumoptics.embed(cs.quantum.basis(system), [index_center], [op])
     function fout(t, rho::Operator)
         push!(sx, real(expect(embed(sigmax), rho)))
         push!(sy, real(expect(embed(sigmay), rho)))
         push!(sz, real(expect(embed(sigmaz), rho)))
     end
-    Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
+    Ψ₀ = cs.quantum.blochstate(phi,theta,N)
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
-    collectivespins.quantum.timeevolution(T, system, ρ₀; fout=fout)
+    cs.quantum.timeevolution(T, system, ρ₀; fout=fout)
 end
 t = toc()
 
