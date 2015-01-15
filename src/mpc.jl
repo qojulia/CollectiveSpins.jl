@@ -262,40 +262,51 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     end
 end
 
+function axisangle2rotmatrix(axis::Vector{Float64}, angle::Float64)
+    x, y, z = axis
+    c = cos(angle)
+    s = sin(angle)
+    t = 1-c
+    R = zeros(Float64, 3, 3)
+    R[1,1] = t*x^2 + c
+    R[1,2] = t*x*y - z*s
+    R[1,3] = t*x*z + y*s
+    R[2,1] = t*x*y + z*s
+    R[2,2] = t*y^2 + c
+    R[2,3] = t*y*z - x*s
+    R[3,1] = t*x*z - y*s
+    R[3,2] = t*y*z + x*s
+    R[3,3] = t*z^2 + c
+    return R
+end
+
 function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MPCState)
     N = state.N
     @assert length(axis)==3
     @assert length(angles)==N
     w = axis/norm(axis)
-    S_total = splitstate(state)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
     rotstate = deepcopy(state)
-    S_total_rot = splitstate(rotstate)
-    pstate = MPCState(2)
-    S_2 = splitstate(pstate)
+    sx_rot, sy_rot, sz_rot, Cxx_rot, Cyy_rot, Czz_rot, Cxy_rot, Cxz_rot, Cyz_rot = splitstate(rotstate)
+    S_rot = splitstate(rotstate)
+    R = [axisangle2rotmatrix(w, angle) for angle=angles]
+    for k=1:N
+        sx_rot[k], sy_rot[k], sz_rot[k] = R[k]*[sx[k], sy[k], sz[k]]
+    end
     for k=1:N,l=1:N
         if k==l
             continue
         end
-        for i=1:3
-            S_2[i][1] = S_total[i][k]
-            S_2[i][2] = S_total[i][l]
-        end
-        for i=4:9
-            S_2[i][1,2] = S_total[i][k,l]
-            S_2[i][2,1] = S_total[i][l,k]
-        end
-        rho_p = densityoperator(pstate)
-        rho_p_rot = quantum.rotate(axis, Float64[angles[k], angles[l]], rho_p)
-        pstate_rot = MPCState(rho_p_rot)
-        S_2rot = splitstate(pstate_rot)
-        for i=1:3
-            S_total_rot[i][k] = S_2rot[i][1]
-            S_total_rot[i][l] = S_2rot[i][2]
-        end
-        for i=4:9
-            S_total_rot[i][k,l] = S_2rot[i][1,2]
-            S_total_rot[i][l,k] = S_2rot[i][2,1]
-        end
+        S2 = [Cxx[k,l],Cxy[k,l],Cxz[k,l],
+              Cxy[l,k],Cyy[k,l],Cyz[k,l],
+              Cxz[l,k],Cyz[l,k],Czz[k,l]]
+        S2_rot = kron(R[k], R[l])*S2
+        Cxx_rot[k,l] = S2_rot[1]
+        Cyy_rot[k,l] = S2_rot[5]
+        Czz_rot[k,l] = S2_rot[9]
+        Cxy_rot[k,l] = S2_rot[2]
+        Cxz_rot[k,l] = S2_rot[3]
+        Cyz_rot[k,l] = S2_rot[6]
     end
     return rotstate
 end
