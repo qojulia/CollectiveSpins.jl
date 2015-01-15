@@ -258,7 +258,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
         quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=x->fout(MPCState(N,x)))
+        return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MPCState(N,y)))
     end
 end
 
