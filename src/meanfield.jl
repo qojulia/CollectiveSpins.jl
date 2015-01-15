@@ -104,7 +104,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
 end
 
 function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Float64, γ::Float64=1.0; fout=nothing)
-    N = 3
+    N = 1
     @assert state0.N==N
     function f(t, s::Vector{Float64}, ds::Vector{Float64})
         ds[1] =  Ωeff*s[2]*s[3] - 0.5*γ*s[1] - 0.5*Γeff*s[1]*s[3]
@@ -118,10 +118,10 @@ function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Floa
             push!(t_out, t)
             push!(state_out, MFState(N, deepcopy(y)))
         end
-        quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
+        quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0, fout=x->fout(MFState(N,x)))
+        return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MFState(N,y)))
     end
 end
 
