@@ -1,11 +1,10 @@
 module meanfield
 
-export MFState, densityoperator, rotate
+export MFState, densityoperator
 
 using ArrayViews
 using quantumoptics
 using ..interaction, ..system
-import ..quantum: rotate, squeeze_sx, squeezingparameter
 
 type MFState
     N::Int
@@ -30,7 +29,7 @@ end
 
 function blochstate(phi, theta, N::Int=1)
     state = MFState(N)
-    sx, sy, sz = splitstate(s)
+    sx, sy, sz = splitstate(state)
     for k=1:N
         sx[k] = cos(phi)*sin(theta)
         sy[k] = sin(phi)*sin(theta)
@@ -97,7 +96,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
             push!(state_out, MFState(N, deepcopy(y)))
         end
 
-        quantumoptics.ode_dopri.ode(f, T, state0, fout=fout_)
+        quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
         return t_out, state_out
     else
         return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=x->fout(MFState(N,x)))
@@ -143,6 +142,6 @@ function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MFState)
 end
 
 rotate(axis::Vector{Float64}, angle::Float64, state::MFState) = rotate(axis, ones(Float64, state.N)*angle, state)
-rotate(axis::Vector{Float64}, angle::Float64, states::Vector{MFState}) = MFState[rotate(axis, ones(Float64, dim(state))*angle, state) for state=states]
+rotate{T<:Number}(axis::Vector{T}, angles, state::MFState) = rotate(convert(Vector{Float64}, axis), angles, state)
 
 end # module

@@ -1,6 +1,6 @@
 module mpc
 
-export MPCState, densityoperator, rotate, squeeze_sx, squeezingparameter
+export MPCState, densityoperator
 
 using ArrayViews
 module Optim
@@ -12,8 +12,7 @@ module Optim
     end
 end
 using quantumoptics
-using ..interaction, ..system
-import ..quantum: rotate, squeeze_sx, squeezingparameter
+using ..interaction, ..system, ..quantum
 import ..meanfield: densityoperator
 
 type MPCState
@@ -286,7 +285,7 @@ function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MPCState)
             S_2[i][2,1] = S_total[i][l,k]
         end
         rho_p = densityoperator(pstate)
-        rho_p_rot = rotate(axis, Float64[angles[k], angles[l]], rho_p)
+        rho_p_rot = quantum.rotate(axis, Float64[angles[k], angles[l]], rho_p)
         pstate_rot = MPCState(rho_p_rot)
         S_2rot = splitstate(pstate_rot)
         for i=1:3
@@ -302,7 +301,7 @@ function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MPCState)
 end
 
 rotate(axis::Vector{Float64}, angle::Float64, state::MPCState) = rotate(axis, ones(Float64, state.N)*angle, state)
-
+rotate{T<:Number}(axis::Vector{T}, angles, state::MPCState) = rotate(convert(Vector{Float64}, axis), angles, state)
 
 function squeeze_sx(χT::Float64, state0::MPCState)
     T = [0,1.]
@@ -389,6 +388,5 @@ function squeezingparameter(state::MPCState)
     varSmin = Optim.optimize(f, 0., 2.pi).f_minimum
     return sqrt(N*varSmin)/norm(n)
 end
-squeezingparameter(states::Vector{MPCState}) = Float64[squeezingparameter(state) for state=states]
 
 end # module

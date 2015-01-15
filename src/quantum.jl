@@ -1,7 +1,5 @@
 module quantum
 
-export rotate, squeeze_sx, squeezingparameter
-
 using ..interaction, ..system
 using quantumoptics
 module Optim
@@ -113,13 +111,12 @@ function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Oper
 end
 
 rotate(axis::Vector{Float64}, angle::Float64, ρ::Operator) = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
-rotate{T}(axis::Vector{Float64}, angles, xlist::Vector{T}) = T[rotate(axis, angles, x) for x=xlist]
-rotate{T<:Number}(axis::Vector{T}, angles, x) = rotate(convert(Vector{Float64}, axis), angles, x)
+rotate{T<:Number}(axis::Vector{T}, angles, ρ::Operator) = rotate(convert(Vector{Float64}, axis), angles, ρ)
 
 
 function squeeze_sx(χT::Float64, ρ₀::Operator)
+    N = dim(ρ₀)
     basis = ρ₀.basis_l
-    N = length(basis.bases)
     totaloperator(op::Operator) = sum([embed(basis, i, op) for i=1:N])/N
     sigmax_total = totaloperator(sigmax)
     H = χT*sigmax_total^2
@@ -129,6 +126,7 @@ function squeeze_sx(χT::Float64, ρ₀::Operator)
 end
 
 function orthogonal_vectors(n::Vector{Float64})
+    @assert length(n)==3
     n = n/norm(n)
     v = (n[1]<n[2] ? [1.,0.,0.] : [0.,1.,0.])
     e1 = v - dot(n,v)*n
@@ -141,8 +139,8 @@ end
 variance(op::Operator, state::Operator) = (expect(op^2, state) - expect(op, state)^2)
 
 function squeezingparameter(ρ::Operator)
+    N = dim(ρ)
     basis = ρ.basis_l
-    N = length(basis.bases)
     totaloperator(op::Operator) = sum([embed(basis, i, op) for i=1:N])/N
     S = map(totaloperator, [sigmax, sigmay, sigmaz])
     n = real([expect(s, ρ) for s=S])
@@ -155,6 +153,5 @@ function squeezingparameter(ρ::Operator)
     varSmin = Optim.optimize(f, 0., 2.pi).f_minimum
     return sqrt(N*varSmin)/norm(n)
 end
-squeezingparameter(ρlist::Vector{Operator}) = Float64[squeezingparameter(ρ) for ρ=ρlist]
 
 end # module
