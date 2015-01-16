@@ -16,14 +16,11 @@ function hexagonal(a; Nr=1)
             Ny = div(2*Nr+1-abs(ix),2)
             for iy=-Ny:Ny-1
                 push!(positions, [ax*ix, (0.5+iy)*a, 0])
-                #push!(positions, [ax*ix, -(0.5+iy)*a, 0])
             end
         else
             Ny = div(2*Nr-abs(ix),2)
-            #push!(positions, [ax*ix, 0, 0])
             for iy=-Ny:Ny
                 push!(positions, [ax*ix, iy*a, 0])
-                #push!(positions, [ax*ix, -iy*a, 0])
             end
         end
     end
