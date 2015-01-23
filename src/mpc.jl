@@ -372,6 +372,22 @@ function squeeze_sx(χT::Float64, state0::MPCState)
     return MPCState(N, state_out[end])
 end
 
+function squeeze(axis::Vector{Float64}, χT::Float64, state0::MPCState)
+    @assert length(axis)==3
+    axis = axis/norm(axis)
+    # Rotation into sigma_x
+    w = Float64[0., axis[3], -axis[2]]
+    if norm(w)<1e-5
+        state_squeezed = squeeze_sx(χT, state0)
+    else
+        α = acos(axis[1])
+        state_rot = rotate(w, α, state0)
+        state_rot_squeezed = squeeze_sx(χT, state_rot)
+        state_squeezed = rotate(w, -α, state_rot_squeezed)
+    end
+    return state_squeezed
+end
+
 function orthogonal_vectors(n::Vector{Float64})
     n = n/norm(n)
     v = (n[1]<n[2] ? [1.,0.,0.] : [0.,1.,0.])

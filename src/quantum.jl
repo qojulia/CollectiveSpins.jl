@@ -125,6 +125,20 @@ function squeeze_sx(χT::Float64, ρ₀::Operator)
     return states[end]
 end
 
+function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::Operator)
+    @assert length(axis)==3
+    axis = axis/norm(axis)
+    N = dim(ρ₀)
+    basis = ρ₀.basis_l
+    totaloperator(op::Operator) = sum([embed(basis, i, op) for i=1:N])/N
+    σ = map(totaloperator, [sigmax, sigmay, sigmaz])
+    σn = sum([axis[i]*σ[i] for i=1:3])
+    H = χT*σn^2
+    T = [0.,1.]
+    t, states = timeevolution_simple.master(T, ρ₀, H, [])
+    return states[end]
+end
+
 function orthogonal_vectors(n::Vector{Float64})
     @assert length(n)==3
     n = n/norm(n)
