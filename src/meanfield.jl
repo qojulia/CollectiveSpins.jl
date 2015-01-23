@@ -133,7 +133,7 @@ function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MFState)
     state_rot = MFState(state.N)
     sx_rot, sy_rot, sz_rot = splitstate(state_rot)
     v = zeros(Float64, 3)
-    for i=1:N
+    for i=1:state.N
         v[1], v[2], v[3] = sx[i], sy[i], sz[i]
         θ = angles[i]
         sx_rot[i], sy_rot[i], sz_rot[i] = cos(θ)*v + sin(θ)*(w × v) + (1-cos(θ))*(w ⋅ v)*w
