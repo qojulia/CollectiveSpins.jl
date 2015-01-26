@@ -31,6 +31,20 @@ function square_orthogonal(a::Float64)
     return effective_interactions(S)
 end
 
+function polygon_orthogonal(N::Int, a::Float64)
+    @assert N>2
+    dα = 2*pi/N
+    R = a/(2*sin(dα/2))
+    positions = Vector{Float64}[]
+    for i=1:(N-1)
+        x = R*cos(i*dα)
+        y = R*sin(i*dα)
+        push!(positions, Float64[x-R,y,0])
+    end
+    S = SpinCollection(positions, e_z, gamma)
+    return effective_interactions(S)
+end
+
 function rectangle_orthogonal(a::Float64, b::Float64)
     positions = Vector{Float64}[[a,0,0], [0,b,0], [a,b,0]]
     S = SpinCollection(positions, e_z, gamma)
