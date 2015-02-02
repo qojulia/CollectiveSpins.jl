@@ -21,4 +21,3 @@ using .meanfield
 using .mpc
 
 end # module
-
