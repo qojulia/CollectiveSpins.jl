@@ -138,6 +138,7 @@ function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::Operator)
     t, states = timeevolution_simple.master(T, ρ₀, H, [])
     return states[end]
 end
+squeeze{T<:Number}(axis::Vector{T}, χT::Float64, ρ₀::Operator) = squeeze(convert(Vector{Float64}, axis), χT, ρ₀)
 
 function orthogonal_vectors(n::Vector{Float64})
     @assert length(n)==3
