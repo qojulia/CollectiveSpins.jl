@@ -18,7 +18,22 @@ basis(N::Int) = CompositeBasis([spinbasis for s=1:N]...)
 basis(x::CavityMode) = FockBasis(x.cutoff)
 basis(x::CavitySpinCollection) = compose(basis(x.spincollection), basis(x.cavity))
 
-function blochstate(phi, theta, spinnumber::Int=1)
+function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
+    N = length(phi)
+    @assert length(theta)==N
+    state_g = basis_ket(spinbasis, 1)
+    state_e = basis_ket(spinbasis, 2)
+
+    states = [cos(theta[k]/2)*state_g + exp(1im*phi[k])*sin(theta[k]/2)*state_e for k=1:N]
+    return reduce(tensor, states)
+    # if spinnumber>1
+    #     return reduce(tensor, [state for i=1:spinnumber])
+    # else
+    #     return state
+    # end
+end
+
+function blochstate(phi::Float64, theta::Float64, spinnumber::Int=1)
     state_g = basis_ket(spinbasis, 1)
     state_e = basis_ket(spinbasis, 2)
     state = cos(theta/2)*state_g + exp(1im*phi)*sin(theta/2)*state_e

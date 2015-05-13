@@ -4,8 +4,17 @@ using ArrayViews
 using quantumoptics
 using ..interaction, ..system
 
+function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
+    N = length(phi)
+    @assert length(theta)==N
+    state = zeros(Float64, 3*N)
+    state[0*N+1:1*N] = cos(phi).*sin(theta)
+    state[1*N+1:2*N] = sin(phi).*sin(theta)
+    state[2*N+1:3*N] = cos(theta)
+    return state
+end
 
-function blochstate(phi, theta, N::Int=1)
+function blochstate(phi::Float64, theta::Float64, N::Int=1)
     state = zeros(Float64, 3*N)
     state[0*N+1:1*N] = ones(Float64, N)*cos(phi)*sin(theta)
     state[1*N+1:2*N] = ones(Float64, N)*sin(phi)*sin(theta)

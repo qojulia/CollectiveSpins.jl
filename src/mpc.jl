@@ -48,8 +48,31 @@ function MPCState(rho::Operator)
     return state
 end
 
+function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
+    N = length(phi)
+    @assert length(theta)==N
+    state = MPCState(N)
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
+    for k=1:N
+        sx[k] = cos(phi[k])*sin(theta[k])
+        sy[k] = sin(phi[k])*sin(theta[k])
+        sz[k] = cos(theta[k])
+    end
+    for k=1:N, l=1:N
+        if k==l
+            continue
+        end
+        Cxx[k,l] = sx[k]*sx[l]
+        Cyy[k,l] = sy[k]*sy[l]
+        Czz[k,l] = sz[k]*sz[l]
+        Cxy[k,l] = sx[k]*sy[l]
+        Cxz[k,l] = sx[k]*sz[l]
+        Cyz[k,l] = sy[k]*sz[l]
+    end
+    return state
+end
 
-function blochstate(phi, theta, N::Int=1)
+function blochstate(phi::Float64, theta::Float64, N::Int=1)
     state = MPCState(N)
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
     for k=1:N

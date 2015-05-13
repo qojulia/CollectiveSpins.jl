@@ -27,7 +27,20 @@ function MFState(rho::Operator)
     return state
 end
 
-function blochstate(phi, theta, N::Int=1)
+function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
+    N = length(phi)
+    @assert length(theta)==N
+    state = MFState(N)
+    sx, sy, sz = splitstate(state)
+    for k=1:N
+        sx[k] = cos(phi[k])*sin(theta[k])
+        sy[k] = sin(phi[k])*sin(theta[k])
+        sz[k] = cos(theta[k])
+    end
+    return state
+end
+
+function blochstate(phi::Float64, theta::Float64, N::Int=1)
     state = MFState(N)
     sx, sy, sz = splitstate(state)
     for k=1:N
