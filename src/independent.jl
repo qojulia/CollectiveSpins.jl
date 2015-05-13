@@ -60,7 +60,7 @@ function timeevolution(T, gamma::Float64, state0::Vector{Float64})
         @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
-            dsz[k] = γ*(1-sz[k])
+            dsz[k] = -γ*(1+sz[k])
         end
     end
 

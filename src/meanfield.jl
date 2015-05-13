@@ -89,14 +89,14 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
         @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
-            dsz[k] = γ*(1-sz[k])
+            dsz[k] = -γ*(1+sz[k])
             for j=1:N
                 if j==k
                     continue
                 end
-                dsx[k] += Ω[k,j]*sy[j]*sz[k] - 0.5*Γ[k,j]*sx[j]*sz[k]
-                dsy[k] += -Ω[k,j]*sx[j]*sz[k] - 0.5*Γ[k,j]*sy[j]*sz[k]
-                dsz[k] += Ω[k,j]*(sx[j]*sy[k] - sy[j]*sx[k]) + 0.5*Γ[k,j]*(sx[j]*sx[k] + sy[j]*sy[k])
+                dsx[k] += Ω[k,j]*sy[j]*sz[k] + 0.5*Γ[k,j]*sx[j]*sz[k]
+                dsy[k] += -Ω[k,j]*sx[j]*sz[k] + 0.5*Γ[k,j]*sy[j]*sz[k]
+                dsz[k] += Ω[k,j]*(sx[j]*sy[k] - sy[j]*sx[k]) - 0.5*Γ[k,j]*(sx[j]*sx[k] + sy[j]*sy[k])
             end
         end
     end
@@ -119,10 +119,12 @@ end
 function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Float64, γ::Float64=1.0; fout=nothing)
     N = 1
     @assert state0.N==N
-    function f(t, s::Vector{Float64}, ds::Vector{Float64})
-        ds[1] =  Ωeff*s[2]*s[3] - 0.5*γ*s[1] - 0.5*Γeff*s[1]*s[3]
-        ds[2] = -Ωeff*s[1]*s[3] - 0.5*γ*s[2] - 0.5*Γeff*s[2]*s[3]
-        ds[3] = γ*(1-s[3]) + 0.5*Γeff*(s[1]^2+s[2]^2)
+    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+        sx, sy, sz = splitstate(N, y)
+        dsx, dsy, dsz = splitstate(N, dy)
+        dsx[1] =  Ωeff*sy[1]*sz[1] - 0.5*γ*sx[1] + 0.5*Γeff*sx[1]*sz[1]
+        dsy[1] = -Ωeff*sx[1]*sz[1] - 0.5*γ*sy[1] + 0.5*Γeff*sy[1]*sz[1]
+        dsz[1] = -γ*(1+sz[1]) - 0.5*Γeff*(sx[1]^2+sy[1]^2)
     end
     if fout==nothing
         t_out = Float64[]
