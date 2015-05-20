@@ -222,26 +222,26 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
         @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
-            dsz[k] = γ*(1-sz[k])
+            dsz[k] = -γ*(1.+sz[k])
             for j=1:N
                 if j==k
                     continue
                 end
-                dsx[k] += Ω[k,j]*Cyz[j,k] - 0.5*Γ[k,j]*Cxz[j,k]
-                dsy[k] += -Ω[k,j]*Cxz[j,k] - 0.5*Γ[k,j]*Cyz[j,k]
-                dsz[k] += Ω[k,j]*(Cxy[j,k]-Cxy[k,j]) + 0.5*Γ[k,j]*(Cxx[j,k] + Cyy[j,k])
+                dsx[k] += Ω[k,j]*Cyz[j,k] + 0.5*Γ[k,j]*Cxz[j,k]
+                dsy[k] += -Ω[k,j]*Cxz[j,k] + 0.5*Γ[k,j]*Cyz[j,k]
+                dsz[k] += Ω[k,j]*(Cxy[j,k]-Cxy[k,j]) - 0.5*Γ[k,j]*(Cxx[j,k] + Cyy[j,k])
             end
         end
         @inbounds for k=1:N, l=1:N
             if k==l
                 continue
             end
-            dCxx[k,l] = -γ*Cxx[k,l] + Γ[k,l]*(Czz[k,l]-0.5*sz[k]-0.5*sz[l])
-            dCyy[k,l] = -γ*Cyy[k,l] + Γ[k,l]*(Czz[k,l]-0.5*sz[k]-0.5*sz[l])
-            dCzz[k,l] = -2*γ*Czz[k,l] + γ*(sz[k]+sz[l]) + Γ[k,l]*(Cyy[k,l]+Cxx[k,l])
+            dCxx[k,l] = -γ*Cxx[k,l] + Γ[k,l]*(Czz[k,l]+0.5*sz[k]+0.5*sz[l])
+            dCyy[k,l] = -γ*Cyy[k,l] + Γ[k,l]*(Czz[k,l]+0.5*sz[k]+0.5*sz[l])
+            dCzz[k,l] = -2*γ*Czz[k,l] - γ*(sz[k]+sz[l]) + Γ[k,l]*(Cyy[k,l]+Cxx[k,l])
             dCxy[k,l] = Ω[k,l]*(sz[k]-sz[l]) - γ*Cxy[k,l]
-            dCxz[k,l] = Ω[k,l]*sy[l] - 1.5*γ*Cxz[k,l] + γ*sx[k] - Γ[k,l]*(Cxz[l,k]-0.5*sx[l])
-            dCyz[k,l] = -Ω[k,l]*sx[l] - 1.5*γ*Cyz[k,l] + γ*sy[k] - Γ[k,l]*(Cyz[l,k]-0.5*sy[l])
+            dCxz[k,l] = Ω[k,l]*sy[l] - 1.5*γ*Cxz[k,l] - γ*sx[k] - Γ[k,l]*(Cxz[l,k]+0.5*sx[l])
+            dCyz[k,l] = -Ω[k,l]*sx[l] - 1.5*γ*Cyz[k,l] - γ*sy[k] - Γ[k,l]*(Cyz[l,k]+0.5*sy[l])
             for j=1:N
                 if j==l || j==k
                     continue
@@ -265,15 +265,15 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
                 Czzx = correlation(sz[k], sz[l], sx[j], Czz[k,l], Cxz[j,k], Cxz[j,l])
                 Czzy = correlation(sz[k], sz[l], sy[j], Czz[k,l], Cyz[j,k], Cyz[j,l])
 
-                dCxx[k,l] += Ω[k,j]*Czxy + Ω[l,j]*Cxzy - 0.5*Γ[k,j]*Czxx - 0.5*Γ[l,j]*Cxzx
-                dCyy[k,l] += -Ω[k,j]*Czyx - Ω[l,j]*Cyzx - 0.5*Γ[k,j]*Czyy - 0.5*Γ[l,j]*Cyzy
+                dCxx[k,l] += Ω[k,j]*Czxy + Ω[l,j]*Cxzy + 0.5*Γ[k,j]*Czxx + 0.5*Γ[l,j]*Cxzx
+                dCyy[k,l] += -Ω[k,j]*Czyx - Ω[l,j]*Cyzx + 0.5*Γ[k,j]*Czyy + 0.5*Γ[l,j]*Cyzy
                 dCzz[k,l] += (Ω[k,j]*(Cyzx-Cxzy) + Ω[l,j]*(Czyx-Czxy)
-                                + 0.5*Γ[k,j]*(Cxzx+Cyzy) + 0.5*Γ[l,j]*(Czxx+Czyy))
-                dCxy[k,l] += Ω[k,j]*Czyy - Ω[l,j]*Cxzx - 0.5*Γ[k,j]*Czyx - 0.5*Γ[l,j]*Cxzy
+                                - 0.5*Γ[k,j]*(Cxzx+Cyzy) - 0.5*Γ[l,j]*(Czxx+Czyy))
+                dCxy[k,l] += Ω[k,j]*Czyy - Ω[l,j]*Cxzx + 0.5*Γ[k,j]*Czyx + 0.5*Γ[l,j]*Cxzy
                 dCxz[k,l] += (Ω[k,j]*Czzy + Ω[l,j]*(Cxyx-Cxxy)
-                                - 0.5*Γ[k,j]*Czzx + 0.5*Γ[l,j]*(Cxxx+Cxyy))
+                                + 0.5*Γ[k,j]*Czzx - 0.5*Γ[l,j]*(Cxxx+Cxyy))
                 dCyz[k,l] += (-Ω[k,j]*Czzx + Ω[l,j]*(Cyyx-Cyxy)
-                                - 0.5*Γ[k,j]*Czzy + 0.5*Γ[l,j]*(Cyxx+Cyyy))
+                                + 0.5*Γ[k,j]*Czzy - 0.5*Γ[l,j]*(Cyxx+Cyyy))
             end
         end
     end
