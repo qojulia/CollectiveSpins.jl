@@ -86,15 +86,15 @@ end
 #     return omega_eff, gamma_eff
 # end
 
-# function cube_orthogonal(a::Float64)
-#     omega_eff, gamma_eff = square_orthogonal(a)
-#     sqrt2 = sqrt(2.)
-#     sqrt3 = sqrt(3.)
-#     Θdiag = atan2(sqrt2, 1.)
-#     omega_eff += Omega(a, 0.) + 2*Omega(sqrt(2.)*a, pi/4.) + Omega(sqrt3*a, Θdiag)
-#     gamma_eff += Gamma(a, 0.) + 2*Gamma(sqrt(2.)*a, pi/4.) + Gamma(sqrt3*a, Θdiag)
-#     return omega_eff, gamma_eff
-# end
+function cube_orthogonal(a::Float64, dϕ)
+    omega_eff, gamma_eff = square_orthogonal(a, 0)
+    sqrt2 = sqrt(2.)
+    sqrt3 = sqrt(3.)
+    Θdiag = atan2(sqrt2, 1.)
+    omega_eff += (Omega(a, 0.) + 2*Omega(sqrt(2.)*a, pi/4.) + Omega(sqrt3*a, Θdiag))*cos(dϕ)
+    gamma_eff += (Gamma(a, 0.) + 2*Gamma(sqrt(2.)*a, pi/4.) + Gamma(sqrt3*a, Θdiag))*cos(dϕ)
+    return omega_eff, gamma_eff
+end
 
 # function box_orthogonal(a::Float64, b::Float64, c::Float64)
 #     omega_eff, gamma_eff = rectangle_orthogonal(a, b)
