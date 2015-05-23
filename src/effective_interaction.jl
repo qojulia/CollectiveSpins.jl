@@ -260,4 +260,71 @@ function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
 end
 
 
+function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
+    omega_eff, gamma_eff::Float64 = hexagonallattice_orthogonal(a, N)
+    a2 = a^2
+    b2 = b^2
+    for n=1:2:N
+        nv1x = -0.5*n
+        nv1y_square = 3./4*n^2
+        nr_square = a2*(nv1y_square + nv1x^2)
+        for iz=1:N
+            nz_square = iz^2*b2
+            d = sqrt(nr_square+nz_square)
+            cosθ_square = nz_square/(nr_square+nz_square)
+            om, ga = OmegaGamma(d, cosθ_square)
+            omega_eff += 12*om
+            gamma_eff += 12*ga
+        end
+        for i=1:div(n-1,2)
+            nr_square = a2*(nv1y_square + (nv1x+1.0*i)^2)
+            for iz=1:N
+                nz_square = iz^2*b2
+                d = sqrt(nr_square+nz_square)
+                cosθ_square = nz_square/(nr_square+nz_square)
+                om, ga = OmegaGamma(d, cosθ_square)
+                omega_eff += 24*om
+                gamma_eff += 24*ga
+            end
+        end
+    end
+    for n=2:2:N
+        nv1x = -0.5*n
+        nv1y_square = 3./4*n^2
+        nr_square = a2*(nv1y_square + nv1x^2)
+        for iz=1:N
+            nz_square = iz^2*b2
+            d = sqrt(nr_square+nz_square)
+            cosθ_square = nz_square/(nr_square+nz_square)
+            om, ga = OmegaGamma(d, cosθ_square)
+            omega_eff += 12*om
+            gamma_eff += 12*ga
+        end
+        for i=1:div(n-2, 2)
+            nr_square = a2*(nv1y_square + (nv1x+1.0*i)^2)
+            for iz=1:N
+                nz_square = iz^2*b2
+                d = sqrt(nr_square+nz_square)
+                cosθ_square = nz_square/(nr_square+nz_square)
+                om, ga = OmegaGamma(d, cosθ_square)
+                omega_eff += 24*om
+                gamma_eff += 24*ga
+            end
+        end
+        i = div(n-2, 2)+1
+        nr_square = a2*(nv1y_square + (nv1x+1.0*i)^2)
+        for iz=1:N
+            nz_square = iz^2*b2
+            d = sqrt(nr_square+nz_square)
+            cosθ_square = nz_square/(nr_square+nz_square)
+            om, ga = OmegaGamma(d, cosθ_square)
+            omega_eff += 12*om
+            gamma_eff += 12*ga
+        end
+    end
+    return omega_eff, gamma_eff
+end
+
+
+
 end # module

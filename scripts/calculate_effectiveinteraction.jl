@@ -45,6 +45,9 @@ elseif geomstring=="cubiclattice_orthogonal"
 elseif geomstring=="tetragonallattice_orthogonal"
     omega_eff, gamma_eff = collectivespins.effective_interaction.tetragonallattice_orthogonal(a, b, N)
     keyparameters["b"]  = parameters["b"]
+elseif geomstring=="hexagonallattice3d_orthogonal"
+    omega_eff, gamma_eff = collectivespins.effective_interaction.hexagonallittice3d_orthogonal(a, b, N)
+    keyparameters["b"]  = parameters["b"]
 else
     error("Unknown geometry.")
 end

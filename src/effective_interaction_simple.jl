@@ -124,14 +124,14 @@ function hexagonallattice_orthogonal(a::Float64, N::Int)
         push!(positions, [0, iy*a, 0])
         push!(positions, [0, -iy*a, 0])
     end
-    for ix=[-1:-2:-N, 1:2:N]
+    for ix=[-1:-2:-N; 1:2:N]
         Ny = div(2*N+1-abs(ix),2)
         for iy=0:Ny-1
             push!(positions, [ax*ix, (0.5+iy)*a, 0])
             push!(positions, [ax*ix, -(0.5+iy)*a, 0])
         end
     end
-    for ix=[-2:-2:-N, 2:2:N]
+    for ix=[-2:-2:-N; 2:2:N]
         Ny = div(2*N-abs(ix),2)
         push!(positions, [ax*ix, 0, 0])
         for iy=1:Ny
@@ -170,5 +170,32 @@ function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
     return effective_interactions(S)
 end
 
+function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
+    positions = Vector{Float64}[]
+    ax = sqrt(3./4)*a
+    for iz=-N:N
+        for iy=1:N
+            push!(positions, [0, iy*a, iz*b])
+            push!(positions, [0, -iy*a, iz*b])
+        end
+        for ix=[-1:-2:-N; 1:2:N]
+            Ny = div(2*N+1-abs(ix),2)
+            for iy=0:Ny-1
+                push!(positions, [ax*ix, (0.5+iy)*a, iz*b])
+                push!(positions, [ax*ix, -(0.5+iy)*a, iz*b])
+            end
+        end
+        for ix=[-2:-2:-N; 2:2:N]
+            Ny = div(2*N-abs(ix),2)
+            push!(positions, [ax*ix, 0, iz*b])
+            for iy=1:Ny
+                push!(positions, [ax*ix, iy*a, iz*b])
+                push!(positions, [ax*ix, -iy*a, iz*b])
+            end
+        end
+    end
+    S = SpinCollection(positions, e_z, gamma)
+    return effective_interactions(S)
+end
 
 end # module
