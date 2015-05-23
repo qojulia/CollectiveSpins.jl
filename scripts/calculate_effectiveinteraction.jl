@@ -20,9 +20,9 @@ const odir = parameters["o"]
 
 # System geometry
 using quantumoptics, collectivespins
-const N = int(parameters["N"])
-const a = float(parameters["a"])
-const b = float(parameters["b"])
+const N = parse(Int, parameters["N"])
+const a = parse(Float64, parameters["a"])
+const b = parse(Float64, parameters["b"])
 const geomstring = parameters["geometry"]
 
 keyparameters = Dict(
@@ -46,7 +46,7 @@ elseif geomstring=="tetragonallattice_orthogonal"
     omega_eff, gamma_eff = collectivespins.effective_interaction.tetragonallattice_orthogonal(a, b, N)
     keyparameters["b"]  = parameters["b"]
 elseif geomstring=="hexagonallattice3d_orthogonal"
-    omega_eff, gamma_eff = collectivespins.effective_interaction.hexagonallittice3d_orthogonal(a, b, N)
+    omega_eff, gamma_eff = collectivespins.effective_interaction.hexagonallattice3d_orthogonal(a, b, N)
     keyparameters["b"]  = parameters["b"]
 else
     error("Unknown geometry.")
@@ -55,9 +55,6 @@ t = toc()
 
 name = quantumoptics.io.dict2filename(keyparameters)
 f = open(joinpath(odir, name), "w")
-write(f, string(omega_eff))
-write(f, ";")
-write(f, string(gamma_eff))
-write(f, "\n#calctime=")
-write(f, string(t))
+write(f, "$omega_eff;$gamma_eff\n")
+write(f, "\n#calctime=$t\n")
 close(f)
