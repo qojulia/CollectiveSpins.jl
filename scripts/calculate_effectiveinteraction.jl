@@ -5,11 +5,17 @@ s = ArgParseSettings()
 
 @add_arg_table s begin
     "--geometry"
+        required = true
     "--N"
+        required = true
+        arg_type = Int
     "--a"
+        required = true
+        arg_type = Float64
     "--b"
-        default = NaN
+        arg_type = Float64
     "--o"
+        required = true
 end
 
 parameters = parse_args(s)
@@ -20,9 +26,8 @@ const odir = parameters["o"]
 
 # System geometry
 using quantumoptics, collectivespins
-const N = parse(Int, parameters["N"])
-const a = parse(Float64, parameters["a"])
-const b = parse(Float64, parameters["b"])
+const N = parameters["N"]
+const a = parameters["a"]
 const geomstring = parameters["geometry"]
 
 keyparameters = Dict(
@@ -43,9 +48,11 @@ elseif geomstring=="hexagonallattice_orthogonal"
 elseif geomstring=="cubiclattice_orthogonal"
     omega_eff, gamma_eff = collectivespins.effective_interaction.cubiclattice_orthogonal(a, N)
 elseif geomstring=="tetragonallattice_orthogonal"
+    const b = parameters["b"]
     omega_eff, gamma_eff = collectivespins.effective_interaction.tetragonallattice_orthogonal(a, b, N)
     keyparameters["b"]  = parameters["b"]
 elseif geomstring=="hexagonallattice3d_orthogonal"
+    const b = parameters["b"]
     omega_eff, gamma_eff = collectivespins.effective_interaction.hexagonallattice3d_orthogonal(a, b, N)
     keyparameters["b"]  = parameters["b"]
 else
