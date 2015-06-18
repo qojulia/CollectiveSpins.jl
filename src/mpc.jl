@@ -344,6 +344,51 @@ end
 rotate(axis::Vector{Float64}, angle::Float64, state::MPCState) = rotate(axis, ones(Float64, state.N)*angle, state)
 rotate{T<:Number}(axis::Vector{T}, angles, state::MPCState) = rotate(convert(Vector{Float64}, axis), angles, state)
 
+function var_Sx(state0::MPCState)
+    N = state0.N
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state0)
+    exp_Sx_2 = 0.
+    exp_Sx2 = 0.
+    for k=1:N, l=1:N
+        exp_Sx_2 += sx[k]*sx[l]
+        if k==l
+            continue
+        end
+        exp_Sx2 += Cxx[k,l]
+    end
+    return 1./N + 1./N^2*exp_Sx2 - 1./N^2*exp_Sx_2
+end
+
+function var_Sy(state0::MPCState)
+    N = state0.N
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state0)
+    exp_Sy_2 = 0.
+    exp_Sy2 = 0.
+    for k=1:N, l=1:N
+        exp_Sy_2 += sy[k]*sy[l]
+        if k==l
+            continue
+        end
+        exp_Sy2 += Cyy[k,l]
+    end
+    return 1./N + 1./N^2*exp_Sy2 - 1./N^2*exp_Sy_2
+end
+
+function var_Sz(state0::MPCState)
+    N = state0.N
+    sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state0)
+    exp_Sz_2 = 0.
+    exp_Sz2 = 0.
+    for k=1:N, l=1:N
+        exp_Sz_2 += sz[k]*sz[l]
+        if k==l
+            continue
+        end
+        exp_Sz2 += Czz[k,l]
+    end
+    return 1./N + 1./N^2*exp_Sz2 - 1./N^2*exp_Sz_2
+end
+
 function squeeze_sx(χT::Float64, state0::MPCState)
     T = [0,1.]
     N = state0.N
