@@ -12,6 +12,13 @@ module Optim
 end
 export Hamiltonian, Jump_operators
 
+spinbasis = SpinBasis(1//2)
+sigmax = spin.sigmax(spinbasis)
+sigmay = spin.sigmay(spinbasis)
+sigmaz = spin.sigmaz(spinbasis)
+sigmap = spin.sigmap(spinbasis)
+sigmam = spin.sigmam(spinbasis)
+
 basis(x::Spin) = spinbasis
 basis(x::SpinCollection) = CompositeBasis([basis(s) for s=x.spins]...)
 basis(N::Int) = CompositeBasis([spinbasis for s=1:N]...)

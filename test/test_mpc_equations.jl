@@ -6,6 +6,12 @@ const edipole = [0.,0.,1.]
 const γ = 1.
 const T = [0:0.1:1;]
 
+spinbasis = SpinBasis(1//2)
+sx = sigmax(spinbasis)
+sy = sigmay(spinbasis)
+sz = sigmaz(spinbasis)
+
+
 N = 2
 systemgeometry = collectivespins.geometry.chain(0.3, N)
 system = collectivespins.SpinCollection(systemgeometry, edipole, γ)
@@ -28,9 +34,9 @@ function test_mpc_2particles(t, ρ)
        dρ_l += Γ[m,n]*(J[m]*ρ*Jdagger[n] - Jdagger[n]*(J[m]*ρ)/Complex(2) - ρ*Jdagger[n]*J[m]/Complex(2))
     end
     # ========== Test Hamiltonian part ==========
-    dsxx_master = expect(sigmax⊗sigmax, dρ_h)
-    dsyy_master = expect(sigmay⊗sigmay, dρ_h)
-    dszz_master = expect(sigmaz⊗sigmaz, dρ_h)
+    dsxx_master = expect(sx⊗sx, dρ_h)
+    dsyy_master = expect(sy⊗sy, dρ_h)
+    dszz_master = expect(sz⊗sz, dρ_h)
 
     # <sxx>, <syy>, <szz>
     dsxx_mpc = 0.
@@ -43,14 +49,14 @@ function test_mpc_2particles(t, ρ)
 
 
     # ========== Test Lindblad part ==========
-    dsxx_master = expect(sigmax⊗sigmax, dρ_l)
-    dsyy_master = expect(sigmay⊗sigmay, dρ_l)
-    dszz_master = expect(sigmaz⊗sigmaz, dρ_l)
+    dsxx_master = expect(sx⊗sx, dρ_l)
+    dsyy_master = expect(sy⊗sy, dρ_l)
+    dszz_master = expect(sz⊗sz, dρ_l)
 
     # <sx>, <sy>, <sz>
-    dsxx_mpc = -expect(sigmax⊗sigmax, ρ) + Γ[1,2]*(expect(sigmaz⊗sigmaz, ρ) + 0.5*expect(sigmaz⊗I, ρ) + 0.5*expect(I⊗sigmaz, ρ))
-    dsyy_mpc = -expect(sigmay⊗sigmay, ρ) + Γ[1,2]*(expect(sigmaz⊗sigmaz, ρ) + 0.5*expect(sigmaz⊗I, ρ) + 0.5*expect(I⊗sigmaz, ρ))
-    dszz_mpc = -2.*expect(sigmaz⊗sigmaz, ρ) - 0.5*expect(sigmaz⊗I, ρ) - 0.5*expect(I⊗sigmaz, ρ) +  Γ[1,2]*(expect(sigmax⊗sigmax, ρ) + expect(sigmay⊗sigmay, ρ))
+    dsxx_mpc = -expect(sx⊗sx, ρ) + Γ[1,2]*(expect(sz⊗sz, ρ) + 0.5*expect(sz⊗I, ρ) + 0.5*expect(I⊗sz, ρ))
+    dsyy_mpc = -expect(sy⊗sy, ρ) + Γ[1,2]*(expect(sz⊗sz, ρ) + 0.5*expect(sz⊗I, ρ) + 0.5*expect(I⊗sz, ρ))
+    dszz_mpc = -2.*expect(sz⊗sz, ρ) - 0.5*expect(sz⊗I, ρ) - 0.5*expect(I⊗sz, ρ) +  Γ[1,2]*(expect(sx⊗sx, ρ) + expect(sy⊗sy, ρ))
     println("$(dsxx_master) <-> $(dsxx_mpc)")
     #@test abs(dsxx_master - dsxx_mpc) < 1e-12
     #@test abs(dsyy_master - dsyy_mpc) < 1e-12
@@ -82,20 +88,20 @@ function test_mpc_3particles(t, ρ)
        dρ_l += Γ[m,n]*(J[m]*ρ*Jdagger[n] - Jdagger[n]*(J[m]*ρ)/Complex(2) - ρ*Jdagger[n]*J[m]/Complex(2))
     end
     # ========== Test Hamiltonian part ==========
-    dsxx_master = expect(sigmax⊗sigmax⊗I, dρ_h)
-    dsyy_master = expect(sigmay⊗sigmay⊗I, dρ_h)
-    dszz_master = expect(sigmaz⊗sigmaz⊗I, dρ_h)
-    dsxy_master = expect(sigmax⊗sigmay⊗I, dρ_h)
-    dsxz_master = expect(sigmax⊗sigmaz⊗I, dρ_h)
-    dsyz_master = expect(sigmay⊗sigmaz⊗I, dρ_h)
+    dsxx_master = expect(sx⊗sx⊗I, dρ_h)
+    dsyy_master = expect(sy⊗sy⊗I, dρ_h)
+    dszz_master = expect(sz⊗sz⊗I, dρ_h)
+    dsxy_master = expect(sx⊗sy⊗I, dρ_h)
+    dsxz_master = expect(sx⊗sz⊗I, dρ_h)
+    dsyz_master = expect(sy⊗sz⊗I, dρ_h)
 
     # <sxx>, <syy>, <szz>
-    dsxx_mpc = Ω[1,3]*expect(sigmaz⊗sigmax⊗sigmay, ρ) + Ω[2,3]*expect(sigmax⊗sigmaz⊗sigmay, ρ)
-    dsyy_mpc = -Ω[1,3]*expect(sigmaz⊗sigmay⊗sigmax, ρ) - Ω[2,3]*expect(sigmay⊗sigmaz⊗sigmax, ρ)
-    dszz_mpc = Ω[1,3]*(expect(sigmay⊗sigmaz⊗sigmax, ρ) - expect(sigmax⊗sigmaz⊗sigmay, ρ)) + Ω[2,3]*(expect(sigmaz⊗sigmay⊗sigmax, ρ) - expect(sigmaz⊗sigmax⊗sigmay, ρ))
-    dsxy_mpc = Ω[1,2]*(expect(sigmaz⊗I⊗I, ρ) - expect(I⊗sigmaz⊗I, ρ)) + Ω[1,3]*expect(sigmaz⊗sigmay⊗sigmay, ρ) - Ω[2,3]*expect(sigmax⊗sigmaz⊗sigmax, ρ)
-    dsxz_mpc = Ω[1,2]*expect(I⊗sigmay⊗I, ρ) + Ω[1,3]*expect(sigmaz⊗sigmaz⊗sigmay, ρ) + Ω[2,3]*(expect(sigmax⊗sigmay⊗sigmax, ρ) - expect(sigmax⊗sigmax⊗sigmay, ρ))
-    dsyz_mpc = -Ω[1,2]*expect(I⊗sigmax⊗I, ρ) - Ω[1,3]*expect(sigmaz⊗sigmaz⊗sigmax, ρ) + Ω[2,3]*(expect(sigmay⊗sigmay⊗sigmax, ρ) - expect(sigmay⊗sigmax⊗sigmay, ρ))
+    dsxx_mpc = Ω[1,3]*expect(sz⊗sx⊗sy, ρ) + Ω[2,3]*expect(sx⊗sz⊗sy, ρ)
+    dsyy_mpc = -Ω[1,3]*expect(sz⊗sy⊗sx, ρ) - Ω[2,3]*expect(sy⊗sz⊗sx, ρ)
+    dszz_mpc = Ω[1,3]*(expect(sy⊗sz⊗sx, ρ) - expect(sx⊗sz⊗sy, ρ)) + Ω[2,3]*(expect(sz⊗sy⊗sx, ρ) - expect(sz⊗sx⊗sy, ρ))
+    dsxy_mpc = Ω[1,2]*(expect(sz⊗I⊗I, ρ) - expect(I⊗sz⊗I, ρ)) + Ω[1,3]*expect(sz⊗sy⊗sy, ρ) - Ω[2,3]*expect(sx⊗sz⊗sx, ρ)
+    dsxz_mpc = Ω[1,2]*expect(I⊗sy⊗I, ρ) + Ω[1,3]*expect(sz⊗sz⊗sy, ρ) + Ω[2,3]*(expect(sx⊗sy⊗sx, ρ) - expect(sx⊗sx⊗sy, ρ))
+    dsyz_mpc = -Ω[1,2]*expect(I⊗sx⊗I, ρ) - Ω[1,3]*expect(sz⊗sz⊗sx, ρ) + Ω[2,3]*(expect(sy⊗sy⊗sx, ρ) - expect(sy⊗sx⊗sy, ρ))
 
     @test abs(dsxx_master - dsxx_mpc) < 1e-12
     @test abs(dsyy_master - dsyy_mpc) < 1e-12
@@ -106,20 +112,20 @@ function test_mpc_3particles(t, ρ)
 
 
     # # ========== Test Lindblad part ==========
-    dsxx_master = expect(sigmax⊗sigmax⊗I, dρ_l)
-    dsyy_master = expect(sigmay⊗sigmay⊗I, dρ_l)
-    dszz_master = expect(sigmaz⊗sigmaz⊗I, dρ_l)
-    dsxy_master = expect(sigmax⊗sigmay⊗I, dρ_l)
-    dsxz_master = expect(sigmax⊗sigmaz⊗I, dρ_l)
-    dsyz_master = expect(sigmay⊗sigmaz⊗I, dρ_l)
+    dsxx_master = expect(sx⊗sx⊗I, dρ_l)
+    dsyy_master = expect(sy⊗sy⊗I, dρ_l)
+    dszz_master = expect(sz⊗sz⊗I, dρ_l)
+    dsxy_master = expect(sx⊗sy⊗I, dρ_l)
+    dsxz_master = expect(sx⊗sz⊗I, dρ_l)
+    dsyz_master = expect(sy⊗sz⊗I, dρ_l)
 
     # <sx>, <sy>, <sz>
-    dsxx_mpc = -expect(sigmax⊗sigmax⊗I, ρ) + Γ[1,2]*(expect(sigmaz⊗sigmaz⊗I, ρ) + 0.5*expect(sigmaz⊗I⊗I, ρ) + 0.5*expect(I⊗sigmaz⊗I, ρ)) + 0.5*Γ[1,3]*expect(sigmaz⊗sigmax⊗sigmax, ρ) + 0.5*Γ[2,3]*expect(sigmax⊗sigmaz⊗sigmax, ρ)
-    dsyy_mpc = -expect(sigmay⊗sigmay⊗I, ρ) + Γ[1,2]*(expect(sigmaz⊗sigmaz⊗I, ρ) + 0.5*expect(sigmaz⊗I⊗I, ρ) + 0.5*expect(I⊗sigmaz⊗I, ρ)) + 0.5*Γ[1,3]*expect(sigmaz⊗sigmay⊗sigmay, ρ) + 0.5*Γ[2,3]*expect(sigmay⊗sigmaz⊗sigmay, ρ)
-    dszz_mpc = -2.*expect(sigmaz⊗sigmaz⊗I, ρ) - expect(sigmaz⊗I⊗I, ρ) - expect(I⊗sigmaz⊗I, ρ) +  Γ[1,2]*(expect(sigmax⊗sigmax⊗I, ρ) + expect(sigmay⊗sigmay⊗I, ρ)) - 0.5*Γ[1,3]*(expect(sigmax⊗sigmaz⊗sigmax, ρ) + expect(sigmay⊗sigmaz⊗sigmay, ρ)) - 0.5*Γ[2,3]*(expect(sigmaz⊗sigmax⊗sigmax, ρ) + expect(sigmaz⊗sigmay⊗sigmay, ρ))
-    dsxy_mpc = -expect(sigmax⊗sigmay⊗I, ρ) + 0.5*Γ[1,3]*expect(sigmaz⊗sigmay⊗sigmax, ρ) + 0.5*Γ[2,3]*expect(sigmax⊗sigmaz⊗sigmay, ρ)
-    dsxz_mpc = -1.5*expect(sigmax⊗sigmaz⊗I, ρ) - expect(sigmax⊗I⊗I, ρ) - Γ[1,2]*(expect(sigmaz⊗sigmax⊗I, ρ) + 0.5*expect(I⊗sigmax⊗I, ρ)) + 0.5*Γ[1,3]*expect(sigmaz⊗sigmaz⊗sigmax, ρ) - 0.5*Γ[2,3]*(expect(sigmax⊗sigmax⊗sigmax, ρ) + expect(sigmax⊗sigmay⊗sigmay, ρ))
-    dsyz_mpc = -1.5*expect(sigmay⊗sigmaz⊗I, ρ) - expect(sigmay⊗I⊗I, ρ) - Γ[1,2]*(expect(sigmaz⊗sigmay⊗I, ρ) + 0.5*expect(I⊗sigmay⊗I, ρ)) + 0.5*Γ[1,3]*expect(sigmaz⊗sigmaz⊗sigmay, ρ) - 0.5*Γ[2,3]*(expect(sigmay⊗sigmax⊗sigmax, ρ) + expect(sigmay⊗sigmay⊗sigmay, ρ))
+    dsxx_mpc = -expect(sx⊗sx⊗I, ρ) + Γ[1,2]*(expect(sz⊗sz⊗I, ρ) + 0.5*expect(sz⊗I⊗I, ρ) + 0.5*expect(I⊗sz⊗I, ρ)) + 0.5*Γ[1,3]*expect(sz⊗sx⊗sx, ρ) + 0.5*Γ[2,3]*expect(sx⊗sz⊗sx, ρ)
+    dsyy_mpc = -expect(sy⊗sy⊗I, ρ) + Γ[1,2]*(expect(sz⊗sz⊗I, ρ) + 0.5*expect(sz⊗I⊗I, ρ) + 0.5*expect(I⊗sz⊗I, ρ)) + 0.5*Γ[1,3]*expect(sz⊗sy⊗sy, ρ) + 0.5*Γ[2,3]*expect(sy⊗sz⊗sy, ρ)
+    dszz_mpc = -2.*expect(sz⊗sz⊗I, ρ) - expect(sz⊗I⊗I, ρ) - expect(I⊗sz⊗I, ρ) +  Γ[1,2]*(expect(sx⊗sx⊗I, ρ) + expect(sy⊗sy⊗I, ρ)) - 0.5*Γ[1,3]*(expect(sx⊗sz⊗sx, ρ) + expect(sy⊗sz⊗sy, ρ)) - 0.5*Γ[2,3]*(expect(sz⊗sx⊗sx, ρ) + expect(sz⊗sy⊗sy, ρ))
+    dsxy_mpc = -expect(sx⊗sy⊗I, ρ) + 0.5*Γ[1,3]*expect(sz⊗sy⊗sx, ρ) + 0.5*Γ[2,3]*expect(sx⊗sz⊗sy, ρ)
+    dsxz_mpc = -1.5*expect(sx⊗sz⊗I, ρ) - expect(sx⊗I⊗I, ρ) - Γ[1,2]*(expect(sz⊗sx⊗I, ρ) + 0.5*expect(I⊗sx⊗I, ρ)) + 0.5*Γ[1,3]*expect(sz⊗sz⊗sx, ρ) - 0.5*Γ[2,3]*(expect(sx⊗sx⊗sx, ρ) + expect(sx⊗sy⊗sy, ρ))
+    dsyz_mpc = -1.5*expect(sy⊗sz⊗I, ρ) - expect(sy⊗I⊗I, ρ) - Γ[1,2]*(expect(sz⊗sy⊗I, ρ) + 0.5*expect(I⊗sy⊗I, ρ)) + 0.5*Γ[1,3]*expect(sz⊗sz⊗sy, ρ) - 0.5*Γ[2,3]*(expect(sy⊗sx⊗sx, ρ) + expect(sy⊗sy⊗sy, ρ))
 
     @test abs(dsxx_master - dsxx_mpc) < 1e-12
     @test abs(dsyy_master - dsyy_mpc) < 1e-12

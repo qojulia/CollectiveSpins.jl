@@ -15,6 +15,14 @@ using quantumoptics
 using ..interaction, ..system, ..quantum
 import ..meanfield: densityoperator
 
+spinbasis = SpinBasis(1//2)
+sigmax = spin.sigmax(spinbasis)
+sigmay = spin.sigmay(spinbasis)
+sigmaz = spin.sigmaz(spinbasis)
+sigmap = spin.sigmap(spinbasis)
+sigmam = spin.sigmam(spinbasis)
+
+
 type MPCState
     N::Int
     data::Vector{Float64}
@@ -285,7 +293,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
             push!(t_out, t)
             push!(state_out, MPCState(N, deepcopy(state)))
         end
-        quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
+        quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
         return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MPCState(N,y)))

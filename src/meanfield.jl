@@ -6,6 +6,15 @@ using ArrayViews
 using quantumoptics
 using ..interaction, ..system
 
+
+spinbasis = SpinBasis(1//2)
+sigmax = spin.sigmax(spinbasis)
+sigmay = spin.sigmay(spinbasis)
+sigmaz = spin.sigmaz(spinbasis)
+sigmap = spin.sigmap(spinbasis)
+sigmam = spin.sigmam(spinbasis)
+
+
 type MFState
     N::Int
     data::Vector{Float64}
@@ -87,8 +96,8 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         @inbounds for k=1:N
-            dsx[k] = -0.5*γ*sx[k]
-            dsy[k] = -0.5*γ*sy[k]
+            dsx[k] = -S.spins[k].delta0*sy[k] - 0.5*γ*sx[k]
+            dsy[k] = S.spins[k].delta0*sx[k] - 0.5*γ*sy[k]
             dsz[k] = -γ*(1+sz[k])
             for j=1:N
                 if j==k
@@ -109,21 +118,21 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
             push!(state_out, MFState(N, deepcopy(y)))
         end
 
-        quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
+        quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MFState(N,y)))
+        return quantumoptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
     end
 end
 
-function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Float64, γ::Float64=1.0; fout=nothing)
+function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Float64; γ::Float64=1.0, δ0::Float64=0., fout=nothing)
     N = 1
     @assert state0.N==N
     function f(t, y::Vector{Float64}, dy::Vector{Float64})
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
-        dsx[1] =  Ωeff*sy[1]*sz[1] - 0.5*γ*sx[1] + 0.5*Γeff*sx[1]*sz[1]
-        dsy[1] = -Ωeff*sx[1]*sz[1] - 0.5*γ*sy[1] + 0.5*Γeff*sy[1]*sz[1]
+        dsx[1] = -δ0*sy[1] + Ωeff*sy[1]*sz[1] - 0.5*γ*sx[1] + 0.5*Γeff*sx[1]*sz[1]
+        dsy[1] = δ0*sx[1] - Ωeff*sx[1]*sz[1] - 0.5*γ*sy[1] + 0.5*Γeff*sy[1]*sz[1]
         dsz[1] = -γ*(1+sz[1]) - 0.5*Γeff*(sx[1]^2+sy[1]^2)
     end
     if fout==nothing
@@ -133,10 +142,10 @@ function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Floa
             push!(t_out, t)
             push!(state_out, MFState(N, deepcopy(y)))
         end
-        quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
+        quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MFState(N,y)))
+        return quantumoptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
     end
 end
 
