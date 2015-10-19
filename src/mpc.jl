@@ -456,7 +456,7 @@ function squeeze_sx(χT::Float64, state0::MPCState)
         push!(state_out, deepcopy(state))
     end
 
-    quantumoptics.ode_dopri.ode(f, T, state0.data, fout=fout_)
+    quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
     return MPCState(N, state_out[end])
 end
 
