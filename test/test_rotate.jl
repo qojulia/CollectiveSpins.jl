@@ -1,10 +1,11 @@
+using Base.Test
 using quantumoptics, collectivespins
 const cs = collectivespins
 
 const e_dipole = [0,0,1.]
 
 function compare_rotate(;Tend=0., phi=0., theta=0., N=1., α=0., axis=[1.,0.,0.])
-    system = SpinCollection(geometry.chain(0.7, N), e_dipole, 1.)
+    system = SpinCollection(geometry.chain(0.9, N), e_dipole, 1.)
     T = Float64[0.,Tend]
     state0_mf = cs.meanfield.blochstate(phi, theta, N)
     if abs(Tend)<1e-12
@@ -40,19 +41,19 @@ function compare_rotate(;Tend=0., phi=0., theta=0., N=1., α=0., axis=[1.,0.,0.]
 end
 
 td = compare_rotate(Tend=0., phi=0., theta=0., N=2, α=[1.0,0.3], axis=[1.,1.,0])
-@assert maximum(td) < 1e-12
+@test maximum(td) < 1e-12
 
 td = compare_rotate(Tend=0., phi=0.3, theta=1., N=5, α=1.6, axis=[1.,1.,5.])
-@assert maximum(td) < 1e-12
+@test maximum(td) < 1e-12
 
-A = [1.2, 2.7]
-td_mpc_mf, td_master_mf, td_master_mpc = compare_rotate(Tend=1., phi=0.3, theta=1., N=2, α=A, axis=[2.,1.,5.])
-@assert td_mpc_mf < 0.03
-@assert td_master_mf < 0.03
-@assert td_master_mpc < 1e-6
+angles = [1.2, 2.7]
+td_mpc_mf, td_master_mf, td_master_mpc = compare_rotate(Tend=1., phi=0.3, theta=1., N=2, α=angles, axis=[2.,1.,5.])
+@test td_mpc_mf < 0.05
+@test td_master_mf < 0.05
+@test td_master_mpc < 1e-6
 
-A = [1.2, 2.7, 2.1, 0.3, -0.5]
-td_mpc_mf, td_master_mf, td_master_mpc = compare_rotate(Tend=1., phi=0.3, theta=1., N=5, α=A, axis=[2.,1.,5.])
-@assert td_mpc_mf < 0.06
-@assert td_master_mf < 0.06
-@assert td_master_mpc < 0.008
+angles = [1.2, 2.7, 2.1, 0.3, -0.5]
+td_mpc_mf, td_master_mf, td_master_mpc = compare_rotate(Tend=1., phi=0.3, theta=1., N=5, α=angles, axis=[2.,1.,5.])
+@test td_mpc_mf < 0.1
+@test td_master_mf < 0.1
+@test td_master_mpc < 0.01

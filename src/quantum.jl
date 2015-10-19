@@ -22,6 +22,7 @@ sigmay = spin.sigmay(spinbasis)
 sigmaz = spin.sigmaz(spinbasis)
 sigmap = spin.sigmap(spinbasis)
 sigmam = spin.sigmam(spinbasis)
+I = identity(spinbasis)
 
 basis(x::Spin) = spinbasis
 basis(x::SpinCollection) = CompositeBasis([basis(s) for s=x.spins]...)
@@ -125,13 +126,12 @@ function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Oper
     @assert length(angles)==N
     basis = ρ.basis_l
     n = rotationaxis/norm(rotationaxis)
-    I = identity(basis)
     for i=1:N
-        σ = map(op->embed(basis, i, op), [sigmax, sigmay, sigmaz])
-        nσ = n ⋅ σ
+        nσ = n[1]*sigmax + n[2]*sigmay + n[3]*sigmaz
         α = angles[i]
         R = I*cos(α/2) - 1im*nσ*sin(α/2)
-        ρ = R*ρ*dagger(R)
+        R_ = embed(basis, i, R)
+        ρ = R_*ρ*dagger(R_)
     end
     return ρ
 end
