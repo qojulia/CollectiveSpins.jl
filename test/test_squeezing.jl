@@ -1,3 +1,4 @@
+using Base.Test
 using quantumoptics, collectivespins
 const cs = collectivespins
 
@@ -11,13 +12,13 @@ function compare_squeezing(;phi=0., theta=0., N=1., χT=0., axis=[1.,0.,0.])
 end
 
 td = compare_squeezing(phi=0., theta=0., N=2, χT=2.5, axis=[1.,0,0])
-@assert td < 1e-5
+@test td < 1e-5
 
 td = compare_squeezing(phi=0.7, theta=1.34, N=2, χT=2.5, axis=[1.,3.,2.5])
-@assert td < 1e-5
+@test td < 1e-5
 
 td = compare_squeezing(phi=0.7, theta=1.34, N=5, χT=0.5, axis=[5.,2.,1.])
-@assert td < 0.1
+@test td < 0.1
 
 td = compare_squeezing(phi=0., theta=0., N=5, χT=2.5, axis=[0.,0.,1.])
-@assert td < 1e-12
+@test td < 1e-12
