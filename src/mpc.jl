@@ -1,19 +1,24 @@
 module mpc
 
-export MPCState, densityoperator
-
 using ArrayViews
-module Optim
-    try
-        require("Optim")
-        global optimize = Main.Optim.optimize
-    catch
-        println("Optim package not available. (Needed for calculation of squeezing parameter)")
-    end
-end
 using quantumoptics
 using ..interaction, ..system, ..quantum
+
+try
+    eval(Expr(:using, :Optim))
+    global optimize = Optim.optimize
+catch e
+    if typeof(e) == ArgumentError
+        println("Optim package not available. (Needed for calculation of squeezing parameter)")
+    else
+        rethrow(e)
+    end
+end
+
 import ..meanfield: densityoperator
+
+export MPCState, densityoperator
+
 
 spinbasis = SpinBasis(1//2)
 sigmax = spin.sigmax(spinbasis)

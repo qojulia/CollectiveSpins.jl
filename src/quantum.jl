@@ -2,14 +2,18 @@ module quantum
 
 using ..interaction, ..system
 using quantumoptics
-module Optim
-    try
-        require("Optim")
-        global optimize = Main.Optim.optimize
-    catch
+
+try
+    eval(Expr(:using, :Optim))
+    global optimize = Optim.optimize
+catch e
+    if typeof(e) == ArgumentError
         println("Optim package not available. (Needed for calculation of squeezing parameter)")
+    else
+        rethrow(e)
     end
 end
+
 export Hamiltonian, Jump_operators
 
 spinbasis = SpinBasis(1//2)
