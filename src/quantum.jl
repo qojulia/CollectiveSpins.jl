@@ -14,21 +14,21 @@ catch e
     end
 end
 
-export Hamiltonian, Jump_operators
+export Hamiltonian, JumpOperators
 
 spinbasis = SpinBasis(1//2)
-sigmax = spin.sigmax(spinbasis)
-sigmay = spin.sigmay(spinbasis)
-sigmaz = spin.sigmaz(spinbasis)
-sigmap = spin.sigmap(spinbasis)
-sigmam = spin.sigmam(spinbasis)
-I = identity(spinbasis)
+sigmax = SparseOperator(spin.sigmax(spinbasis))
+sigmay = SparseOperator(spin.sigmay(spinbasis))
+sigmaz = SparseOperator(spin.sigmaz(spinbasis))
+sigmap = SparseOperator(spin.sigmap(spinbasis))
+sigmam = SparseOperator(spin.sigmam(spinbasis))
+I_spin = sparse_identity(spinbasis)
 
 basis(x::Spin) = spinbasis
 basis(x::SpinCollection) = CompositeBasis([basis(s) for s=x.spins]...)
 basis(N::Int) = CompositeBasis([spinbasis for s=1:N]...)
 basis(x::CavityMode) = FockBasis(x.cutoff)
-basis(x::CavitySpinCollection) = compose(basis(x.spincollection), basis(x.cavity))
+basis(x::CavitySpinCollection) = compose(basis(x.cavity), basis(x.spincollection))
 
 function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     N = length(phi)
@@ -64,21 +64,73 @@ function Hamiltonian(S::system.SpinCollection)
     spins = S.spins
     N = length(spins)
     b = basis(S)
-    result = Operator(b)
+    H = SparseOperator(b)
+    for i=1:N
+        if S.spins[i].delta != 0.
+            H += S.spins[i].delta * embed(b, i, sigmaz)
+        end
+    end
     for i=1:N, j=1:N
         if i==j
             continue
         end
         sigmap_i = embed(b, i, sigmap)
         sigmam_j = embed(b, j, sigmam)
-        result += interaction.Omega(spins[i].position, spins[j].position, S.polarization, S.gamma)*sigmap_i*sigmam_j
+        H += interaction.Omega(spins[i].position, spins[j].position, S.polarization, S.gamma)*sigmap_i*sigmam_j
     end
-    return result
+    return H
 end
 
-Jump_operators(S::system.SpinCollection) = Operator[embed(basis(S), i, sigmam) for i=1:length(S.spins)]
+function Hamiltonian(S::system.CavityMode)
+    b = basis(S)
+    H = SparseOperator(S.delta*number(b) + S.eta*(create(b) + destroy(b)))
+    return H
+end
 
-function Jump_operators_diagonal(S::system.SpinCollection)
+function Hamiltonian(S::system.CavitySpinCollection)
+    b = basis(S)
+    bs = basis(S.spincollection)
+    bc = basis(S.cavity)
+    Hs = Hamiltonian(S.spincollection)
+    Hc = Hamiltonian(S.cavity)
+    Ic = sparse_identity(basis(S.cavity))
+    H = embed(b, 1, Hc) + tensor(Ic, Hs)
+    a = SparseOperator(destroy(bc))
+    at = SparseOperator(create(bc))
+    for i=1:length(S.spincollection.spins)
+        if S.g[i] != 0.
+            H += S.g[i]*(tensor(a, embed(bs, i, sigmap)) + tensor(at, embed(bs, i, sigmam)))
+        end
+    end
+    return H
+end
+
+function JumpOperators(S::system.SpinCollection)
+    J = SparseOperator[embed(basis(S), i, sigmam) for i=1:length(S.spins)]
+    Γ = interaction.GammaMatrix(S)
+    return Γ, J
+end
+
+JumpOperators(S::system.CavityMode) = (Float64[S.kappa], SparseOperator[SparseOperator(destroy(basis(S)))])
+
+function JumpOperators(S::system.CavitySpinCollection)
+    Γs, Js = JumpOperators(S.spincollection)
+    Γc, Jc = JumpOperators(S.cavity)
+    Ns = length(Js)
+    Nc = length(Jc)
+    N = Ns + Nc
+    Γ = zeros(Float64, N, N)
+    Γ[1:Nc, 1:Nc] = Γc
+    Γ[Nc+1:end, Nc+1:end] = Γs
+    Ic = sparse_identity(basis(S.cavity))
+    J = SparseOperator[embed(basis(S), 1, Jc[1])]
+    for j in Js
+        push!(J, tensor(Ic, j))
+    end
+    return Γ, J
+end
+
+function JumpOperators_diagonal(S::system.SpinCollection)
     spins = S.spins
     N = length(spins)
     b = basis(S)
@@ -100,24 +152,18 @@ end
 
 function timeevolution_diagonal(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
     H = Hamiltonian(S)
-    J = Jump_operators_diagonal(S)
+    J = JumpOperators_diagonal(S)
     Hnh = H - 0.5im*sum([dagger(J[i])*J[i] for i=1:length(J)])
     Hnh_sparse = operators_sparse.SparseOperator(Hnh)
     J_sparse = map(operators_sparse.SparseOperator, J)
-    return quantumoptics.timeevolution.master_nh(T, ρ₀, Hnh_sparse, J_sparse, fout=fout; kwargs...)
+    return quantumoptics.timeevolution.master_nh(T, ρ₀, Hnh_sparse, J_sparse; fout=fout, kwargs...)
 end
 
 function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
-    spins = S.spins
-    N = length(spins)
     b = basis(S)
     H = Hamiltonian(S)
-    H_sparse = operators_sparse.SparseOperator(H)
-
-    J = Jump_operators(S)
-    J_sparse = map(operators_sparse.SparseOperator, J)
-    Γ = interaction.GammaMatrix(S)
-    return quantumoptics.timeevolution.master_h(T, ρ₀, H_sparse, J_sparse, fout=fout, Gamma=Γ)
+    Γ, J = JumpOperators(S)
+    return quantumoptics.timeevolution.master_h(T, ρ₀, H, J; fout=fout, Gamma=Γ, kwargs...)
 end
 
 function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Operator)
@@ -129,7 +175,7 @@ function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Oper
     for i=1:N
         nσ = n[1]*sigmax + n[2]*sigmay + n[3]*sigmaz
         α = angles[i]
-        R = I*cos(α/2) - 1im*nσ*sin(α/2)
+        R = I_spin*cos(α/2) - 1im*nσ*sin(α/2)
         R_ = embed(basis, i, R)
         ρ = R_*ρ*dagger(R_)
     end
@@ -156,7 +202,7 @@ function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::Operator)
     axis = axis/norm(axis)
     N = dim(ρ₀)
     basis = ρ₀.basis_l
-    totaloperator(op::Operator) = sum([embed(basis, i, op) for i=1:N])/N
+    totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
     σ = map(totaloperator, [sigmax, sigmay, sigmaz])
     σn = sum([axis[i]*σ[i] for i=1:3])
     H = χT*σn^2

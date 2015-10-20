@@ -19,9 +19,8 @@ basis = collectivespins.quantum.basis(system)
 I = identity(spinbasis)
 
 H = collectivespins.quantum.Hamiltonian(system)
-J = collectivespins.quantum.Jump_operators(system)
+Γ, J = collectivespins.quantum.JumpOperators(system)
 Jdagger = [dagger(j) for j=J]
-Γ = collectivespins.interaction.GammaMatrix(system)
 Ω = collectivespins.interaction.OmegaMatrix(system)
 
 Ψ₀ = collectivespins.quantum.blochstate(0., pi/2., N)
@@ -73,9 +72,8 @@ basis = collectivespins.quantum.basis(system)
 I = identity(spinbasis)
 
 H = collectivespins.quantum.Hamiltonian(system)
-J = collectivespins.quantum.Jump_operators(system)
+Γ, J = collectivespins.quantum.JumpOperators(system)
 Jdagger = [dagger(j) for j=J]
-Γ = collectivespins.interaction.GammaMatrix(system)
 Ω = collectivespins.interaction.OmegaMatrix(system)
 
 Ψ₀ = collectivespins.quantum.blochstate(0., pi/2., N)

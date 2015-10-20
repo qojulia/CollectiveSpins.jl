@@ -96,8 +96,8 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         @inbounds for k=1:N
-            dsx[k] = -S.spins[k].delta0*sy[k] - 0.5*γ*sx[k]
-            dsy[k] = S.spins[k].delta0*sx[k] - 0.5*γ*sy[k]
+            dsx[k] = -S.spins[k].delta*sy[k] - 0.5*γ*sx[k]
+            dsy[k] = S.spins[k].delta*sx[k] - 0.5*γ*sy[k]
             dsz[k] = -γ*(1+sz[k])
             for j=1:N
                 if j==k

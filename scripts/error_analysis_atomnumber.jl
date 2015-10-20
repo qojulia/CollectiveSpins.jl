@@ -28,7 +28,7 @@ for atomnumber=2:6
 
         # System operators
         H = Hint(system)
-        J = Jump_operators(system)
+        J = JumpOperators(system)
         Jdagger =map(dagger,J)
 
         # Non-hermitian Hamiltonian
