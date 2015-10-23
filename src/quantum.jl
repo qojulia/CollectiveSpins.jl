@@ -67,7 +67,7 @@ function Hamiltonian(S::system.SpinCollection)
     H = SparseOperator(b)
     for i=1:N
         if S.spins[i].delta != 0.
-            H += S.spins[i].delta * embed(b, i, sigmaz)
+            H += 0.5*S.spins[i].delta * embed(b, i, sigmaz)
         end
     end
     for i=1:N, j=1:N
@@ -111,7 +111,7 @@ function JumpOperators(S::system.SpinCollection)
     return Γ, J
 end
 
-JumpOperators(S::system.CavityMode) = (Float64[S.kappa], SparseOperator[SparseOperator(destroy(basis(S)))])
+JumpOperators(S::system.CavityMode) = (Float64[2*S.kappa], SparseOperator[SparseOperator(destroy(basis(S)))])
 
 function JumpOperators(S::system.CavitySpinCollection)
     Γs, Js = JumpOperators(S.spincollection)
