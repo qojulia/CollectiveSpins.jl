@@ -8,6 +8,10 @@
 *.bbl
 *.blg
 *Notes.bib
+*.fls
+*.fdb_latexmk
+*.nav
+*.snm
 
 # Documents
 *.pdf
@@ -20,6 +24,8 @@
 # Images
 *.bmp
 *.tiff
+*.png
+*.jpg
 
 # Archives
 *.gz
@@ -29,3 +35,7 @@
 # Backup files
 *.backup
 *~
+
+# OS X Noise
+.DS_Store
+.Trash
