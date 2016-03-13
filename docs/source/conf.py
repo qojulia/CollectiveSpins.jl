@@ -31,6 +31,9 @@ import os
 # ones.
 extensions = [
     'sphinx.ext.mathjax',
+    'sphinxjulia.juliadomain',
+    'sphinxjulia.juliaautodoc',
+    'sphinx.ext.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -102,6 +105,12 @@ pygments_style = 'sphinx'
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
 
+primary_domain = 'jl'
+highlight_language = 'julia'
+
+# Julia autodoc
+juliaautodoc_basedir = "../src"
+
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
@@ -110,7 +119,7 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -122,7 +131,7 @@ html_theme = 'alabaster'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = "DipoleInteraction.jl"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -225,7 +234,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'DipoleInteractionjl.tex', 'DipoleInteraction.jl Documentation',
-     'Sebastian Krämer', 'manual'),
+     'Sebastian Kr\\"amer', 'howto'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
