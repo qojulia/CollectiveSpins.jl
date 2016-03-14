@@ -7,5 +7,6 @@ DipoleInteraction.jl
     installation
     system
     interaction
+    effective_interaction
     geometry
     theories
