@@ -27,15 +27,60 @@ sigmaz = spin.sigmaz(spinbasis)
 sigmap = spin.sigmap(spinbasis)
 sigmam = spin.sigmam(spinbasis)
 
+"""
+Class describing a MPC state (Product state + Correlations).
 
+The data layout is vector that in matrix form looks like
+|Cxx Cxy|
+|Cyy Cxz|
+|Czz Cyz|
+where the Cij are the appropriate correlation matrices.
+The expectation values sx, sy and sz are the diagonals of
+the matrices Cxx, Cyy and Czz, respectively.
+
+Arguments
+---------
+N
+    Number of spins.
+data
+    Vector of length (3*N)*(2*N+1).
+"""
 type MPCState
     N::Int
     data::Vector{Float64}
 end
 
+"""
+MPC state with all Pauli expectation values and correlations equal to zero.
+
+Arguments
+---------
+
+N
+    Number of spins.
+"""
 MPCState(N::Int) = MPCState(N, zeros(Float64, (3*N)*(2*N+1)))
+
+"""
+MPC state created from vector.
+
+Arguments
+---------
+
+data
+    Real valued vector of length (3*N)*(2*N+1).
+"""
 MPCState(data::Vector{Float64}) = MPCState(dim(data), data)
 
+"""
+Create MPC state from density operator.
+
+Arguments
+---------
+
+rho
+    Density operator.
+"""
 function MPCState(rho::Operator)
     basis = rho.basis_l
     N = length(basis.bases)
@@ -61,6 +106,17 @@ function MPCState(rho::Operator)
     return state
 end
 
+"""
+Product state of N single spin Bloch states.
+
+Arguments
+---------
+
+phi
+    Azimuthal angle(s).
+theta
+    Polar angle(s).
+"""
 function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     N = length(phi)
     @assert length(theta)==N
@@ -115,6 +171,9 @@ function integersqrt(N::Int)
     return int(n)
 end
 
+"""
+Number of spins described by this state.
+"""
 function dim(state::Vector{Float64})
     x, rem = divrem(length(state), 3)
     @assert rem==0
@@ -123,6 +182,11 @@ function dim(state::Vector{Float64})
     return N
 end
 
+"""
+Split vector in MPCState layout into expectation values and correlations.
+
+Returns sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz.
+"""
 function splitstate(N::Int, data::Vector{Float64})
     data = reshape(data, 3*N, 2*N+1)
     sx = view(data, 0*N+1:1*N, 2*N+1)
@@ -136,6 +200,12 @@ function splitstate(N::Int, data::Vector{Float64})
     Cyz = view(data, 2*N+1:3*N, 1*N+1:2*N)
     return sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz
 end
+
+"""
+Split MPCState into expectation values and correlations.
+
+Returns sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz.
+"""
 splitstate(state::MPCState) = splitstate(state.N, state.data)
 
 function covarianceoperator(productstate::Vector{Operator}, operators::Vector{Operator}, indices::Vector{Int})
@@ -143,6 +213,11 @@ function covarianceoperator(productstate::Vector{Operator}, operators::Vector{Op
     return tensor(x...)
 end
 
+"""
+Convert a MPCState from correlation form into covariance form.
+
+Basically it just calculates Cov_ab = <s_a s_b> - <s_a> <s_b>.
+"""
 function correlation2covariance(corstate::MPCState)
     N = corstate.N
     covstate = MPCState(N)
@@ -167,6 +242,11 @@ function correlation2covariance(corstate::MPCState)
     return covstate
 end
 
+"""
+Convert a MPCState from covariance form into correlation form.
+
+Basically it just calculates <s_a s_b> = Cov_ab + <s_a> <s_b>.
+"""
 function covariance2correlation(covstate::MPCState)
     N = covstate.N
     corstate = MPCState(N)
@@ -191,6 +271,15 @@ function covariance2correlation(covstate::MPCState)
     return corstate
 end
 
+"""
+Create density operator from MPCState.
+
+Arguments
+---------
+
+state
+    MPCState
+"""
 function densityoperator(state::MPCState)
     N = state.N
     covstate = correlation2covariance(state)
@@ -207,21 +296,71 @@ function densityoperator(state::MPCState)
     return ρ
 end
 
+"""
+Sigmax expectation values of MPCState.
+"""
 sx(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 2*x.N+1)
+"""
+Sigmay expectation values of MPCState.
+"""
 sy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 2*x.N+1)
+"""
+Sigmaz expectation values of MPCState.
+"""
 sz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 2*x.N+1)
 
+"""
+Sigmax-Sigmax correlation values of MPCState.
+"""
 Cxx(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 0*x.N+1:1*x.N)
+"""
+Sigmay-Sigmay correlation values of MPCState.
+"""
 Cyy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 0*x.N+1:1*x.N)
+"""
+Sigmaz-Sigmaz correlation values of MPCState.
+"""
 Czz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 0*x.N+1:1*x.N)
+"""
+Sigmax-Sigmay correlation values of MPCState.
+"""
 Cxy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 1*x.N+1:2*x.N)
+"""
+Sigmax-Sigmaz correlation values of MPCState.
+"""
 Cxz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 1*x.N+1:2*x.N)
+"""
+Sigmay-Sigmaz correlation values of MPCState.
+"""
 Cyz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 1*x.N+1:2*x.N)
 
+"""
+3-spin correlation value.
+"""
 function correlation(s1::Float64, s2::Float64, s3::Float64, C12::Float64, C13::Float64, C23::Float64)
     return -2.*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
 end
 
+"""
+MPC time evolution.
+
+Arguments
+---------
+
+T
+    Points of time for which output will be generated.
+S
+    SpinCollection describing the system.
+state0
+    Initial MPCState.
+
+Keyword Arguments
+-----------------
+
+fout (optional)
+    Function with signature fout(t, state) that is called whenever output
+    should be generated.
+"""
 function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothing)
     N = length(S.spins)
     @assert N==state0.N
@@ -323,6 +462,19 @@ function axisangle2rotmatrix(axis::Vector{Float64}, angle::Float64)
     return R
 end
 
+"""
+Rotations on the Bloch sphere for the given MPCState.
+
+Arguments
+---------
+
+axis
+    Rotation axis.
+angles
+    Rotation angle(s).
+state
+    MPCState that should be rotated.
+"""
 function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MPCState)
     N = state.N
     @assert length(axis)==3
@@ -357,6 +509,9 @@ end
 rotate(axis::Vector{Float64}, angle::Float64, state::MPCState) = rotate(axis, ones(Float64, state.N)*angle, state)
 rotate{T<:Number}(axis::Vector{T}, angles, state::MPCState) = rotate(convert(Vector{Float64}, axis), angles, state)
 
+"""
+Variance of the total Sx operator for the given MPCState.
+"""
 function var_Sx(state0::MPCState)
     N = state0.N
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state0)
@@ -372,6 +527,9 @@ function var_Sx(state0::MPCState)
     return 1./N + 1./N^2*exp_Sx2 - 1./N^2*exp_Sx_2
 end
 
+"""
+Variance of the total Sy operator for the given MPCState.
+"""
 function var_Sy(state0::MPCState)
     N = state0.N
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state0)
@@ -387,6 +545,9 @@ function var_Sy(state0::MPCState)
     return 1./N + 1./N^2*exp_Sy2 - 1./N^2*exp_Sy_2
 end
 
+"""
+Variance of the total Sz operator for the given MPCState.
+"""
 function var_Sz(state0::MPCState)
     N = state0.N
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state0)
@@ -402,6 +563,17 @@ function var_Sz(state0::MPCState)
     return 1./N + 1./N^2*exp_Sz2 - 1./N^2*exp_Sz_2
 end
 
+"""
+Spin squeezing along sx.
+
+Arguments
+---------
+
+χT
+    Squeezing strength.
+state0
+    MPCState that should be squeezed.
+"""
 function squeeze_sx(χT::Float64, state0::MPCState)
     T = [0,1.]
     N = state0.N
@@ -460,6 +632,19 @@ function squeeze_sx(χT::Float64, state0::MPCState)
     return MPCState(N, state_out[end])
 end
 
+"""
+Spin squeezing along an arbitrary axis.
+
+Arguments
+---------
+
+axis
+    Squeezing axis.
+χT
+    Squeezing strength.
+state0
+    MPCState that should be squeezed.
+"""
 function squeeze(axis::Vector{Float64}, χT::Float64, state0::MPCState)
     @assert length(axis)==3
     axis = axis/norm(axis)
@@ -476,6 +661,9 @@ function squeeze(axis::Vector{Float64}, χT::Float64, state0::MPCState)
     return state_squeezed
 end
 
+"""
+Create 3 orthonormal vectors where one is in the given direction.
+"""
 function orthogonal_vectors(n::Vector{Float64})
     n = n/norm(n)
     v = (n[1]<n[2] ? [1.,0.,0.] : [0.,1.,0.])
@@ -486,6 +674,9 @@ function orthogonal_vectors(n::Vector{Float64})
     return e1, e2
 end
 
+"""
+Calculate squeezing parameter for the given state.
+"""
 function squeezingparameter(state::MPCState)
     N = state.N
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = map(sum, splitstate(state))

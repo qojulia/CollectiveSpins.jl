@@ -6,7 +6,7 @@ using ArrayViews
 using quantumoptics
 using ..interaction, ..system
 
-
+# Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
 sigmax = spin.sigmax(spinbasis)
 sigmay = spin.sigmay(spinbasis)
@@ -14,14 +14,54 @@ sigmaz = spin.sigmaz(spinbasis)
 sigmap = spin.sigmap(spinbasis)
 sigmam = spin.sigmam(spinbasis)
 
+"""
+Class describing a Meanfield state (Product state).
 
+The data layout is [sx1 sx2 ... sy1 sy2 ... sz1 sz2 ...]
+
+Arguments
+---------
+N
+    Number of spins.
+data
+    Vector of length 3*N.
+"""
 type MFState
     N::Int
     data::Vector{Float64}
 end
-MFState(N::Int) = MFState(N, zeros(Float64, 3*N))
-MFState(data::Vector{Float64}) = MFState(dim(N), data)
 
+"""
+Meanfield state with all Pauli expectation values equal to zero.
+
+Arguments
+---------
+
+N
+    Number of spins.
+"""
+MFState(N::Int) = MFState(N, zeros(Float64, 3*N))
+
+"""
+Meanfield state created from vector.
+
+Arguments
+---------
+
+data
+    Real valued vector of length 3*spinnumber.
+"""
+MFState(data::Vector{Float64}) = MFState(dim(data), data)
+
+"""
+Create Meanfield state from density operator.
+
+Arguments
+---------
+
+rho
+    Density operator.
+"""
 function MFState(rho::Operator)
     N = quantum.dim(rho)
     basis = quantum.basis(N)
@@ -36,6 +76,17 @@ function MFState(rho::Operator)
     return state
 end
 
+"""
+Product state of N single spin Bloch states.
+
+Arguments
+---------
+
+phi
+    Azimuthal angle(s).
+theta
+    Polar angle(s).
+"""
 function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     N = length(phi)
     @assert length(theta)==N
@@ -60,19 +111,52 @@ function blochstate(phi::Float64, theta::Float64, N::Int=1)
     return state
 end
 
+"""
+Number of spins described by this state.
+"""
 function dim(state::Vector{Float64})
     N, rem = divrem(length(state), 3)
     @assert rem==0
     return N
 end
 
+"""
+Split vector assumed to be in MFState layout into sx, sy and sz parts.
+"""
 splitstate(N::Int, data::Vector{Float64}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
+
+"""
+Split MFState into sx, sy and sz parts.
+"""
 splitstate(state::MFState) = splitstate(state.N, state.data)
 
+
+"""
+Create single spin density operator.
+
+Arguments
+---------
+
+sx
+    sigmax expectation value.
+sy
+    sigmay expectation value.
+sz
+    sigmaz expectation value.
+"""
 function densityoperator(sx::Float64, sy::Float64, sz::Float64)
     return 0.5*(identity(spinbasis) + sx*sigmax + sy*sigmay + sz*sigmaz)
 end
 
+"""
+Create density operator from MFState.
+
+Arguments
+---------
+
+state
+    MFState
+"""
 function densityoperator(state::MFState)
     sx, sy, sz = splitstate(state)
     rho = densityoperator(sx[1], sy[1], sz[1])
@@ -82,10 +166,40 @@ function densityoperator(state::MFState)
     return rho
 end
 
+"""
+Sigmax expectation values of MFState.
+"""
 sx(x::MFState) = view(x.data, 1:x.N)
+"""
+Sigmay expectation values of MFState.
+"""
 sy(x::MFState) = view(x.data, x.N+1:2*x.N)
+"""
+Sigmaz expectation values of MFState.
+"""
 sz(x::MFState) = view(x.data, 2*x.N+1:3*x.N)
 
+
+"""
+Meanfield time evolution.
+
+Arguments
+---------
+
+T
+    Points of time for which output will be generated.
+S
+    SpinCollection describing the system.
+state0
+    Initial MFState.
+
+Keyword Arguments
+-----------------
+
+fout (optional)
+    Function with signature fout(t, state) that is called whenever output
+    should be generated.
+"""
 function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothing)
     N = length(S.spins)
     @assert N==state0.N
@@ -125,6 +239,31 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
     end
 end
 
+"""
+Symmetric meanfield time evolution.
+
+Arguments
+---------
+
+T
+    Points of time for which output will be generated.
+state0
+    Initial MFState.
+Ωeff
+    Effective dipole-dipole interaction.
+Γeff
+    Effective collective decay rate.
+Keyword Arguments
+-----------------
+
+γ (optional)
+    Single spin decay rate.
+δ0 (optional)
+    Phase shift for rotated symmetric meanfield time evolution.
+fout (optional)
+    Function with signature fout(t, state) that is called whenever output
+    should be generated.
+"""
 function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Float64; γ::Float64=1.0, δ0::Float64=0., fout=nothing)
     N = 1
     @assert state0.N==N
@@ -149,6 +288,20 @@ function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Floa
     end
 end
 
+
+"""
+Rotations on the Bloch sphere for the given MFState.
+
+Arguments
+---------
+
+axis
+    Rotation axis.
+angles
+    Rotation angle(s).
+state
+    MFState that should be rotated.
+"""
 function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MFState)
     @assert length(axis)==3
     @assert length(angles)==state.N

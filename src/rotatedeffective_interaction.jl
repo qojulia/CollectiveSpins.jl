@@ -1,5 +1,7 @@
 module rotatedeffective_interaction
 
+# Optimized functions for calculation of Omega and Gamma
+
 function Omega(a, θ)
     ξ = 2*pi*a
     cosθpow2 = cos(θ)^2
@@ -68,6 +70,19 @@ end
 #     return omega_eff, gamma_eff
 # end
 
+"""
+Effective Omega and Gamma for a square.
+
+The polarization axis is orthogonal to the square plane.
+
+Arguments
+---------
+
+a
+    Edge length.
+dϕ
+    Phase shift.
+"""
 function square_orthogonal(a::Float64, Nδ::Int)
     @assert 0 <= Nδ < 4
     δ = 2.*pi*Nδ/4
@@ -86,6 +101,19 @@ end
 #     return omega_eff, gamma_eff
 # end
 
+"""
+Effective Omega and Gamma for a cube.
+
+The polarization axis is orthogonal to the xy faces.
+
+Arguments
+---------
+
+a
+    edge length.
+dϕ
+    Phase shift.
+"""
 function cube_orthogonal(a::Float64, dϕ)
     omega_eff, gamma_eff = square_orthogonal(a, 0)
     sqrt2 = sqrt(2.)
@@ -135,6 +163,22 @@ end
 #     return 2*omega_eff, 2*gamma_eff
 # end
 
+"""
+Effective Omega and Gamma for an infinite chain.
+
+The polarization axis is orthogonal to the chain and the calculation is
+done by adding N spins left and N spins right of a central spin.
+
+Arguments
+---------
+
+a
+    Spin-spin distance.
+N
+    Number of included spins.
+dϕ
+    Phase shift between neighboring spins.
+"""
 function chain_orthogonal(a::Float64, N::Int, dϕ::Float64)
     omega_eff::Float64 = 0.
     gamma_eff::Float64 = 0.

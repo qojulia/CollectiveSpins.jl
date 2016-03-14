@@ -16,6 +16,7 @@ end
 
 export Hamiltonian, JumpOperators
 
+# Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
 sigmax = SparseOperator(spin.sigmax(spinbasis))
 sigmay = SparseOperator(spin.sigmay(spinbasis))
@@ -24,12 +25,26 @@ sigmap = SparseOperator(spin.sigmap(spinbasis))
 sigmam = SparseOperator(spin.sigmam(spinbasis))
 I_spin = sparse_identity(spinbasis)
 
+"""
+Get basis of the given System.
+"""
 basis(x::Spin) = spinbasis
 basis(x::SpinCollection) = CompositeBasis([basis(s) for s=x.spins]...)
 basis(N::Int) = CompositeBasis([spinbasis for s=1:N]...)
 basis(x::CavityMode) = FockBasis(x.cutoff)
 basis(x::CavitySpinCollection) = compose(basis(x.cavity), basis(x.spincollection))
 
+"""
+Product state of N single spin Bloch states.
+
+Arguments
+---------
+
+phi
+    Azimuthal angle(s).
+theta
+    Polar angle(s).
+"""
 function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     N = length(phi)
     @assert length(theta)==N
@@ -56,9 +71,13 @@ function blochstate(phi::Float64, theta::Float64, spinnumber::Int=1)
     end
 end
 
+"""
+Number of spins described by this density operator.
+"""
 function dim(ρ::Operator)
     return length(ρ.basis_l.bases)
 end
+
 
 function Hamiltonian(S::system.SpinCollection)
     spins = S.spins
@@ -105,6 +124,9 @@ function Hamiltonian(S::system.CavitySpinCollection)
     return H
 end
 
+"""
+Jump operators of the given system.
+"""
 function JumpOperators(S::system.SpinCollection)
     J = SparseOperator[embed(basis(S), i, sigmam) for i=1:length(S.spins)]
     Γ = interaction.GammaMatrix(S)
@@ -130,6 +152,12 @@ function JumpOperators(S::system.CavitySpinCollection)
     return Γ, J
 end
 
+"""
+Jump operators of the given system. (diagonalized)
+
+Diagonalized means that the Gamma matrix is diagonalized and
+the jump operators are changed accordingly.
+"""
 function JumpOperators_diagonal(S::system.SpinCollection)
     spins = S.spins
     N = length(spins)
@@ -150,6 +178,29 @@ function JumpOperators_diagonal(S::system.SpinCollection)
     return J
 end
 
+"""
+Master equation time evolution. (diagonalized)
+
+Diagonalized means that the Gamma matrix is diagonalized and
+the jump operators are changed accordingly.
+
+Arguments
+---------
+
+T
+    Points of time for which output will be generated.
+S
+    System.
+ρ₀
+    Initial density operator.
+
+Keyword Arguments
+-----------------
+
+fout (optional)
+    Function with signature fout(t, state) that is called whenever output
+    should be generated.
+"""
 function timeevolution_diagonal(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
     H = Hamiltonian(S)
     J = JumpOperators_diagonal(S)
@@ -159,6 +210,29 @@ function timeevolution_diagonal(T, S::system.System, ρ₀::Operator; fout=nothi
     return quantumoptics.timeevolution.master_nh(T, ρ₀, Hnh_sparse, J_sparse; fout=fout, kwargs...)
 end
 
+"""
+Master equation time evolution.
+
+Diagonalized means that the Gamma matrix is diagonalized and
+the jump operators are changed accordingly.
+
+Arguments
+---------
+
+T
+    Points of time for which output will be generated.
+S
+    System.
+ρ₀
+    Initial density operator.
+
+Keyword Arguments
+-----------------
+
+fout (optional)
+    Function with signature fout(t, state) that is called whenever output
+    should be generated.
+"""
 function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
     b = basis(S)
     H = Hamiltonian(S)
@@ -166,6 +240,20 @@ function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwarg
     return quantumoptics.timeevolution.master_h(T, ρ₀, H, J; fout=fout, Gamma=Γ, kwargs...)
 end
 
+
+"""
+Rotations on the Bloch sphere for the given density operator.
+
+Arguments
+---------
+
+axis
+    Rotation axis.
+angles
+    Rotation angle(s).
+ρ
+    Density operator that should be rotated.
+"""
 function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Operator)
     N = dim(ρ)
     @assert length(rotationaxis)==3
@@ -185,7 +273,17 @@ end
 rotate(axis::Vector{Float64}, angle::Float64, ρ::Operator) = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
 rotate{T<:Number}(axis::Vector{T}, angles, ρ::Operator) = rotate(convert(Vector{Float64}, axis), angles, ρ)
 
+"""
+Spin squeezing along sx.
 
+Arguments
+---------
+
+χT
+    Squeezing strength.
+ρ₀
+    Operator that should be squeezed.
+"""
 function squeeze_sx(χT::Float64, ρ₀::Operator)
     N = dim(ρ₀)
     basis = ρ₀.basis_l
@@ -197,6 +295,19 @@ function squeeze_sx(χT::Float64, ρ₀::Operator)
     return states[end]
 end
 
+"""
+Spin squeezing along an arbitrary axis.
+
+Arguments
+---------
+
+axis
+    Squeezing axis.
+χT
+    Squeezing strength.
+ρ₀
+    Operator that should be squeezed.
+"""
 function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::Operator)
     @assert length(axis)==3
     axis = axis/norm(axis)
@@ -212,6 +323,9 @@ function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::Operator)
 end
 squeeze{T<:Number}(axis::Vector{T}, χT::Float64, ρ₀::Operator) = squeeze(convert(Vector{Float64}, axis), χT, ρ₀)
 
+"""
+Create 3 orthonormal vectors where one is in the given direction.
+"""
 function orthogonal_vectors(n::Vector{Float64})
     @assert length(n)==3
     n = n/norm(n)
@@ -223,8 +337,14 @@ function orthogonal_vectors(n::Vector{Float64})
     return e1, e2
 end
 
+"""
+Variance of the operator for the given state.
+"""
 variance(op::Operator, state::Operator) = (expect(op^2, state) - expect(op, state)^2)
 
+"""
+Calculate squeezing parameter for the given state.
+"""
 function squeezingparameter(ρ::Operator)
     N = dim(ρ)
     basis = ρ.basis_l
