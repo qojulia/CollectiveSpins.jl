@@ -21,13 +21,13 @@ end
 
 function triangle_orthogonal(a::Float64)
     positions = Vector{Float64}[[a,0,0], [a/2, sqrt(3./4)*a,0]]
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
 function square_orthogonal(a::Float64)
     positions = Vector{Float64}[[a,0,0], [0,a,0], [a,a,0]]
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -41,13 +41,13 @@ function polygon_orthogonal(N::Int, a::Float64)
         y = R*sin(i*dα)
         push!(positions, Float64[x-R,y,0])
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
 function rectangle_orthogonal(a::Float64, b::Float64)
     positions = Vector{Float64}[[a,0,0], [0,b,0], [a,b,0]]
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -59,7 +59,7 @@ function cube_orthogonal(a::Float64)
         end
         push!(positions, [ix*a, iy*a, iz*a])
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -71,7 +71,7 @@ function box_orthogonal(a::Float64, b::Float64, c::Float64)
         end
         push!(positions, [ix*a, iy*b, iz*c])
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -86,7 +86,7 @@ function chain(a::Float64, Θ, N::Int)
         end
         push!(positions, [ix*a, 0., 0.])
     end
-    S = SpinCollection(positions, Float64[cos(Θ), 0., sin(Θ)], gamma)
+    S = SpinCollection(positions, Float64[cos(Θ), 0., sin(Θ)]; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -98,7 +98,7 @@ function chain_orthogonal(a::Float64, N::Int)
         end
         push!(positions, [ix*a, 0., 0.])
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -113,7 +113,7 @@ function squarelattice_orthogonal(a::Float64, N::Int)
         end
         push!(positions, [ix*a, iy*a, 0.])
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -139,7 +139,7 @@ function hexagonallattice_orthogonal(a::Float64, N::Int)
             push!(positions, [ax*ix, -iy*a, 0])
         end
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -154,7 +154,7 @@ function cubiclattice_orthogonal(a::Float64, N::Int)
         end
         push!(positions, [ix*a, iy*a, iz*a])
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -166,7 +166,7 @@ function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
         end
         push!(positions, [ix*a, iy*a, iz*b])
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 
@@ -194,7 +194,7 @@ function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
             end
         end
     end
-    S = SpinCollection(positions, e_z, gamma)
+    S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
 

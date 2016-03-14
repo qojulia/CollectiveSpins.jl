@@ -18,8 +18,9 @@ type SpinCollection <: System
     polarization::Vector{Float64}
     gamma::Float64
 end
-SpinCollection(positions::Vector{Vector{Float64}}, polarization::Vector{Float64}, gamma::Float64) = SpinCollection(Spin[Spin(p) for p=positions], polarization, gamma)
-SpinCollection(positions::Vector{Vector{Float64}}, polarization::Vector{Float64}, delta::Float64, gamma::Float64) = SpinCollection(Spin[Spin(p, delta) for p=positions], polarization, gamma)
+
+SpinCollection(positions::Vector{Vector{Float64}}, polarization::Vector{Float64}; delta::Float64=0., gamma::Float64=0.) = SpinCollection(Spin[Spin(p, delta) for p=positions], polarization, gamma)
+
 
 type CavityMode <: System
     delta::Float64

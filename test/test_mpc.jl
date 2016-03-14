@@ -11,7 +11,7 @@ function test_2spin()
     phi = [0.3, 0.8]
     theta = [1./2*pi, 3./2*pi]
 
-    system = SpinCollection(Vector{Float64}[[0.,0.,0.], [a, 0., 0.]], e_dipole, γ)
+    system = SpinCollection(Vector{Float64}[[0.,0.,0.], [a, 0., 0.]], e_dipole; gamma=γ)
     N = length(system.spins)
 
     # Meanfield + Correlations
@@ -39,7 +39,7 @@ function test_3spin()
     phi = [0.3, 0.8, 1.6]
     theta = [1./2*pi, 3./2*pi, 1.2*pi]
 
-    system = SpinCollection(cs.geometry.triangle(a), e_dipole, γ)
+    system = SpinCollection(cs.geometry.triangle(a), e_dipole; gamma=γ)
     N = length(system.spins)
 
     # Meanfield

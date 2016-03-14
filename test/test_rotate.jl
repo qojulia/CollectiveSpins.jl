@@ -5,7 +5,7 @@ const cs = collectivespins
 const e_dipole = [0,0,1.]
 
 function compare_rotate(;Tend=0., phi=0., theta=0., N=1., α=0., axis=[1.,0.,0.])
-    system = SpinCollection(geometry.chain(0.9, N), e_dipole, 1.)
+    system = SpinCollection(geometry.chain(0.9, N), e_dipole; gamma=1.)
     T = Float64[0.,Tend]
     state0_mf = cs.meanfield.blochstate(phi, theta, N)
     if abs(Tend)<1e-12

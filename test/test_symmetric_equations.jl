@@ -11,7 +11,7 @@ const T = [0:0.05:5;]
 
 # =========== Test square configuration =========================
 
-const system_square = SpinCollection(cs.geometry.square(a), e_dipole, γ)
+const system_square = SpinCollection(cs.geometry.square(a), e_dipole; gamma=γ)
 const N_square = length(system_square.spins)
 
 # Initial state (Bloch state)
@@ -73,7 +73,7 @@ end
 
 # =========== Test cube configuration ===========================
 
-const system_cube = SpinCollection(cs.geometry.cube(a), e_dipole, γ)
+const system_cube = SpinCollection(cs.geometry.cube(a), e_dipole; gamma=γ)
 const N_cube = length(system_cube.spins)
 
 # Initial state (Bloch state)
