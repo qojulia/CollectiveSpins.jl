@@ -1,6 +1,6 @@
 module geometry
 
-export chain, rectangle, square, hexagonal, box, cube
+export chain, triangle, rectangle, square, hexagonal, box, cube
 
 """
 Positions of spins on a chain in x-direction.
@@ -76,6 +76,42 @@ Ny (optional)
 square(a; Nx=2, Ny=2) = vec([i*[a,0.,0.]+j*[0.,a,0.] for i=0:Nx-1, j=0:Ny-1])
 
 """
+Positions of spins on a hexagonal lattice in the xy-plane.
+
+The hexagonal lattice consists of Nr rings.
+
+Arguments
+---------
+
+a
+    Spin-spin distance.
+
+Keyword Arguments
+-----------------
+
+Nr (optional)
+    Number of "rings".
+"""
+function hexagonal(a; Nr=1)
+    positions = Vector{Float64}[]
+    ax = sqrt(3./4)*a
+    for ix=[-Nr:Nr]
+        if isodd(ix)
+            Ny = div(2*Nr+1-abs(ix),2)
+            for iy=-Ny:Ny-1
+                push!(positions, [ax*ix, (0.5+iy)*a, 0])
+            end
+        else
+            Ny = div(2*Nr-abs(ix),2)
+            for iy=-Ny:Ny
+                push!(positions, [ax*ix, iy*a, 0])
+            end
+        end
+    end
+    return positions
+end
+
+"""
 Positions of spins on a orthorhombic lattice.
 
 The lattice starts at the origin and continues into
@@ -126,49 +162,6 @@ Nz (optional)
     Number of spins into z direction.
 """
 cube(a; Nx=2, Ny=2, Nz=2) = box(a, a, a, Nx=Nx, Ny=Ny, Nz=Nz)
-
-"""
-Positions of spins on a hexagonal lattice in the xy-plane.
-
-The hexagonal lattice consists of Nr "rings" e.g. for N=2 the grid looks like
-
-    + + +
-   + + + +
-  + + o + +
-   + + + +
-    + + +
-
-Arguments
----------
-
-a
-    Spin-spin distance.
-
-
-Keyword Arguments
------------------
-
-Nr (optional)
-    Number of "rings".
-"""
-function hexagonal(a; Nr=1)
-    positions = Vector{Float64}[]
-    ax = sqrt(3./4)*a
-    for ix=[-Nr:Nr]
-        if isodd(ix)
-            Ny = div(2*Nr+1-abs(ix),2)
-            for iy=-Ny:Ny-1
-                push!(positions, [ax*ix, (0.5+iy)*a, 0])
-            end
-        else
-            Ny = div(2*Nr-abs(ix),2)
-            for iy=-Ny:Ny
-                push!(positions, [ax*ix, iy*a, 0])
-            end
-        end
-    end
-    return positions
-end
 
 
 end # module

@@ -280,14 +280,7 @@ Effective Omega and Gamma for a infinite hexagonal lattice.
 
 The polarization axis is orthogonal to the square lattice plane and the
 calculation is done by creating hexagonal lattice consisting of
-N "rings" and calculate the combined interaction for the central spin.
-E.g. for N = 2 the grid looks like
-
-    + + +
-   + + + +
-  + + o + +
-   + + + +
-    + + +
+N rings and calculate the combined interaction for the central spin.
 
 Arguments
 ---------

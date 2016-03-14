@@ -78,7 +78,9 @@ function dim(ρ::Operator)
     return length(ρ.basis_l.bases)
 end
 
-
+"""
+Hamiltonian of the given System.
+"""
 function Hamiltonian(S::system.SpinCollection)
     spins = S.spins
     N = length(spins)

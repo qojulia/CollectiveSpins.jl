@@ -253,6 +253,8 @@ state0
     Effective dipole-dipole interaction.
 Γeff
     Effective collective decay rate.
+
+
 Keyword Arguments
 -----------------
 

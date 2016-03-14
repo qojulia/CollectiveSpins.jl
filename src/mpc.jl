@@ -31,9 +31,11 @@ sigmam = spin.sigmam(spinbasis)
 Class describing a MPC state (Product state + Correlations).
 
 The data layout is vector that in matrix form looks like
-|Cxx Cxy|
-|Cyy Cxz|
-|Czz Cyz|
+
+Cxx Cxy
+Cyy Cxz
+Czz Cyz
+
 where the Cij are the appropriate correlation matrices.
 The expectation values sx, sy and sz are the diagonals of
 the matrices Cxx, Cyy and Czz, respectively.
