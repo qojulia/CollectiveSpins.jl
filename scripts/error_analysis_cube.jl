@@ -1,4 +1,4 @@
-using quantumoptics, collectivespins
+using Quantumoptics, collectivespins
 using PyCall
 @pyimport matplotlib.pyplot as plt
 

@@ -1,5 +1,5 @@
 using Base.Test
-using quantumoptics
+using Quantumoptics
 using collectivespins
 
 const edipole = [0.,0.,1.]
@@ -79,9 +79,9 @@ Jdagger = [dagger(j) for j=J]
 Ψ₀ = collectivespins.quantum.blochstate(0., pi/2., N)
 ρ₀ = Ψ₀ ⊗ dagger(Ψ₀)
 
-function test_mpc_3particles(t, ρ)
+function test_mpc_3particles(t, ρ::DenseOperator)
     dρ_h = -1im*(H*ρ - ρ*H)
-    dρ_l = Operator(basis)
+    dρ_l = DenseOperator(basis)
     for m=1:length(J), n=1:length(J)
        dρ_l += Γ[m,n]*(J[m]*ρ*Jdagger[n] - Jdagger[n]*(J[m]*ρ)/Complex(2) - ρ*Jdagger[n]*J[m]/Complex(2))
     end

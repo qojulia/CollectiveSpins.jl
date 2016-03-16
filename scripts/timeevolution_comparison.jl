@@ -1,4 +1,4 @@
-using quantumoptics, collectivespins
+using Quantumoptics, collectivespins
 
 # System parameters
 const γ = 1.
@@ -58,7 +58,7 @@ td_cor = [tracedistance(ρ_t[i],ρcor_t[i]) for i=1:length(T)]
 #     rhop_t = map(x->ptrace(x, [i]), rhop_t)
 # end
 
-embed(op::Operator) = quantumoptics.embed(collectivespins.quantum.basis(system), [1], [op])
+embed(op::Operator) = Quantumoptics.embed(collectivespins.quantum.basis(system), [1], [op])
 sx_master = map(ρ->expect(embed(sigmax), ρ), ρ_t)
 sy_master = map(ρ->expect(embed(sigmay), ρ), ρ_t)
 sz_master = map(ρ->expect(embed(sigmaz), ρ), ρ_t)

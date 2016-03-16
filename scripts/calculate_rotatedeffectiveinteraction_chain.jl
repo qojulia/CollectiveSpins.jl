@@ -17,7 +17,7 @@ const odir = parameters["o"]
 @assert isdir(odir)
 
 # System geometry
-using quantumoptics, collectivespins
+using Quantumoptics, collectivespins
 const N = parse(Int, parameters["N"])
 const a = parse(Float64, parameters["a"])
 const dphi = parse(Float64, parameters["dphi"])
@@ -34,7 +34,7 @@ tic()
 omega_eff, gamma_eff = collectivespins.rotatedeffective_interaction.chain_orthogonal(a, N, dphi)
 t = toc()
 
-name = quantumoptics.io.dict2filename(keyparameters)
+name = Quantumoptics.io.dict2filename(keyparameters)
 f = open(joinpath(odir, name), "w")
 write(f, string(omega_eff))
 write(f, ";")

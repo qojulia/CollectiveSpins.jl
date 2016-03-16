@@ -63,7 +63,7 @@ end
 
 const I = identity(spinbasis)
 
-function correlations(rho::AbstractOperator)
+function correlations(rho::Operator)
     N = length(rho.basis_l.bases)
     C = Dict{AbstractString, Matrix{Float64}}()
     m = zeros(Float64, N, N)
@@ -106,7 +106,7 @@ end
 function densityoperator{T<:Real}(σx::Vector{T}, σy::Vector{T}, σz::Vector{T}, C::Dict{AbstractString, Matrix{T}})
     N = length(σx)
     ρ = densityoperator(σx, σy, σz)
-    ρlist = Operator[densityoperator(σx[k], σy[k], σz[k]) for k=1:N]
+    ρlist = DenseOperator[densityoperator(σx[k], σy[k], σz[k]) for k=1:N]
     function cor(s1,s2,k,l)
         if k==1
             result = s1

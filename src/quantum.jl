@@ -1,7 +1,7 @@
 module quantum
 
 using ..interaction, ..system
-using quantumoptics
+using Quantumoptics
 
 try
     eval(Expr(:using, :Optim))
@@ -18,12 +18,12 @@ export Hamiltonian, JumpOperators
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
-sigmax = SparseOperator(spin.sigmax(spinbasis))
-sigmay = SparseOperator(spin.sigmay(spinbasis))
-sigmaz = SparseOperator(spin.sigmaz(spinbasis))
-sigmap = SparseOperator(spin.sigmap(spinbasis))
-sigmam = SparseOperator(spin.sigmam(spinbasis))
-I_spin = sparse_identity(spinbasis)
+sigmax = spin.sigmax(spinbasis)
+sigmay = spin.sigmay(spinbasis)
+sigmaz = spin.sigmaz(spinbasis)
+sigmap = spin.sigmap(spinbasis)
+sigmam = spin.sigmam(spinbasis)
+I_spin = identity(spinbasis)
 
 """
 Get basis of the given System.
@@ -114,7 +114,7 @@ function Hamiltonian(S::system.CavitySpinCollection)
     bc = basis(S.cavity)
     Hs = Hamiltonian(S.spincollection)
     Hc = Hamiltonian(S.cavity)
-    Ic = sparse_identity(basis(S.cavity))
+    Ic = identity(basis(S.cavity))
     H = embed(b, 1, Hc) + tensor(Ic, Hs)
     a = SparseOperator(destroy(bc))
     at = SparseOperator(create(bc))
@@ -146,7 +146,7 @@ function JumpOperators(S::system.CavitySpinCollection)
     Γ = zeros(Float64, N, N)
     Γ[1:Nc, 1:Nc] = Γc
     Γ[Nc+1:end, Nc+1:end] = Γs
-    Ic = sparse_identity(basis(S.cavity))
+    Ic = identity(basis(S.cavity))
     J = SparseOperator[embed(basis(S), 1, Jc[1])]
     for j in Js
         push!(J, tensor(Ic, j))
@@ -203,13 +203,11 @@ fout (optional)
     Function with signature fout(t, state) that is called whenever output
     should be generated.
 """
-function timeevolution_diagonal(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
+function timeevolution_diagonal(T, S::system.System, ρ₀::DenseOperator; fout=nothing, kwargs...)
     H = Hamiltonian(S)
     J = JumpOperators_diagonal(S)
     Hnh = H - 0.5im*sum([dagger(J[i])*J[i] for i=1:length(J)])
-    Hnh_sparse = operators_sparse.SparseOperator(Hnh)
-    J_sparse = map(operators_sparse.SparseOperator, J)
-    return quantumoptics.timeevolution.master_nh(T, ρ₀, Hnh_sparse, J_sparse; fout=fout, kwargs...)
+    return Quantumoptics.timeevolution.master_nh(T, ρ₀, Hnh, J; fout=fout, kwargs...)
 end
 
 """
@@ -235,11 +233,11 @@ fout (optional)
     Function with signature fout(t, state) that is called whenever output
     should be generated.
 """
-function timeevolution(T, S::system.System, ρ₀::Operator; fout=nothing, kwargs...)
+function timeevolution(T, S::system.System, ρ₀::DenseOperator; fout=nothing, kwargs...)
     b = basis(S)
     H = Hamiltonian(S)
     Γ, J = JumpOperators(S)
-    return quantumoptics.timeevolution.master_h(T, ρ₀, H, J; fout=fout, Gamma=Γ, kwargs...)
+    return Quantumoptics.timeevolution.master_h(T, ρ₀, H, J; fout=fout, Gamma=Γ, kwargs...)
 end
 
 
@@ -256,7 +254,7 @@ angles
 ρ
     Density operator that should be rotated.
 """
-function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Operator)
+function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::DenseOperator)
     N = dim(ρ)
     @assert length(rotationaxis)==3
     @assert length(angles)==N
@@ -272,8 +270,8 @@ function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Oper
     return ρ
 end
 
-rotate(axis::Vector{Float64}, angle::Float64, ρ::Operator) = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
-rotate{T<:Number}(axis::Vector{T}, angles, ρ::Operator) = rotate(convert(Vector{Float64}, axis), angles, ρ)
+rotate(axis::Vector{Float64}, angle::Float64, ρ::DenseOperator) = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
+rotate{T<:Number}(axis::Vector{T}, angles, ρ::DenseOperator) = rotate(convert(Vector{Float64}, axis), angles, ρ)
 
 """
 Spin squeezing along sx.
@@ -286,10 +284,10 @@ Arguments
 ρ₀
     Operator that should be squeezed.
 """
-function squeeze_sx(χT::Float64, ρ₀::Operator)
+function squeeze_sx(χT::Float64, ρ₀::DenseOperator)
     N = dim(ρ₀)
     basis = ρ₀.basis_l
-    totaloperator(op::Operator) = sum([embed(basis, i, op) for i=1:N])/N
+    totaloperator(op::DenseOperator) = sum([embed(basis, i, op) for i=1:N])/N
     sigmax_total = totaloperator(sigmax)
     H = χT*sigmax_total^2
     T = [0.,1.]
@@ -310,7 +308,7 @@ axis
 ρ₀
     Operator that should be squeezed.
 """
-function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::Operator)
+function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::DenseOperator)
     @assert length(axis)==3
     axis = axis/norm(axis)
     N = dim(ρ₀)
@@ -323,7 +321,7 @@ function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::Operator)
     t, states = timeevolution_simple.master(T, ρ₀, H, [])
     return states[end]
 end
-squeeze{T<:Number}(axis::Vector{T}, χT::Float64, ρ₀::Operator) = squeeze(convert(Vector{Float64}, axis), χT, ρ₀)
+squeeze{T<:Number}(axis::Vector{T}, χT::Float64, ρ₀::DenseOperator) = squeeze(convert(Vector{Float64}, axis), χT, ρ₀)
 
 """
 Create 3 orthonormal vectors where one is in the given direction.
@@ -342,15 +340,15 @@ end
 """
 Variance of the operator for the given state.
 """
-variance(op::Operator, state::Operator) = (expect(op^2, state) - expect(op, state)^2)
+variance(op::Operator, state) = (expect(op^2, state) - expect(op, state)^2)
 
 """
 Calculate squeezing parameter for the given state.
 """
-function squeezingparameter(ρ::Operator)
+function squeezingparameter(ρ::DenseOperator)
     N = dim(ρ)
     basis = ρ.basis_l
-    totaloperator(op::Operator) = sum([embed(basis, i, op) for i=1:N])/N
+    totaloperator(op::DenseOperator) = sum([embed(basis, i, op) for i=1:N])/N
     S = map(totaloperator, [sigmax, sigmay, sigmaz])
     n = real([expect(s, ρ) for s=S])
     e1, e2 = orthogonal_vectors(n)

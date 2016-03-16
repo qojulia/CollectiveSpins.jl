@@ -3,16 +3,17 @@ module meanfield
 export MFState, densityoperator
 
 using ArrayViews
-using quantumoptics
+using Quantumoptics
 using ..interaction, ..system
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
-sigmax = spin.sigmax(spinbasis)
-sigmay = spin.sigmay(spinbasis)
-sigmaz = spin.sigmaz(spinbasis)
-sigmap = spin.sigmap(spinbasis)
-sigmam = spin.sigmam(spinbasis)
+I = dense_identity(spinbasis)
+sigmax = full(spin.sigmax(spinbasis))
+sigmay = full(spin.sigmay(spinbasis))
+sigmaz = full(spin.sigmaz(spinbasis))
+sigmap = full(spin.sigmap(spinbasis))
+sigmam = full(spin.sigmam(spinbasis))
 
 """
 Class describing a Meanfield state (Product state).
@@ -62,7 +63,7 @@ Arguments
 rho
     Density operator.
 """
-function MFState(rho::Operator)
+function MFState(rho::DenseOperator)
     N = quantum.dim(rho)
     basis = quantum.basis(N)
     state = MFState(N)
@@ -145,7 +146,7 @@ sz
     sigmaz expectation value.
 """
 function densityoperator(sx::Float64, sy::Float64, sz::Float64)
-    return 0.5*(identity(spinbasis) + sx*sigmax + sy*sigmay + sz*sigmaz)
+    return 0.5*(I + sx*sigmax + sy*sigmay + sz*sigmaz)
 end
 
 """
@@ -232,10 +233,10 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
             push!(state_out, MFState(N, deepcopy(y)))
         end
 
-        quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
+        Quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
+        return Quantumoptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
     end
 end
 
@@ -283,10 +284,10 @@ function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Floa
             push!(t_out, t)
             push!(state_out, MFState(N, deepcopy(y)))
         end
-        quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
+        Quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
+        return Quantumoptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
     end
 end
 

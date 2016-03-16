@@ -1,7 +1,7 @@
 module mpc
 
 using ArrayViews
-using quantumoptics
+using Quantumoptics
 using ..interaction, ..system, ..quantum
 
 try
@@ -21,11 +21,11 @@ export MPCState, densityoperator
 
 
 spinbasis = SpinBasis(1//2)
-sigmax = spin.sigmax(spinbasis)
-sigmay = spin.sigmay(spinbasis)
-sigmaz = spin.sigmaz(spinbasis)
-sigmap = spin.sigmap(spinbasis)
-sigmam = spin.sigmam(spinbasis)
+sigmax = full(spin.sigmax(spinbasis))
+sigmay = full(spin.sigmay(spinbasis))
+sigmaz = full(spin.sigmaz(spinbasis))
+sigmap = full(spin.sigmap(spinbasis))
+sigmam = full(spin.sigmam(spinbasis))
 
 """
 Class describing a MPC state (Product state + Correlations).
@@ -210,8 +210,8 @@ Returns sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz.
 """
 splitstate(state::MPCState) = splitstate(state.N, state.data)
 
-function covarianceoperator(productstate::Vector{Operator}, operators::Vector{Operator}, indices::Vector{Int})
-    x = Operator[(i in indices ? operators[findfirst(indices, i)] : productstate[i]) for i=1:length(productstate)]
+function covarianceoperator(productstate::Vector{DenseOperator}, operators::Vector{DenseOperator}, indices::Vector{Int})
+    x = DenseOperator[(i in indices ? operators[findfirst(indices, i)] : productstate[i]) for i=1:length(productstate)]
     return tensor(x...)
 end
 
@@ -286,7 +286,7 @@ function densityoperator(state::MPCState)
     N = state.N
     covstate = correlation2covariance(state)
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(covstate)
-    productstate = Operator[densityoperator(sx[k], sy[k], sz[k]) for k=1:N]
+    productstate = DenseOperator[densityoperator(sx[k], sy[k], sz[k]) for k=1:N]
     C(op1,op2,index1,index2) = covarianceoperator(productstate, [op1,op2], [index1,index2])
     ρ = reduce(tensor, productstate)
     for k=1:N, l=k+1:N
@@ -439,10 +439,10 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
             push!(t_out, t)
             push!(state_out, MPCState(N, deepcopy(state)))
         end
-        quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
+        Quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return quantumoptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MPCState(N,y)))
+        return Quantumoptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MPCState(N,y)))
     end
 end
 
@@ -630,7 +630,7 @@ function squeeze_sx(χT::Float64, state0::MPCState)
         push!(state_out, deepcopy(state))
     end
 
-    quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
+    Quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
     return MPCState(N, state_out[end])
 end
 

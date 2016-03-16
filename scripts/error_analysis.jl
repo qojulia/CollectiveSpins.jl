@@ -35,7 +35,7 @@ const phi = float(parameters["phi"])
 const theta = float(parameters["theta"])
 
 # System geometry
-using quantumoptics, collectivespins
+using Quantumoptics, collectivespins
 const cs = collectivespins
 
 const edipole = float(eval(parse(parameters["edipole"])))
@@ -94,7 +94,7 @@ keyparameters = Dict(
     "d"=>parameters["d"]
     )
 
-name = quantumoptics.io.dict2filename(keyparameters)
+name = Quantumoptics.io.dict2filename(keyparameters)
 f = open(joinpath(odir, name), "w")
 cs.io.write_head(f, system, parameters)
 cs.io.write_state(f, "timevector", T; time=false)
