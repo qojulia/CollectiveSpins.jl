@@ -1,6 +1,6 @@
 module meanfield
 
-export MFState, densityoperator
+export ProductState, densityoperator
 
 using ArrayViews
 using QuantumOptics
@@ -27,7 +27,7 @@ N
 data
     Vector of length 3*N.
 """
-type MFState
+type ProductState
     N::Int
     data::Vector{Float64}
 end
@@ -41,7 +41,7 @@ Arguments
 N
     Number of spins.
 """
-MFState(N::Int) = MFState(N, zeros(Float64, 3*N))
+ProductState(N::Int) = ProductState(N, zeros(Float64, 3*N))
 
 """
 Meanfield state created from vector.
@@ -52,7 +52,7 @@ Arguments
 data
     Real valued vector of length 3*spinnumber.
 """
-MFState(data::Vector{Float64}) = MFState(dim(data), data)
+ProductState(data::Vector{Float64}) = ProductState(dim(data), data)
 
 """
 Create Meanfield state from density operator.
@@ -63,10 +63,10 @@ Arguments
 rho
     Density operator.
 """
-function MFState(rho::DenseOperator)
+function ProductState(rho::DenseOperator)
     N = quantum.dim(rho)
     basis = quantum.basis(N)
-    state = MFState(N)
+    state = ProductState(N)
     sx, sy, sz = splitstate(s)
     f(ind, op) = real(expect(embed(basis, ind, op), rho))
     for k=1:N
@@ -91,7 +91,7 @@ theta
 function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     N = length(phi)
     @assert length(theta)==N
-    state = MFState(N)
+    state = ProductState(N)
     sx, sy, sz = splitstate(state)
     for k=1:N
         sx[k] = cos(phi[k])*sin(theta[k])
@@ -102,7 +102,7 @@ function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
 end
 
 function blochstate(phi::Float64, theta::Float64, N::Int=1)
-    state = MFState(N)
+    state = ProductState(N)
     sx, sy, sz = splitstate(state)
     for k=1:N
         sx[k] = cos(phi)*sin(theta)
@@ -122,14 +122,14 @@ function dim(state::Vector{Float64})
 end
 
 """
-Split vector assumed to be in MFState layout into sx, sy and sz parts.
+Split vector assumed to be in ProductState layout into sx, sy and sz parts.
 """
 splitstate(N::Int, data::Vector{Float64}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
 
 """
-Split MFState into sx, sy and sz parts.
+Split ProductState into sx, sy and sz parts.
 """
-splitstate(state::MFState) = splitstate(state.N, state.data)
+splitstate(state::ProductState) = splitstate(state.N, state.data)
 
 
 """
@@ -150,15 +150,15 @@ function densityoperator(sx::Float64, sy::Float64, sz::Float64)
 end
 
 """
-Create density operator from MFState.
+Create density operator from ProductState.
 
 Arguments
 ---------
 
 state
-    MFState
+    ProductState
 """
-function densityoperator(state::MFState)
+function densityoperator(state::ProductState)
     sx, sy, sz = splitstate(state)
     rho = densityoperator(sx[1], sy[1], sz[1])
     for i=2:state.N
@@ -168,17 +168,17 @@ function densityoperator(state::MFState)
 end
 
 """
-Sigmax expectation values of MFState.
+Sigmax expectation values of ProductState.
 """
-sx(x::MFState) = view(x.data, 1:x.N)
+sx(x::ProductState) = view(x.data, 1:x.N)
 """
-Sigmay expectation values of MFState.
+Sigmay expectation values of ProductState.
 """
-sy(x::MFState) = view(x.data, x.N+1:2*x.N)
+sy(x::ProductState) = view(x.data, x.N+1:2*x.N)
 """
-Sigmaz expectation values of MFState.
+Sigmaz expectation values of ProductState.
 """
-sz(x::MFState) = view(x.data, 2*x.N+1:3*x.N)
+sz(x::ProductState) = view(x.data, 2*x.N+1:3*x.N)
 
 
 """
@@ -192,7 +192,7 @@ T
 S
     SpinCollection describing the system.
 state0
-    Initial MFState.
+    Initial ProductState.
 
 Keyword Arguments
 -----------------
@@ -201,7 +201,7 @@ fout (optional)
     Function with signature fout(t, state) that is called whenever output
     should be generated.
 """
-function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothing)
+function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=nothing)
     N = length(S.spins)
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
@@ -227,16 +227,16 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
 
     if fout==nothing
         t_out = Float64[]
-        state_out = MFState[]
+        state_out = ProductState[]
         function fout_(t, y::Vector{Float64})
             push!(t_out, t)
-            push!(state_out, MFState(N, deepcopy(y)))
+            push!(state_out, ProductState(N, deepcopy(y)))
         end
 
         QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
+        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
     end
 end
 
@@ -249,7 +249,7 @@ Arguments
 T
     Points of time for which output will be generated.
 state0
-    Initial MFState.
+    Initial ProductState.
 Ωeff
     Effective dipole-dipole interaction.
 Γeff
@@ -267,7 +267,7 @@ fout (optional)
     Function with signature fout(t, state) that is called whenever output
     should be generated.
 """
-function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Float64; γ::Float64=1.0, δ0::Float64=0., fout=nothing)
+function timeevolution_symmetric(T, state0::ProductState, Ωeff::Float64, Γeff::Float64; γ::Float64=1.0, δ0::Float64=0., fout=nothing)
     N = 1
     @assert state0.N==N
     function f(t, y::Vector{Float64}, dy::Vector{Float64})
@@ -279,21 +279,21 @@ function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Floa
     end
     if fout==nothing
         t_out = Float64[]
-        state_out = MFState[]
+        state_out = ProductState[]
         function fout_(t, y::Vector{Float64})
             push!(t_out, t)
-            push!(state_out, MFState(N, deepcopy(y)))
+            push!(state_out, ProductState(N, deepcopy(y)))
         end
         QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
+        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
     end
 end
 
 
 """
-Rotations on the Bloch sphere for the given MFState.
+Rotations on the Bloch sphere for the given ProductState.
 
 Arguments
 ---------
@@ -303,14 +303,14 @@ axis
 angles
     Rotation angle(s).
 state
-    MFState that should be rotated.
+    ProductState that should be rotated.
 """
-function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MFState)
+function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::ProductState)
     @assert length(axis)==3
     @assert length(angles)==state.N
     w = axis/norm(axis)
     sx, sy, sz = splitstate(state)
-    state_rot = MFState(state.N)
+    state_rot = ProductState(state.N)
     sx_rot, sy_rot, sz_rot = splitstate(state_rot)
     v = zeros(Float64, 3)
     for i=1:state.N
@@ -321,7 +321,7 @@ function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MFState)
     return state_rot
 end
 
-rotate(axis::Vector{Float64}, angle::Float64, state::MFState) = rotate(axis, ones(Float64, state.N)*angle, state)
-rotate{T<:Number}(axis::Vector{T}, angles, state::MFState) = rotate(convert(Vector{Float64}, axis), angles, state)
+rotate(axis::Vector{Float64}, angle::Float64, state::ProductState) = rotate(axis, ones(Float64, state.N)*angle, state)
+rotate{T<:Number}(axis::Vector{T}, angles, state::ProductState) = rotate(convert(Vector{Float64}, axis), angles, state)
 
 end # module

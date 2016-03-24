@@ -93,11 +93,11 @@ Quantum
 
 .. epigraph::
 
-    .. jl:autotype:: meanfield.jl MFState
+    .. jl:autotype:: meanfield.jl ProductState
 
 .. epigraph::
 
-    .. jl:autofunction:: meanfield.jl MFState(rho)
+    .. jl:autofunction:: meanfield.jl ProductState(rho)
 
 .. epigraph::
 
