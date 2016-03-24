@@ -5,13 +5,13 @@ const cs = collectivespins
 # System parameters
 function test_2spin()
     a = 0.54
-    γ = 1.
-    e_dipole = [0,0,1.]
+    γ = 1
+    e_dipole = [0, 0, 1]
     T = [0:0.05:5.;]
     phi = [0.3, 0.8]
     theta = [1./2*pi, 3./2*pi]
 
-    system = SpinCollection(Vector{Float64}[[0.,0.,0.], [a, 0., 0.]], e_dipole; gamma=γ)
+    system = SpinCollection(Vector{Float64}[[0, 0, 0], [a, 0, 0]], e_dipole; gamma=γ)
     N = length(system.spins)
 
     # Meanfield + Correlations
@@ -34,7 +34,7 @@ end
 function test_3spin()
     a = 0.54
     γ = 1.
-    e_dipole = [0,0,1.]
+    e_dipole = [0, 0, 1]
     T = [0:0.05:5.;]
     phi = [0.3, 0.8, 1.6]
     theta = [1./2*pi, 3./2*pi, 1.2*pi]

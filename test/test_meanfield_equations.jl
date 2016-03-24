@@ -2,8 +2,8 @@ using Base.Test
 using QuantumOptics
 using collectivespins
 
-const edipole = [0.,0.,1.]
-const γ = 1.
+const edipole = [0, 0, 1]
+const γ = 1
 const N = 2
 const T = [0:0.1:1;]
 

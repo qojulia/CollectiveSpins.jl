@@ -4,8 +4,8 @@ const cs = collectivespins
 
 # System parameters
 const a = 0.18
-const γ = 1.
-const e_dipole = [0,0,1.]
+const γ = 1
+const e_dipole = [0, 0, 1]
 const T = [0:0.05:5;]
 
 

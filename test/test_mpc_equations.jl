@@ -2,8 +2,8 @@ using Base.Test
 using QuantumOptics
 using collectivespins
 
-const edipole = [0.,0.,1.]
-const γ = 1.
+const edipole = [0, 0, 1]
+const γ = 1
 const T = [0:0.1:1;]
 
 spinbasis = SpinBasis(1//2)
@@ -14,7 +14,7 @@ sz = sigmaz(spinbasis)
 
 N = 2
 systemgeometry = collectivespins.geometry.chain(0.3, N)
-system = collectivespins.SpinCollection(systemgeometry, edipole, gamma=γ)
+system = collectivespins.SpinCollection(systemgeometry, edipole; gamma=γ)
 basis = collectivespins.quantum.basis(system)
 I = identity(spinbasis)
 
