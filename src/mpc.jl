@@ -1,7 +1,7 @@
 module mpc
 
 using ArrayViews
-using Quantumoptics
+using QuantumOptics
 using ..interaction, ..system, ..quantum
 
 try
@@ -439,10 +439,10 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
             push!(t_out, t)
             push!(state_out, MPCState(N, deepcopy(state)))
         end
-        Quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
+        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return Quantumoptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MPCState(N,y)))
+        return QuantumOptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MPCState(N,y)))
     end
 end
 
@@ -630,7 +630,7 @@ function squeeze_sx(χT::Float64, state0::MPCState)
         push!(state_out, deepcopy(state))
     end
 
-    Quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
+    QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
     return MPCState(N, state_out[end])
 end
 

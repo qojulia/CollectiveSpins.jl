@@ -3,7 +3,7 @@ module meanfield
 export MFState, densityoperator
 
 using ArrayViews
-using Quantumoptics
+using QuantumOptics
 using ..interaction, ..system
 
 # Define Spin 1/2 operators
@@ -233,10 +233,10 @@ function timeevolution(T, S::system.SpinCollection, state0::MFState; fout=nothin
             push!(state_out, MFState(N, deepcopy(y)))
         end
 
-        Quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
+        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return Quantumoptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
+        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
     end
 end
 
@@ -284,10 +284,10 @@ function timeevolution_symmetric(T, state0::MFState, Ωeff::Float64, Γeff::Floa
             push!(t_out, t)
             push!(state_out, MFState(N, deepcopy(y)))
         end
-        Quantumoptics.ode_dopri.ode(f, T, state0.data, fout_)
+        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
         return t_out, state_out
     else
-        return Quantumoptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
+        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, MFState(N,y)))
     end
 end
 

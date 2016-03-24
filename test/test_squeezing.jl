@@ -1,5 +1,5 @@
 using Base.Test
-using Quantumoptics, collectivespins
+using QuantumOptics, collectivespins
 const cs = collectivespins
 
 function compare_squeezing(;phi=0., theta=0., N=1., χT=0., axis=[1.,0.,0.])
@@ -8,7 +8,7 @@ function compare_squeezing(;phi=0., theta=0., N=1., χT=0., axis=[1.,0.,0.])
     Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
     ρ_squeezed = cs.quantum.squeeze(axis, χT, ρ₀)
-    return Quantumoptics.tracedistance(ρ_squeezed, cs.mpc.densityoperator(state_squeezed))
+    return QuantumOptics.tracedistance(ρ_squeezed, cs.mpc.densityoperator(state_squeezed))
 end
 
 td = compare_squeezing(phi=0., theta=0., N=2, χT=2.5, axis=[1.,0,0])

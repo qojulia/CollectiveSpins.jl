@@ -1,5 +1,5 @@
 using Base.Test
-using Quantumoptics, collectivespins
+using QuantumOptics, collectivespins
 const cs = collectivespins
 
 const e_dipole = [0,0,1.]
@@ -34,9 +34,9 @@ function compare_rotate(;Tend=0., phi=0., theta=0., N=1., α=0., axis=[1.,0.,0.]
     end
     ρ = cs.quantum.rotate(axis, α, ρT)
 
-    td_mpc_mf = Quantumoptics.tracedistance(ρmpc, ρmf)
-    td_master_mf = Quantumoptics.tracedistance(ρ, ρmf)
-    td_master_mpc = Quantumoptics.tracedistance(ρ, ρmpc)
+    td_mpc_mf = QuantumOptics.tracedistance(ρmpc, ρmf)
+    td_master_mf = QuantumOptics.tracedistance(ρ, ρmf)
+    td_master_mpc = QuantumOptics.tracedistance(ρ, ρmpc)
     return td_mpc_mf, td_master_mf, td_master_mpc
 end
 

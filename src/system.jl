@@ -1,6 +1,6 @@
 module system
 
-# using Quantumoptics
+# using QuantumOptics
 
 export Spin, SpinCollection, CavityMode, CavitySpinCollection
 

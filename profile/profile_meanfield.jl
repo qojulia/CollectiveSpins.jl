@@ -1,4 +1,4 @@
-using cascadeddecay, Quantumoptics, meanfield
+using cascadeddecay, QuantumOptics, meanfield
 
 
 const γ = 1.

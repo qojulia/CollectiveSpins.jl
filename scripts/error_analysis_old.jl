@@ -32,7 +32,7 @@ const sy0 = sin(phi)*sin(theta)
 const sz0 = cos(theta)
 
 
-using Quantumoptics, collectivespins
+using QuantumOptics, collectivespins
 const geomstring = parameters["geometry"]
 const systemgeometry = eval(parse("collectivespins.geometry.$geomstring"))
 const system = SpinCollection(systemgeometry, edipole, γ)

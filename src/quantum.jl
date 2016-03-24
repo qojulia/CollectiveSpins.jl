@@ -1,7 +1,7 @@
 module quantum
 
 using ..interaction, ..system
-using Quantumoptics
+using QuantumOptics
 
 try
     eval(Expr(:using, :Optim))
@@ -207,7 +207,7 @@ function timeevolution_diagonal(T, S::system.System, ρ₀::DenseOperator; fout=
     H = Hamiltonian(S)
     J = JumpOperators_diagonal(S)
     Hnh = H - 0.5im*sum([dagger(J[i])*J[i] for i=1:length(J)])
-    return Quantumoptics.timeevolution.master_nh(T, ρ₀, Hnh, J; fout=fout, kwargs...)
+    return QuantumOptics.timeevolution.master_nh(T, ρ₀, Hnh, J; fout=fout, kwargs...)
 end
 
 """
@@ -237,7 +237,7 @@ function timeevolution(T, S::system.System, ρ₀::DenseOperator; fout=nothing, 
     b = basis(S)
     H = Hamiltonian(S)
     Γ, J = JumpOperators(S)
-    return Quantumoptics.timeevolution.master_h(T, ρ₀, H, J; fout=fout, Gamma=Γ, kwargs...)
+    return QuantumOptics.timeevolution.master_h(T, ρ₀, H, J; fout=fout, Gamma=Γ, kwargs...)
 end
 
 

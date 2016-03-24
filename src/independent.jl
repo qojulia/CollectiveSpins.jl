@@ -1,7 +1,7 @@
 module independent
 
 using ArrayViews
-using Quantumoptics
+using QuantumOptics
 using ..interaction, ..system
 
 """
@@ -133,7 +133,7 @@ function timeevolution(T, gamma::Float64, state0::Vector{Float64})
         push!(state_out, deepcopy(y))
     end
 
-    Quantumoptics.ode_dopri.ode(f, T, state0, fout=fout)
+    QuantumOptics.ode_dopri.ode(f, T, state0, fout=fout)
     return t_out, state_out
 end
 

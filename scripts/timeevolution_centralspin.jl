@@ -91,7 +91,7 @@ elseif method=="mpc"
     end
     cs.mpc.timeevolution(T, system, state0; fout=fout)
 elseif method=="master"
-    embed(op::Operator) = Quantumoptics.embed(cs.quantum.basis(system), [index_center], [op])
+    embed(op::Operator) = QuantumOptics.embed(cs.quantum.basis(system), [index_center], [op])
     function fout(t, rho::Operator)
         push!(sx, real(expect(embed(sigmax), rho)))
         push!(sy, real(expect(embed(sigmay), rho)))
@@ -113,7 +113,7 @@ keyparameters = Dict(
     "method"=>parameters["method"]
     )
 
-name = Quantumoptics.io.dict2filename(keyparameters)
+name = QuantumOptics.io.dict2filename(keyparameters)
 f = open(joinpath(odir, name), "w")
 write(f, "# Time sx sy sz\n")
 write(f, "#calctime=$(t)\n")

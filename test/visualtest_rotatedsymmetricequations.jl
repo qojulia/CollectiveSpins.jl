@@ -1,4 +1,4 @@
-using Quantumoptics, collectivespins
+using QuantumOptics, collectivespins
 const cs = collectivespins
 
 # System parameters
@@ -65,7 +65,7 @@ td_mpc = Float64[]
 
 const Ncenter = 5#int(N/2)+1
 
-embed(op::Operator) = Quantumoptics.embed(cs.quantum.basis(system), Ncenter, op)
+embed(op::Operator) = QuantumOptics.embed(cs.quantum.basis(system), Ncenter, op)
 
 function fout(t, rho::Operator)
     i = findfirst(T, t)

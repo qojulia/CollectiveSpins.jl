@@ -1,5 +1,5 @@
 using Base.Test
-using Quantumoptics
+using QuantumOptics
 using collectivespins
 
 const edipole = [0.,0.,1.]

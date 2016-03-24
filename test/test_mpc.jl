@@ -1,5 +1,5 @@
 using Base.Test
-using Quantumoptics, collectivespins
+using QuantumOptics, collectivespins
 const cs = collectivespins
 
 # System parameters

@@ -25,7 +25,7 @@ const odir = parameters["o"]
 @assert isdir(odir)
 
 # System geometry
-using Quantumoptics, collectivespins
+using QuantumOptics, collectivespins
 const N = parameters["N"]
 const a = parameters["a"]
 const geomstring = parameters["geometry"]
@@ -60,7 +60,7 @@ else
 end
 t = toc()
 
-name = Quantumoptics.io.dict2filename(keyparameters)
+name = QuantumOptics.io.dict2filename(keyparameters)
 f = open(joinpath(odir, name), "w")
 write(f, "$omega_eff;$gamma_eff\n")
 write(f, "\n#calctime=$t\n")
