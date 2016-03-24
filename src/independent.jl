@@ -15,7 +15,7 @@ phi
 theta
     Polar angle(s).
 """
-function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
+function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
     N = length(phi)
     @assert length(theta)==N
     state = zeros(Float64, 3*N)
@@ -25,7 +25,7 @@ function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     return state
 end
 
-function blochstate(phi::Float64, theta::Float64, N::Int=1)
+function blochstate(phi::Real, theta::Real, N::Int=1)
     state = zeros(Float64, 3*N)
     state[0*N+1:1*N] = ones(Float64, N)*cos(phi)*sin(theta)
     state[1*N+1:2*N] = ones(Float64, N)*sin(phi)*sin(theta)
@@ -63,7 +63,7 @@ sy
 sz
     sigmaz expectation value.
 """
-function densityoperator(sx::Float64, sy::Float64, sz::Float64)
+function densityoperator(sx::Number, sy::Number, sz::Number)
     return 0.5*(identity(spinbasis) + sx*sigmax + sy*sigmay + sz*sigmaz)
 end
 
@@ -113,7 +113,7 @@ gamma
 state0
     Initial state.
 """
-function timeevolution(T, gamma::Float64, state0::Vector{Float64})
+function timeevolution(T, gamma::Number, state0::Vector{Float64})
     N = dim(state0)
     γ = gamma
     function f(t, s::Vector{Float64}, ds::Vector{Float64})
