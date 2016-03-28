@@ -1,4 +1,4 @@
-module rotatedeffective_interaction
+module effective_interaction_rotated
 
 # Optimized functions for calculation of Omega and Gamma
 

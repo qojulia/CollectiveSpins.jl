@@ -31,7 +31,7 @@ omega_eff = NaN
 gamma_eff = NaN
 
 tic()
-omega_eff, gamma_eff = collectivespins.rotatedeffective_interaction.chain_orthogonal(a, N, dphi)
+omega_eff, gamma_eff = collectivespins.effective_interaction_rotated.chain_orthogonal(a, N, dphi)
 t = toc()
 
 name = QuantumOptics.io.dict2filename(keyparameters)

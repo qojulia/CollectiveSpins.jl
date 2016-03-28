@@ -33,7 +33,7 @@ tout, state_mf_t = cs.meanfield.timeevolution(T, system, state0)
 
 # Symmetric meanfield
 state0 = cs.meanfield.blochstate(0., pi/2., 1)
-Ωeff, Γeff = collectivespins.rotatedeffective_interaction.cube_orthogonal(a, pi/2.)
+Ωeff, Γeff = collectivespins.effective_interaction_rotated.cube_orthogonal(a, pi/2.)
 tout, state_mfsym_t = cs.meanfield.timeevolution_symmetric(T, state0, Ωeff, Γeff)
 
 # #println("N: ", state_mf_t[end].N)

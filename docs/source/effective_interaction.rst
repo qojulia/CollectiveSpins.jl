@@ -57,12 +57,12 @@ Rotated effective interactions
 
 .. epigraph::
 
-    .. jl:autofunction:: rotatedeffective_interaction.jl square_orthogonal
+    .. jl:autofunction:: effective_interaction_rotated.jl square_orthogonal
 
 .. epigraph::
 
-    .. jl:autofunction:: rotatedeffective_interaction.jl cube_orthogonal
+    .. jl:autofunction:: effective_interaction_rotated.jl cube_orthogonal
 
 .. epigraph::
 
-    .. jl:autofunction:: rotatedeffective_interaction.jl chain_orthogonal
+    .. jl:autofunction:: effective_interaction_rotated.jl chain_orthogonal

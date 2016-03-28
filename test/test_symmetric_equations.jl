@@ -34,9 +34,9 @@ tout, state2_mf_t = cs.meanfield.timeevolution(T, system_square, state2_mf)
 state0_sym = cs.meanfield.blochstate(0., pi/2., 1)
 
 Ωeff0_, Γeff0_ = cs.effective_interaction.square_orthogonal(a)
-Ωeff0, Γeff0 = cs.rotatedeffective_interaction.square_orthogonal(a, 0)
-Ωeff1, Γeff1 = cs.rotatedeffective_interaction.square_orthogonal(a, 1)
-Ωeff2, Γeff2 = cs.rotatedeffective_interaction.square_orthogonal(a, 2)
+Ωeff0, Γeff0 = cs.effective_interaction_rotated.square_orthogonal(a, 0)
+Ωeff1, Γeff1 = cs.effective_interaction_rotated.square_orthogonal(a, 1)
+Ωeff2, Γeff2 = cs.effective_interaction_rotated.square_orthogonal(a, 2)
 @test (Ωeff0_-Ωeff0) < 1e-12
 @test (Γeff0_-Γeff0) < 1e-12
 
@@ -94,8 +94,8 @@ tout, state1_mf_t = cs.meanfield.timeevolution(T, system_cube, state1_mf)
 state0_sym = cs.meanfield.blochstate(0., pi/2., 1)
 
 Ωeff0_, Γeff0_ = cs.effective_interaction.cube_orthogonal(a)
-Ωeff0, Γeff0 = cs.rotatedeffective_interaction.cube_orthogonal(a, 0.)
-Ωeff1, Γeff1 = cs.rotatedeffective_interaction.cube_orthogonal(a, dphi1_cube)
+Ωeff0, Γeff0 = cs.effective_interaction_rotated.cube_orthogonal(a, 0.)
+Ωeff1, Γeff1 = cs.effective_interaction_rotated.cube_orthogonal(a, dphi1_cube)
 @test (Ωeff0_-Ωeff0) < 1e-12
 @test (Γeff0_-Γeff0) < 1e-12
 
