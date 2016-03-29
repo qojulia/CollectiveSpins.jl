@@ -13,7 +13,7 @@ CollectiveSpins.jl
 
 .. image:: https://ci.appveyor.com/api/projects/status/t83f2bqfpumn6d96/branch/master?svg=true
    :alt: Windows build status
-   :target: https://ci.appveyor.com/project/bastikr/quantumoptics-jl/branch/master
+   :target: https://ci.appveyor.com/project/bastikr/collectivespins-jl/branch/master
 
 
 Example
