@@ -32,9 +32,9 @@ const sy0 = sin(phi)*sin(theta)
 const sz0 = cos(theta)
 
 
-using QuantumOptics, collectivespins
+using QuantumOptics, CollectiveSpins
 const geomstring = parameters["geometry"]
-const systemgeometry = eval(parse("collectivespins.geometry.$geomstring"))
+const systemgeometry = eval(parse("CollectiveSpins.geometry.$geomstring"))
 const system = SpinCollection(systemgeometry, edipole, γ)
 const N = length(system.spins)
 
@@ -46,28 +46,28 @@ const td_mpc = Float64[]
 state_master_t = Vector{Float64}[]
 
 # Independent
-state0 = collectivespins.independent.blochstate(phi,theta,N)
-tout, state_ind_t = collectivespins.independent.timeevolution(T, system, state0)
+state0 = CollectiveSpins.independent.blochstate(phi,theta,N)
+tout, state_ind_t = CollectiveSpins.independent.timeevolution(T, system, state0)
 
 # Meanfield
-state0 = collectivespins.meanfield.blochstate(phi,theta,N)
-tout, state_mf_t = collectivespins.meanfield.timeevolution(T, system, state0)
+state0 = CollectiveSpins.meanfield.blochstate(phi,theta,N)
+tout, state_mf_t = CollectiveSpins.meanfield.timeevolution(T, system, state0)
 
 # Meanfield + Correlations
-state0 = collectivespins.mpc.blochstate(phi,theta,N)
-tout, state_mpc_t = collectivespins.mpc.timeevolution(T, system, state0)
+state0 = CollectiveSpins.mpc.blochstate(phi,theta,N)
+tout, state_mpc_t = CollectiveSpins.mpc.timeevolution(T, system, state0)
 
 # Quantum: master equation
 
-sx_operators = Operator[quantumoptics.embed(collectivespins.quantum.basis(system), [i], [sigmax]) for i=1:N]
-sy_operators = Operator[quantumoptics.embed(collectivespins.quantum.basis(system), [i], [sigmay]) for i=1:N]
-sz_operators = Operator[quantumoptics.embed(collectivespins.quantum.basis(system), [i], [sigmaz]) for i=1:N]
+sx_operators = Operator[quantumoptics.embed(CollectiveSpins.quantum.basis(system), [i], [sigmax]) for i=1:N]
+sy_operators = Operator[quantumoptics.embed(CollectiveSpins.quantum.basis(system), [i], [sigmay]) for i=1:N]
+sz_operators = Operator[quantumoptics.embed(CollectiveSpins.quantum.basis(system), [i], [sigmaz]) for i=1:N]
 
 function fout(t, rho::Operator)
     i = findfirst(T, t)
-    rho_ind = collectivespins.independent.densityoperator(state_ind_t[i])
-    rho_mf = collectivespins.meanfield.densityoperator(state_mf_t[i])
-    rho_mpc = collectivespins.mpc.densityoperator(state_mpc_t[i])
+    rho_ind = CollectiveSpins.independent.densityoperator(state_ind_t[i])
+    rho_mf = CollectiveSpins.meanfield.densityoperator(state_mf_t[i])
+    rho_mpc = CollectiveSpins.mpc.densityoperator(state_mpc_t[i])
     push!(td_ind, tracedistance(rho, rho_ind))
     push!(td_mf, tracedistance(rho, rho_mf))
     push!(td_mpc, tracedistance(rho, rho_mpc))
@@ -78,39 +78,39 @@ function fout(t, rho::Operator)
     push!(state_master_t, state)
 end
 
-Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
+Ψ₀ = CollectiveSpins.quantum.blochstate(phi,theta,N)
 ρ₀ = Ψ₀⊗dagger(Ψ₀)
-collectivespins.quantum.timeevolution(T, system, ρ₀, fout=fout)
+CollectiveSpins.quantum.timeevolution(T, system, ρ₀, fout=fout)
 
 f = open(opath, "w")
-collectivespins.io.write_head(f, system, parameters)
-collectivespins.io.write_state(f, "timevector", T; time=false)
-collectivespins.io.write_state(f, "td_ind", td_ind; time=false)
-collectivespins.io.write_state(f, "td_mf", td_mf; time=false)
-collectivespins.io.write_state(f, "td_mpc", td_mpc; time=false)
+CollectiveSpins.io.write_head(f, system, parameters)
+CollectiveSpins.io.write_state(f, "timevector", T; time=false)
+CollectiveSpins.io.write_state(f, "td_ind", td_ind; time=false)
+CollectiveSpins.io.write_state(f, "td_mf", td_mf; time=false)
+CollectiveSpins.io.write_state(f, "td_mpc", td_mpc; time=false)
 
 write(f, "<master>\n")
 for i=1:length(T)
-    collectivespins.io.write_state(f, "meanfield", state_master_t[i]; time=false)
+    CollectiveSpins.io.write_state(f, "meanfield", state_master_t[i]; time=false)
 end
 write(f, "</master>\n")
 write(f, "<meanfield>\n")
 for i=1:length(T)
-    collectivespins.io.write_state(f, "meanfield", state_mf_t[i]; time=false)
+    CollectiveSpins.io.write_state(f, "meanfield", state_mf_t[i]; time=false)
 end
 write(f, "</meanfield>\n")
 write(f, "<mpc>\n")
 for i=1:length(T)
-    sx = collectivespins.mpc.sx(state_mpc_t[i])
-    sy = collectivespins.mpc.sy(state_mpc_t[i])
-    sz = collectivespins.mpc.sz(state_mpc_t[i])
+    sx = CollectiveSpins.mpc.sx(state_mpc_t[i])
+    sy = CollectiveSpins.mpc.sy(state_mpc_t[i])
+    sz = CollectiveSpins.mpc.sz(state_mpc_t[i])
     state = zeros(Float64, 3*N)
     for i=1:N
         state[i] = sx[i]
         state[N+i] = sy[i]
         state[2*N+i] = sz[i]
     end
-    collectivespins.io.write_state(f, "meanfield", state; time=false)
+    CollectiveSpins.io.write_state(f, "meanfield", state; time=false)
 end
 write(f, "</mpc>\n")
 

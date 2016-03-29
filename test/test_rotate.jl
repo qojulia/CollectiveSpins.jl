@@ -1,6 +1,6 @@
 using Base.Test
-using QuantumOptics, collectivespins
-const cs = collectivespins
+using QuantumOptics, CollectiveSpins
+const cs = CollectiveSpins
 
 const e_dipole = [0, 0, 1]
 
@@ -11,7 +11,7 @@ function compare_rotate(;Tend=0., phi=0., theta=0., N=1., α=0., axis=[1.,0.,0.]
     if abs(Tend)<1e-12
         stateT_mf = state0_mf
     else
-        stateT_mf = collectivespins.meanfield.timeevolution(T, system, state0_mf)[2][end]
+        stateT_mf = CollectiveSpins.meanfield.timeevolution(T, system, state0_mf)[2][end]
     end
     state_mf = cs.meanfield.rotate(axis, α, stateT_mf)
     ρmf = cs.mpc.densityoperator(state_mf)
@@ -20,17 +20,17 @@ function compare_rotate(;Tend=0., phi=0., theta=0., N=1., α=0., axis=[1.,0.,0.]
     if abs(Tend)<1e-12
         stateT_mpc = state0_mpc
     else
-        stateT_mpc = collectivespins.mpc.timeevolution(T, system, state0_mpc)[2][end]
+        stateT_mpc = CollectiveSpins.mpc.timeevolution(T, system, state0_mpc)[2][end]
     end
     state_mpc = cs.mpc.rotate(axis, α, stateT_mpc)
     ρmpc = cs.mpc.densityoperator(state_mpc)
 
-    Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
+    Ψ₀ = CollectiveSpins.quantum.blochstate(phi,theta,N)
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
     if abs(Tend)<1e-12
         ρT = ρ₀
     else
-        ρT = collectivespins.quantum.timeevolution(T, system, ρ₀)[2][end]
+        ρT = CollectiveSpins.quantum.timeevolution(T, system, ρ₀)[2][end]
     end
     ρ = cs.quantum.rotate(axis, α, ρT)
 

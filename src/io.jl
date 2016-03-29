@@ -57,9 +57,9 @@ function write_libraryinfo_quantumoptics(f)
     end
 end
 
-function write_libraryinfo_collectivespins(f)
-    tag = "collectivespins-library"
-    searchname = "collectivespins-library"
+function write_libraryinfo_CollectiveSpins(f)
+    tag = "CollectiveSpins-library"
+    searchname = "CollectiveSpins-library"
     for path in LOAD_PATH
         if contains(path, searchname)
             write_gitinfo(f, tag, path)
@@ -71,7 +71,7 @@ function write_libraryinfo(f)
     write(f, "<libraries>\n")
     write_libraryinfo_julia(f)
     write_libraryinfo_quantumoptics(f)
-    write_libraryinfo_collectivespins(f)
+    write_libraryinfo_CollectiveSpins(f)
     write(f, "</libraries>\n")
 end
 

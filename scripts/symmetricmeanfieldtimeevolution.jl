@@ -1,4 +1,4 @@
-using collectivespins
+using CollectiveSpins
 using PyCall
 @pyimport matplotlib.pyplot as plt
 
@@ -10,11 +10,11 @@ const theta0 = pi/2.
 
 for Ωeff=Ωeff_range
     for Γeff=Γeff_range
-        state0 = collectivespins.meanfield.blochstate(phi0, theta0)
-        tout, states_t = collectivespins.meanfield.timeevolution_symmetric(T, state0, Ωeff, Γeff)
-        sx = [collectivespins.meanfield.sx(state)[1] for state in states_t]
-        sy = [collectivespins.meanfield.sy(state)[1] for state in states_t]
-        sz = [collectivespins.meanfield.sz(state)[1] for state in states_t]
+        state0 = CollectiveSpins.meanfield.blochstate(phi0, theta0)
+        tout, states_t = CollectiveSpins.meanfield.timeevolution_symmetric(T, state0, Ωeff, Γeff)
+        sx = [CollectiveSpins.meanfield.sx(state)[1] for state in states_t]
+        sy = [CollectiveSpins.meanfield.sy(state)[1] for state in states_t]
+        sz = [CollectiveSpins.meanfield.sz(state)[1] for state in states_t]
         plt.figure(1)
         plt.plot(tout, sx)
         plt.ylabel("\$\\sigma_x\$")

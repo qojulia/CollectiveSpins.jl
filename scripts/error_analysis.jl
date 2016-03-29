@@ -35,8 +35,8 @@ const phi = float(parameters["phi"])
 const theta = float(parameters["theta"])
 
 # System geometry
-using QuantumOptics, collectivespins
-const cs = collectivespins
+using QuantumOptics, CollectiveSpins
+const cs = CollectiveSpins
 
 const edipole = float(eval(parse(parameters["edipole"])))
 const geomN = int(parameters["N"])

@@ -1,6 +1,6 @@
 using Base.Test
-using QuantumOptics, collectivespins
-const cs = collectivespins
+using QuantumOptics, CollectiveSpins
+const cs = CollectiveSpins
 
 # System parameters
 const a = 0.18

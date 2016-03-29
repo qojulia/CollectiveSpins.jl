@@ -1,4 +1,4 @@
-using collectivespins
+using CollectiveSpins
 
 using PyCall
 @pyimport matplotlib.pyplot as plt

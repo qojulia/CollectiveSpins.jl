@@ -25,7 +25,7 @@ const odir = parameters["o"]
 @assert isdir(odir)
 
 # System geometry
-using QuantumOptics, collectivespins
+using QuantumOptics, CollectiveSpins
 const N = parameters["N"]
 const a = parameters["a"]
 const geomstring = parameters["geometry"]
@@ -40,20 +40,20 @@ gamma_eff = NaN
 
 tic()
 if geomstring=="chain_orthogonal"
-    omega_eff, gamma_eff = collectivespins.effective_interaction.chain_orthogonal(a, N)
+    omega_eff, gamma_eff = CollectiveSpins.effective_interaction.chain_orthogonal(a, N)
 elseif geomstring=="squarelattice_orthogonal"
-    omega_eff, gamma_eff = collectivespins.effective_interaction.squarelattice_orthogonal(a, N)
+    omega_eff, gamma_eff = CollectiveSpins.effective_interaction.squarelattice_orthogonal(a, N)
 elseif geomstring=="hexagonallattice_orthogonal"
-    omega_eff, gamma_eff = collectivespins.effective_interaction.hexagonallattice_orthogonal(a, N)
+    omega_eff, gamma_eff = CollectiveSpins.effective_interaction.hexagonallattice_orthogonal(a, N)
 elseif geomstring=="cubiclattice_orthogonal"
-    omega_eff, gamma_eff = collectivespins.effective_interaction.cubiclattice_orthogonal(a, N)
+    omega_eff, gamma_eff = CollectiveSpins.effective_interaction.cubiclattice_orthogonal(a, N)
 elseif geomstring=="tetragonallattice_orthogonal"
     const b = parameters["b"]
-    omega_eff, gamma_eff = collectivespins.effective_interaction.tetragonallattice_orthogonal(a, b, N)
+    omega_eff, gamma_eff = CollectiveSpins.effective_interaction.tetragonallattice_orthogonal(a, b, N)
     keyparameters["b"]  = parameters["b"]
 elseif geomstring=="hexagonallattice3d_orthogonal"
     const b = parameters["b"]
-    omega_eff, gamma_eff = collectivespins.effective_interaction.hexagonallattice3d_orthogonal(a, b, N)
+    omega_eff, gamma_eff = CollectiveSpins.effective_interaction.hexagonallattice3d_orthogonal(a, b, N)
     keyparameters["b"]  = parameters["b"]
 else
     error("Unknown geometry.")

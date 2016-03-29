@@ -1,6 +1,6 @@
 using Base.Test
-using collectivespins.effective_interaction
-using collectivespins.effective_interaction_simple
+using CollectiveSpins.effective_interaction
+using CollectiveSpins.effective_interaction_simple
 
 const a = 0.3
 const b = 0.7

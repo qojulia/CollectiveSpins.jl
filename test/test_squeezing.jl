@@ -1,11 +1,11 @@
 using Base.Test
-using QuantumOptics, collectivespins
-const cs = collectivespins
+using QuantumOptics, CollectiveSpins
+const cs = CollectiveSpins
 
 function compare_squeezing(;phi=0., theta=0., N=1., χT=0., axis=[1.,0.,0.])
     state0 = cs.mpc.blochstate(phi, theta, N)
     state_squeezed = cs.mpc.squeeze(axis, χT, state0)
-    Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
+    Ψ₀ = CollectiveSpins.quantum.blochstate(phi,theta,N)
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
     ρ_squeezed = cs.quantum.squeeze(axis, χT, ρ₀)
     return QuantumOptics.tracedistance(ρ_squeezed, cs.mpc.densityoperator(state_squeezed))

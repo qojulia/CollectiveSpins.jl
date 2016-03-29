@@ -1,6 +1,6 @@
 using Base.Test
 using QuantumOptics
-using collectivespins
+using CollectiveSpins
 
 const edipole = [0, 0, 1]
 const γ = 1
@@ -13,17 +13,17 @@ sz = sigmaz(spinbasis)
 
 
 N = 2
-systemgeometry = collectivespins.geometry.chain(0.3, N)
-system = collectivespins.SpinCollection(systemgeometry, edipole; gamma=γ)
-basis = collectivespins.quantum.basis(system)
+systemgeometry = CollectiveSpins.geometry.chain(0.3, N)
+system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gamma=γ)
+basis = CollectiveSpins.quantum.basis(system)
 I = identity(spinbasis)
 
-H = collectivespins.quantum.Hamiltonian(system)
-Γ, J = collectivespins.quantum.JumpOperators(system)
+H = CollectiveSpins.quantum.Hamiltonian(system)
+Γ, J = CollectiveSpins.quantum.JumpOperators(system)
 Jdagger = [dagger(j) for j=J]
-Ω = collectivespins.interaction.OmegaMatrix(system)
+Ω = CollectiveSpins.interaction.OmegaMatrix(system)
 
-Ψ₀ = collectivespins.quantum.blochstate(0., pi/2., N)
+Ψ₀ = CollectiveSpins.quantum.blochstate(0., pi/2., N)
 ρ₀ = Ψ₀ ⊗ dagger(Ψ₀)
 
 function test_mpc_2particles(t, ρ)
@@ -62,21 +62,21 @@ function test_mpc_2particles(t, ρ)
     #@test abs(dszz_master - dszz_mpc) < 1e-12
 end
 
-# collectivespins.quantum.timeevolution(T, system, ρ₀; fout=test_mpc_2particles)
+# CollectiveSpins.quantum.timeevolution(T, system, ρ₀; fout=test_mpc_2particles)
 
 
 N = 3
-systemgeometry = collectivespins.geometry.chain(0.3, N)
-system = collectivespins.SpinCollection(systemgeometry, edipole; gamma=γ)
-basis = collectivespins.quantum.basis(system)
+systemgeometry = CollectiveSpins.geometry.chain(0.3, N)
+system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gamma=γ)
+basis = CollectiveSpins.quantum.basis(system)
 I = identity(spinbasis)
 
-H = collectivespins.quantum.Hamiltonian(system)
-Γ, J = collectivespins.quantum.JumpOperators(system)
+H = CollectiveSpins.quantum.Hamiltonian(system)
+Γ, J = CollectiveSpins.quantum.JumpOperators(system)
 Jdagger = [dagger(j) for j=J]
-Ω = collectivespins.interaction.OmegaMatrix(system)
+Ω = CollectiveSpins.interaction.OmegaMatrix(system)
 
-Ψ₀ = collectivespins.quantum.blochstate(0., pi/2., N)
+Ψ₀ = CollectiveSpins.quantum.blochstate(0., pi/2., N)
 ρ₀ = Ψ₀ ⊗ dagger(Ψ₀)
 
 function test_mpc_3particles(t, ρ::DenseOperator)
@@ -134,4 +134,4 @@ function test_mpc_3particles(t, ρ::DenseOperator)
     #println("$(dsxx_master) <-> $(dsxx_mpc)")
 end
 
-collectivespins.quantum.timeevolution(T, system, ρ₀; fout=test_mpc_3particles)
+CollectiveSpins.quantum.timeevolution(T, system, ρ₀; fout=test_mpc_3particles)

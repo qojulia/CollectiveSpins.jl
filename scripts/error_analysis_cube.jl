@@ -1,4 +1,4 @@
-using QuantumOptics, collectivespins
+using QuantumOptics, CollectiveSpins
 using PyCall
 @pyimport matplotlib.pyplot as plt
 
@@ -13,7 +13,7 @@ const theta = pi/2.
 
 for d=D
     println(d)
-    systemgeometry = collectivespins.geometry.cube(d)
+    systemgeometry = CollectiveSpins.geometry.cube(d)
     system = SpinCollection(systemgeometry, edipole, γ)
     N = length(system.spins)
 
@@ -25,24 +25,24 @@ for d=D
     td2_mf = Float64[]
 
     # Independent
-    state0 = collectivespins.independent.blochstate(phi,theta,N)
-    tout, state_ind_t = collectivespins.independent.timeevolution(T, system, state0)
+    state0 = CollectiveSpins.independent.blochstate(phi,theta,N)
+    tout, state_ind_t = CollectiveSpins.independent.timeevolution(T, system, state0)
 
     # Meanfield
-    state0 = collectivespins.meanfield.blochstate(phi,theta,N)
-    tout, state_mf_t = collectivespins.meanfield.timeevolution(T, system, state0)
+    state0 = CollectiveSpins.meanfield.blochstate(phi,theta,N)
+    tout, state_mf_t = CollectiveSpins.meanfield.timeevolution(T, system, state0)
 
     # Meanfield + Correlations
-    state0 = collectivespins.mpc.blochstate(phi,theta,N)
-    tout, state_mpc_t = collectivespins.mpc.timeevolution(T, system, state0)
+    state0 = CollectiveSpins.mpc.blochstate(phi,theta,N)
+    tout, state_mpc_t = CollectiveSpins.mpc.timeevolution(T, system, state0)
 
     # Quantum: master equation
 
     function fout(t, rho::Operator)
         i = findfirst(T, t)
-        rho_ind = collectivespins.independent.densityoperator(state_ind_t[i])
-        rho_mf = collectivespins.meanfield.densityoperator(state_mf_t[i])
-        rho_mpc = collectivespins.mpc.densityoperator(state_mpc_t[i])
+        rho_ind = CollectiveSpins.independent.densityoperator(state_ind_t[i])
+        rho_mf = CollectiveSpins.meanfield.densityoperator(state_mf_t[i])
+        rho_mpc = CollectiveSpins.mpc.densityoperator(state_mpc_t[i])
         push!(td_ind, tracedistance(rho, rho_ind))
         push!(td_mf, tracedistance(rho, rho_mf))
         push!(td_mpc, tracedistance(rho, rho_mpc))
@@ -50,9 +50,9 @@ for d=D
         push!(td2_mf, tracedistance(rho_mpc, rho_mf))
     end
 
-    Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
+    Ψ₀ = CollectiveSpins.quantum.blochstate(phi,theta,N)
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
-    collectivespins.quantum.timeevolution(T, system, ρ₀, fout=fout)
+    CollectiveSpins.quantum.timeevolution(T, system, ρ₀, fout=fout)
     plt.figure(1)
     plt.plot(d, maximum(td_ind), ".", lw=3.0, color="darkorange", label="Independent")
     plt.plot(d, maximum(td_mf), ".", lw=3.0, color="gray", label="meanfield")

@@ -1,4 +1,4 @@
-module collectivespins
+module CollectiveSpins
 
 export Spin, SpinCollection, CavityMode, CavitySpinCollection,
         geometry

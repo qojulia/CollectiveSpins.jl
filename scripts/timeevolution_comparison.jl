@@ -1,4 +1,4 @@
-using QuantumOptics, collectivespins
+using QuantumOptics, CollectiveSpins
 
 # System parameters
 const γ = 1.
@@ -18,19 +18,19 @@ const sz0 = cos(theta)
 
 
 # Quantum: master equation
-Ψ₀ = collectivespins.quantum.blochstate(phi,theta,N)
+Ψ₀ = CollectiveSpins.quantum.blochstate(phi,theta,N)
 ρ₀ = Ψ₀⊗dagger(Ψ₀)
-@time tout, ρ_t = collectivespins.quantum.timeevolution(T, system, ρ₀)
+@time tout, ρ_t = CollectiveSpins.quantum.timeevolution(T, system, ρ₀)
 
 # Meanfield
-state0 = collectivespins.meanfield.blochstate(phi,theta,N)
-@time tout, state_mf_t = collectivespins.meanfield.timeevolution(T, system, state0)
-@time tout, state_mf_t = collectivespins.meanfield.timeevolution(T, system, state0)
+state0 = CollectiveSpins.meanfield.blochstate(phi,theta,N)
+@time tout, state_mf_t = CollectiveSpins.meanfield.timeevolution(T, system, state0)
+@time tout, state_mf_t = CollectiveSpins.meanfield.timeevolution(T, system, state0)
 
 # Meanfield + Correlations
-state0 = collectivespins.mpc.blochstate(phi,theta,N)
-@time tout, state_cor_t = collectivespins.mpc.timeevolution(T, system, state0)
-@time tout, state_cor_t = collectivespins.mpc.timeevolution(T, system, state0)
+state0 = CollectiveSpins.mpc.blochstate(phi,theta,N)
+@time tout, state_cor_t = CollectiveSpins.mpc.timeevolution(T, system, state0)
+@time tout, state_cor_t = CollectiveSpins.mpc.timeevolution(T, system, state0)
 
 
 # Expectation values
@@ -38,18 +38,18 @@ sx_indep = exp(-0.5*γ*T)*sx0
 sy_indep = exp(-0.5*γ*T)*sy0
 sz_indep = 1 - exp(-γ*T)*(1-sz0)
 
-sx_mf = map(s->(collectivespins.meanfield.sx(s)[1]), state_mf_t)
-sy_mf = map(s->(collectivespins.meanfield.sy(s)[1]), state_mf_t)
-sz_mf = map(s->(collectivespins.meanfield.sz(s)[1]), state_mf_t)
+sx_mf = map(s->(CollectiveSpins.meanfield.sx(s)[1]), state_mf_t)
+sy_mf = map(s->(CollectiveSpins.meanfield.sy(s)[1]), state_mf_t)
+sz_mf = map(s->(CollectiveSpins.meanfield.sz(s)[1]), state_mf_t)
 
-sx_cor = map(s->(collectivespins.mpc.sx(s)[1]), state_cor_t)
-sy_cor = map(s->(collectivespins.mpc.sy(s)[1]), state_cor_t)
-sz_cor = map(s->(collectivespins.mpc.sz(s)[1]), state_cor_t)
+sx_cor = map(s->(CollectiveSpins.mpc.sx(s)[1]), state_cor_t)
+sy_cor = map(s->(CollectiveSpins.mpc.sy(s)[1]), state_cor_t)
+sz_cor = map(s->(CollectiveSpins.mpc.sz(s)[1]), state_cor_t)
 
 
 # Trace distances
-ρmf_t = map(collectivespins.meanfield.densityoperator, state_mf_t)
-ρcor_t = map(collectivespins.mpc.densityoperator, state_cor_t)
+ρmf_t = map(CollectiveSpins.meanfield.densityoperator, state_mf_t)
+ρcor_t = map(CollectiveSpins.mpc.densityoperator, state_cor_t)
 td_mf = [tracedistance(ρ_t[i],ρmf_t[i]) for i=1:length(T)]
 td_cor = [tracedistance(ρ_t[i],ρcor_t[i]) for i=1:length(T)]
 
@@ -58,7 +58,7 @@ td_cor = [tracedistance(ρ_t[i],ρcor_t[i]) for i=1:length(T)]
 #     rhop_t = map(x->ptrace(x, [i]), rhop_t)
 # end
 
-embed(op::Operator) = QuantumOptics.embed(collectivespins.quantum.basis(system), [1], [op])
+embed(op::Operator) = QuantumOptics.embed(CollectiveSpins.quantum.basis(system), [1], [op])
 sx_master = map(ρ->expect(embed(sigmax), ρ), ρ_t)
 sy_master = map(ρ->expect(embed(sigmay), ρ), ρ_t)
 sz_master = map(ρ->expect(embed(sigmaz), ρ), ρ_t)

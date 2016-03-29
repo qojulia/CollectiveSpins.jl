@@ -1,13 +1,13 @@
 using Base.Test
-using QuantumOptics, collectivespins
+using QuantumOptics, CollectiveSpins
 
 # Make sure that the interface works as expected
-spin1 = collectivespins.Spin([0,0,0], delta=2)
-spin2 = collectivespins.Spin([1.2,0,0], delta=-1.)
+spin1 = CollectiveSpins.Spin([0,0,0], delta=2)
+spin2 = CollectiveSpins.Spin([1.2,0,0], delta=-1.)
 
 S = SpinCollection([spin1, spin2], [0, 0, 1]; gamma=0.1)
 
-S = SpinCollection(collectivespins.geometry.chain(0.2, 4), [0, 1, 1]; delta=-1., gamma=2)
+S = SpinCollection(CollectiveSpins.geometry.chain(0.2, 4), [0, 1, 1]; delta=-1., gamma=2)
 
 cavitymode = CavityMode(1, delta=2, eta=3, kappa=4.)
 
