@@ -15,7 +15,7 @@ a
 N
     Number of spins
 """
-chain(a, N) = [i*[a,0.,0.] for i=0:N-1]
+chain(a::Real, N::Int) = [i*Float64[a, 0, 0] for i=0:N-1]
 
 """
 Positions of spins on a equilateral triangle in the xy-plane.
@@ -28,7 +28,7 @@ Arguments
 a
     Spin-spin distance.
 """
-triangle(a) = Vector{Float64}[[0.,0.,0.], [a,0.,0.], [a/2.,a*sqrt(3)/2,0]]
+triangle(a::Real) = Vector{Float64}[[0, 0, 0], [a, 0, 0], [a/2, a*sqrt(3)/2, 0]]
 
 """
 Positions of spins on a rectangular lattice in the xy-plane.
@@ -52,7 +52,7 @@ Nx (optional)
 Ny (optional)
     Number of spins into y direction.
 """
-rectangle(a, b; Nx=2, Ny=2) = vec([i*[a,0.,0.]+j*[0.,b,0.] for i=0:Nx-1, j=0:Ny-1])
+rectangle(a::Real, b::Real; Nx::Int=2, Ny::Int=2) = vec([i*Float64[a,0.,0.]+j*Float64[0.,b,0.] for i=0:Nx-1, j=0:Ny-1])
 
 """
 Positions of spins on a square lattice in the xy-plane.
@@ -73,7 +73,7 @@ Nx (optional)
 Ny (optional)
     Number of spins into y direction.
 """
-square(a; Nx=2, Ny=2) = vec([i*[a,0.,0.]+j*[0.,a,0.] for i=0:Nx-1, j=0:Ny-1])
+square(a::Real; Nx::Int=2, Ny::Int=2) = rectangle(a, a; Nx=Nx, Ny=Ny)
 
 """
 Positions of spins on a hexagonal lattice in the xy-plane.
@@ -92,10 +92,10 @@ Keyword Arguments
 Nr (optional)
     Number of "rings".
 """
-function hexagonal(a; Nr=1)
+function hexagonal(a::Real; Nr::Int=1)
     positions = Vector{Float64}[]
     ax = sqrt(3./4)*a
-    for ix=[-Nr:Nr]
+    for ix=-Nr:Nr
         if isodd(ix)
             Ny = div(2*Nr+1-abs(ix),2)
             for iy=-Ny:Ny-1
@@ -137,7 +137,7 @@ Ny (optional)
 Nz (optional)
     Number of spins into z direction.
 """
-box(a, b, c; Nx=2, Ny=2, Nz=2) = vec([i*[a,0.,0.]+j*[0.,b,0.]+k*[0.,0.,c] for i=0:Nx-1, j=0:Ny-1, k=0:Nz-1])
+box(a::Real, b::Real, c::Real; Nx::Int=2, Ny::Int=2, Nz::Int=2) = vec([i*Float64[a,0.,0.] + j*Float64[0.,b,0.] + k*Float64[0.,0.,c] for i=0:Nx-1, j=0:Ny-1, k=0:Nz-1])
 
 """
 Positions of spins on a cubic lattice.
@@ -161,7 +161,7 @@ Ny (optional)
 Nz (optional)
     Number of spins into z direction.
 """
-cube(a; Nx=2, Ny=2, Nz=2) = box(a, a, a, Nx=Nx, Ny=Ny, Nz=Nz)
+cube(a::Real; Nx::Int=2, Ny::Int=2, Nz::Int=2) = box(a, a, a, Nx=Nx, Ny=Ny, Nz=Nz)
 
 
 end # module
