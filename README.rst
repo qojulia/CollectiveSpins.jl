@@ -11,7 +11,7 @@ CollectiveSpins.jl
    :alt: Test coverage status
    :target: https://coveralls.io/github/bastikr/CollectiveSpins.jl?branch=master
 
-.. image:: https://ci.appveyor.com/api/projects/status/t83f2bqfpumn6d96/branch/master?svg=true
+.. image:: https://ci.appveyor.com/api/projects/status/pucinp1htrlgq84o/branch/master?svg=true
    :alt: Windows build status
    :target: https://ci.appveyor.com/project/bastikr/collectivespins-jl/branch/master
 
