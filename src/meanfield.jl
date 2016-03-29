@@ -88,7 +88,7 @@ phi
 theta
     Polar angle(s).
 """
-function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
+function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
     N = length(phi)
     @assert length(theta)==N
     state = ProductState(N)
@@ -101,7 +101,7 @@ function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     return state
 end
 
-function blochstate(phi::Float64, theta::Float64, N::Int=1)
+function blochstate(phi::Real, theta::Real, N::Int=1)
     state = ProductState(N)
     sx, sy, sz = splitstate(state)
     for k=1:N
@@ -115,7 +115,7 @@ end
 """
 Number of spins described by this state.
 """
-function dim(state::Vector{Float64})
+function dim{T<:Real}(state::Vector{T})
     N, rem = divrem(length(state), 3)
     @assert rem==0
     return N
@@ -145,7 +145,7 @@ sy
 sz
     sigmaz expectation value.
 """
-function densityoperator(sx::Float64, sy::Float64, sz::Float64)
+function densityoperator(sx::Real, sy::Real, sz::Real)
     return 0.5*(I + sx*sigmax + sy*sigmay + sz*sigmaz)
 end
 
@@ -267,7 +267,7 @@ fout (optional)
     Function with signature fout(t, state) that is called whenever output
     should be generated.
 """
-function timeevolution_symmetric(T, state0::ProductState, Ωeff::Float64, Γeff::Float64; γ::Float64=1.0, δ0::Float64=0., fout=nothing)
+function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Real; γ::Real=1.0, δ0::Real=0., fout=nothing)
     N = 1
     @assert state0.N==N
     function f(t, y::Vector{Float64}, dy::Vector{Float64})
@@ -305,7 +305,7 @@ angles
 state
     ProductState that should be rotated.
 """
-function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::ProductState)
+function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state::ProductState)
     @assert length(axis)==3
     @assert length(angles)==state.N
     w = axis/norm(axis)
@@ -321,7 +321,6 @@ function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::ProductSt
     return state_rot
 end
 
-rotate(axis::Vector{Float64}, angle::Float64, state::ProductState) = rotate(axis, ones(Float64, state.N)*angle, state)
-rotate{T<:Number}(axis::Vector{T}, angles, state::ProductState) = rotate(convert(Vector{Float64}, axis), angles, state)
+rotate{T<:Real}(axis::Vector{T}, angle::Real, state::ProductState) = rotate(axis, ones(Float64, state.N)*angle, state)
 
 end # module

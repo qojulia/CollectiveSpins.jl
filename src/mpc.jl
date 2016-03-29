@@ -119,7 +119,7 @@ phi
 theta
     Polar angle(s).
 """
-function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
+function blochstate{T1<:Real,T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
     N = length(phi)
     @assert length(theta)==N
     state = MPCState(N)
@@ -143,7 +143,7 @@ function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     return state
 end
 
-function blochstate(phi::Float64, theta::Float64, N::Int=1)
+function blochstate(phi::Real, theta::Real, N::Int=1)
     state = MPCState(N)
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
     for k=1:N
@@ -176,7 +176,7 @@ end
 """
 Number of spins described by this state.
 """
-function dim(state::Vector{Float64})
+function dim{T<:Real}(state::Vector{T})
     x, rem = divrem(length(state), 3)
     @assert rem==0
     N, rem = divrem(-1 + integersqrt(1+8*x), 4)
@@ -339,7 +339,7 @@ Cyz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 1*x.N+1:
 """
 3-spin correlation value.
 """
-function correlation(s1::Float64, s2::Float64, s3::Float64, C12::Float64, C13::Float64, C23::Float64)
+function correlation{T<:Real}(s1::T, s2::T, s3::T, C12::T, C13::T, C23::T)
     return -2.*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
 end
 
@@ -446,7 +446,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     end
 end
 
-function axisangle2rotmatrix(axis::Vector{Float64}, angle::Float64)
+function axisangle2rotmatrix{T<:Real}(axis::Vector{T}, angle::Real)
     x, y, z = axis
     c = cos(angle)
     s = sin(angle)
@@ -477,7 +477,7 @@ angles
 state
     MPCState that should be rotated.
 """
-function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MPCState)
+function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state::MPCState)
     N = state.N
     @assert length(axis)==3
     @assert length(angles)==N
@@ -508,8 +508,7 @@ function rotate(axis::Vector{Float64}, angles::Vector{Float64}, state::MPCState)
     return rotstate
 end
 
-rotate(axis::Vector{Float64}, angle::Float64, state::MPCState) = rotate(axis, ones(Float64, state.N)*angle, state)
-rotate{T<:Number}(axis::Vector{T}, angles, state::MPCState) = rotate(convert(Vector{Float64}, axis), angles, state)
+rotate{T<:Real}(axis::Vector{T}, angle::Real, state::MPCState) = rotate(axis, ones(Float64, state.N)*angle, state)
 
 """
 Variance of the total Sx operator for the given MPCState.
@@ -576,10 +575,10 @@ Arguments
 state0
     MPCState that should be squeezed.
 """
-function squeeze_sx(χT::Float64, state0::MPCState)
+function squeeze_sx(χT::Real, state0::MPCState)
     T = [0,1.]
     N = state0.N
-    χeff = 4*χT/N^2
+    χeff = 4.*χT/N^2
     function f(t, y::Vector{Float64}, dy::Vector{Float64})
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
@@ -647,7 +646,7 @@ axis
 state0
     MPCState that should be squeezed.
 """
-function squeeze(axis::Vector{Float64}, χT::Float64, state0::MPCState)
+function squeeze{T<:Real}(axis::Vector{T}, χT::Real, state0::MPCState)
     @assert length(axis)==3
     axis = axis/norm(axis)
     # Rotation into sigma_x

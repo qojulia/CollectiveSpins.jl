@@ -45,7 +45,7 @@ phi
 theta
     Polar angle(s).
 """
-function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
+function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
     N = length(phi)
     @assert length(theta)==N
     state_g = basis_ket(spinbasis, 1)
@@ -60,12 +60,12 @@ function blochstate(phi::Vector{Float64}, theta::Vector{Float64})
     # end
 end
 
-function blochstate(phi::Float64, theta::Float64, spinnumber::Int=1)
+function blochstate(phi::Real, theta::Real, N::Int=1)
     state_g = basis_ket(spinbasis, 1)
     state_e = basis_ket(spinbasis, 2)
     state = cos(theta/2)*state_g + exp(1im*phi)*sin(theta/2)*state_e
-    if spinnumber>1
-        return reduce(tensor, [state for i=1:spinnumber])
+    if N>1
+        return reduce(tensor, [state for i=1:N])
     else
         return state
     end
@@ -203,7 +203,7 @@ fout (optional)
     Function with signature fout(t, state) that is called whenever output
     should be generated.
 """
-function timeevolution_diagonal(T, S::system.System, ρ₀::DenseOperator; fout=nothing, kwargs...)
+function timeevolution_diagonal(T, S::system.System, ρ₀::Union{StateVector, DenseOperator}; fout=nothing, kwargs...)
     H = Hamiltonian(S)
     J = JumpOperators_diagonal(S)
     Hnh = H - 0.5im*sum([dagger(J[i])*J[i] for i=1:length(J)])
@@ -233,7 +233,7 @@ fout (optional)
     Function with signature fout(t, state) that is called whenever output
     should be generated.
 """
-function timeevolution(T, S::system.System, ρ₀::DenseOperator; fout=nothing, kwargs...)
+function timeevolution(T, S::system.System, ρ₀::Union{StateVector, DenseOperator}; fout=nothing, kwargs...)
     b = basis(S)
     H = Hamiltonian(S)
     Γ, J = JumpOperators(S)
@@ -254,7 +254,7 @@ angles
 ρ
     Density operator that should be rotated.
 """
-function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::DenseOperator)
+function rotate{T1<:Real, T2<:Real}(rotationaxis::Vector{T1}, angles::Vector{T2}, ρ::DenseOperator)
     N = dim(ρ)
     @assert length(rotationaxis)==3
     @assert length(angles)==N
@@ -270,8 +270,7 @@ function rotate(rotationaxis::Vector{Float64}, angles::Vector{Float64}, ρ::Dens
     return ρ
 end
 
-rotate(axis::Vector{Float64}, angle::Float64, ρ::DenseOperator) = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
-rotate{T<:Number}(axis::Vector{T}, angles, ρ::DenseOperator) = rotate(convert(Vector{Float64}, axis), angles, ρ)
+rotate{T<:Real}(axis::Vector{T}, angle::Real, ρ::DenseOperator) = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
 
 """
 Spin squeezing along sx.
@@ -284,7 +283,7 @@ Arguments
 ρ₀
     Operator that should be squeezed.
 """
-function squeeze_sx(χT::Float64, ρ₀::DenseOperator)
+function squeeze_sx(χT::Real, ρ₀::DenseOperator)
     N = dim(ρ₀)
     basis = ρ₀.basis_l
     totaloperator(op::DenseOperator) = sum([embed(basis, i, op) for i=1:N])/N
@@ -308,7 +307,7 @@ axis
 ρ₀
     Operator that should be squeezed.
 """
-function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::DenseOperator)
+function squeeze{T<:Real}(axis::Vector{T}, χT::Real, ρ₀::DenseOperator)
     @assert length(axis)==3
     axis = axis/norm(axis)
     N = dim(ρ₀)
@@ -317,11 +316,9 @@ function squeeze(axis::Vector{Float64}, χT::Float64, ρ₀::DenseOperator)
     σ = map(totaloperator, [sigmax, sigmay, sigmaz])
     σn = sum([axis[i]*σ[i] for i=1:3])
     H = χT*σn^2
-    T = [0.,1.]
-    t, states = timeevolution_simple.master(T, ρ₀, H, [])
+    tout, states = timeevolution_simple.master([0,1], ρ₀, H, [])
     return states[end]
 end
-squeeze{T<:Number}(axis::Vector{T}, χT::Float64, ρ₀::DenseOperator) = squeeze(convert(Vector{Float64}, axis), χT, ρ₀)
 
 """
 Create 3 orthonormal vectors where one is in the given direction.
