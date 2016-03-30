@@ -174,7 +174,7 @@ Quantum
 
 .. epigraph::
 
-    .. jl:autofunction:: quantum.jl blochstate(::Vector{Float64}, ::Vector{Float64})
+    .. jl:autofunction:: quantum.jl blochstate(phi,theta)
 
 .. epigraph::
 
@@ -202,7 +202,7 @@ Quantum
 
 .. epigraph::
 
-    .. jl:autofunction:: quantum.jl rotate(::Vector{Float64}, , )
+    .. jl:autofunction:: quantum.jl rotate(axis, angles, ρ)
 
 .. epigraph::
 
@@ -218,7 +218,7 @@ Quantum
 
 .. epigraph::
 
-    .. jl:autofunction:: independent.jl blochstate(::Vector{Float64}, ::Vector{Float64})
+    .. jl:autofunction:: independent.jl blochstate(phi,theta)
 
 .. epigraph::
 
@@ -262,7 +262,7 @@ Quantum
 
 .. epigraph::
 
-    .. jl:autofunction:: meanfield.jl blochstate(::Vector{Float64}, ::Vector{Float64})
+    .. jl:autofunction:: meanfield.jl blochstate(phi,theta)
 
 .. epigraph::
 
@@ -297,7 +297,7 @@ Quantum
 
 .. epigraph::
 
-    .. jl:autofunction:: meanfield.jl rotate(::Vector{Float64}, , )
+    .. jl:autofunction:: meanfield.jl rotate(axis, angles, state)
 
 
 2nd order: Meanfield plus Correlations (MPC)
@@ -313,7 +313,7 @@ Quantum
 
 .. epigraph::
 
-    .. jl:autofunction:: mpc.jl blochstate(::Vector{Float64}, ::Vector{Float64})
+    .. jl:autofunction:: mpc.jl blochstate(phi,theta)
 
 .. epigraph::
 
@@ -377,7 +377,7 @@ Quantum
 
 .. epigraph::
 
-    .. jl:autofunction:: mpc.jl rotate(::Vector{Float64}, , )
+    .. jl:autofunction:: mpc.jl rotate(axis, angles, state)
 
 .. epigraph::
 

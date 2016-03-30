@@ -9,4 +9,5 @@ DipoleInteraction.jl
     interaction
     effective_interaction
     geometry
-    theories
+    descriptions
+    api
