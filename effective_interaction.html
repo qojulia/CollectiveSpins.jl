@@ -1,0 +1,235 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Effective Interactions &mdash; DipoleInteraction.jl</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="DipoleInteraction.jl" href="index.html"/>
+        <link rel="next" title="Theoretical descriptions" href="descriptions.html"/>
+        <link rel="prev" title="Dipole-Dipole interaction" href="interaction.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> DipoleInteraction.jl
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system.html">System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interaction.html">Dipole-Dipole interaction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Effective Interactions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rotated-effective-interactions">Rotated effective interactions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="descriptions.html">Theoretical descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">DipoleInteraction.jl</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Effective Interactions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/effective_interaction.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="effective-interactions">
+<span id="section-effectiveinteraction"></span><h1>Effective Interactions<a class="headerlink" href="#effective-interactions" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="api.html#effective_interaction.triangle_orthogonal-41a53ad7a25e3a33e5c778a57454f6cb" title="effective_interaction.triangle_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.triangle_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.square_orthogonal-41a53ad7a25e3a33e5c778a57454f6cb" title="effective_interaction.square_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.square_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.rectangle_orthogonal-11f8dca92ac91ebc29b4ce40d8e2504d" title="effective_interaction.rectangle_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.rectangle_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.cube_orthogonal-41a53ad7a25e3a33e5c778a57454f6cb" title="effective_interaction.cube_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.cube_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.box_orthogonal-f63060745cfa3dea48593ab7d0d62e18" title="effective_interaction.box_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.box_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.chain-f200800e6a3c61e724419fa955f21938" title="effective_interaction.chain"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.chain</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.chain_orthogonal-43cbb535f201cfb4ea9cc1af32988f85" title="effective_interaction.chain_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.chain_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.squarelattice_orthogonal-43cbb535f201cfb4ea9cc1af32988f85" title="effective_interaction.squarelattice_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.squarelattice_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.hexagonallattice_orthogonal-43cbb535f201cfb4ea9cc1af32988f85" title="effective_interaction.hexagonallattice_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.hexagonallattice_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.cubiclattice_orthogonal-43cbb535f201cfb4ea9cc1af32988f85" title="effective_interaction.cubiclattice_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.cubiclattice_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.tetragonallattice_orthogonal-9a0d41e436260c6401a7b94fb674ecb0" title="effective_interaction.tetragonallattice_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.tetragonallattice_orthogonal</span></code></a></li>
+<li><a class="reference internal" href="api.html#effective_interaction.hexagonallattice3d_orthogonal-9a0d41e436260c6401a7b94fb674ecb0" title="effective_interaction.hexagonallattice3d_orthogonal"><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction.hexagonallattice3d_orthogonal</span></code></a></li>
+</ul>
+<div class="section" id="rotated-effective-interactions">
+<h2>Rotated effective interactions<a class="headerlink" href="#rotated-effective-interactions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction_rotated.square_orthogonal</span></code></li>
+<li><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction_rotated.cube_orthogonal</span></code></li>
+<li><code class="xref jl jl-func docutils literal"><span class="pre">effective_interaction_rotated.chain_orthogonal</span></code></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="descriptions.html" class="btn btn-neutral float-right" title="Theoretical descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="interaction.html" class="btn btn-neutral" title="Dipole-Dipole interaction" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Sebastian Krämer.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
