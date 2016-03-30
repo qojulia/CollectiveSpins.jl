@@ -6,8 +6,8 @@ DipoleInteraction.jl
     introduction
     installation
     system
+    geometry
     interaction
     effective_interaction
-    geometry
     descriptions
     api

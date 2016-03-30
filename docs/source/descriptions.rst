@@ -5,13 +5,25 @@ Theoretical descriptions
 
 **CollectiveSpins.jl** provides several different possibilities to simulate multi-spin systems. A full quantum description is available but only possible for small numbers of spins. Additionally, approximations of different orders are implemented using a cumulant expansion approach:
 
-* :ref:`section-descriptions-quantum`
-* :ref:`section-descriptions-cumulant0`
-* :ref:`section-descriptions-cumulant1`
-* :ref:`section-descriptions-cumulant2`
+* ``quantum`` - :ref:`section-descriptions-quantum`
+* ``independent`` - :ref:`section-descriptions-cumulant0`
+* ``meanfield`` - :ref:`section-descriptions-cumulant1`
+* ``mpc`` - :ref:`section-descriptions-cumulant2`
 
+All variants provide a unfied interface wherever possible:
 
-In this picture the zero-th order would correspond to independent particles
+* ``blochstate(phi, theta)``
+* ``densityoperator(state)``
+
+* ``sx(state)``
+* ``sy(state)``
+* ``sz(state)``
+
+* ``timeevolution(T, system, state0; fout=nothing)``
+
+* ``rotate(axis, angles, state)``
+* ``squeeze(axis, χT, state)``
+* ``squeezingparameter(state)``
 
 
 .. _section-descriptions-quantum:

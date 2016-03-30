@@ -3,6 +3,10 @@
 Geometry
 ========
 
-
-Specifys how the spins are spatially distributed.
-
+* :jl:func:`geometry.chain`
+* :jl:func:`geometry.triangle`
+* :jl:func:`geometry.rectangle`
+* :jl:func:`geometry.square`
+* :jl:func:`geometry.hexagonal`
+* :jl:func:`geometry.box`
+* :jl:func:`geometry.cube`
