@@ -111,7 +111,7 @@ Calculates
 
     \\Omega(|x_j-x_i|, \\theta, \\gamma) = \\frac{3}{4}\\gamma G_\\theta(2\\pi |x_j - x_i|)
 
-with :math:`\theta = \\angle(x_j-x_i, e)`.
+with :math:`\\theta = \\angle(x_j-x_i, e)`.
 
 Arguments
 ---------
@@ -159,7 +159,7 @@ Calculates
 
     \\Gamma(|x_j-x_i|, \\theta, \\gamma) = \\frac{3}{2}\\gamma F_\\theta(2\\pi |x_j - x_i|)
 
-with :math:`\theta = \\angle(x_j-x_i, e)`.
+with :math:`\\theta = \\angle(x_j-x_i, e)`.
 
 Arguments
 ---------
