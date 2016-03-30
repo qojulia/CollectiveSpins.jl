@@ -254,12 +254,12 @@ angles
 ρ
     Density operator that should be rotated.
 """
-function rotate{T1<:Real, T2<:Real}(rotationaxis::Vector{T1}, angles::Vector{T2}, ρ::DenseOperator)
+function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, ρ::DenseOperator)
     N = dim(ρ)
-    @assert length(rotationaxis)==3
+    @assert length(axis)==3
     @assert length(angles)==N
     basis = ρ.basis_l
-    n = rotationaxis/norm(rotationaxis)
+    n = axis/norm(axis)
     for i=1:N
         nσ = n[1]*sigmax + n[2]*sigmay + n[3]*sigmaz
         α = angles[i]
