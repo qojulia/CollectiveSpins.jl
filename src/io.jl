@@ -1,6 +1,6 @@
 module io
 
-const escaperules = Vector{ASCIIString}[
+const escaperules = Vector{String}[
     ["\"", "&quot;"],
     ["\'", "&apos;"],
     ["<",  "&lt;"],

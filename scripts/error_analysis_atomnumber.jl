@@ -44,7 +44,7 @@ for atomnumber=2:6
 
 
         # Initial conditions
-        I = identity(basis_atom)
+        I = identityoperator(basis_atom)
         R = 1/sqrt(2)*(I + 1im*sigmay)
 
         Ψ₀_atom = R*basis_ket(basis_atom,1)

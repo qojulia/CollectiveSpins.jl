@@ -8,7 +8,7 @@ using ..interaction, ..system
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
-I = dense_identity(spinbasis)
+I = dense_identityoperator(spinbasis)
 sigmax = full(spin.sigmax(spinbasis))
 sigmay = full(spin.sigmay(spinbasis))
 sigmaz = full(spin.sigmaz(spinbasis))
@@ -124,7 +124,7 @@ end
 """
 Split vector assumed to be in ProductState layout into sx, sy and sz parts.
 """
-splitstate(N::Int, data::Vector{Float64}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
+splitstate(N::Int, data::Vector{Float64}) = ArrayViews.view(data, 0*N+1:1*N), ArrayViews.view(data, 1*N+1:2*N), ArrayViews.view(data, 2*N+1:3*N)
 
 """
 Split ProductState into sx, sy and sz parts.
@@ -170,15 +170,15 @@ end
 """
 Sigmax expectation values of ProductState.
 """
-sx(x::ProductState) = view(x.data, 1:x.N)
+sx(x::ProductState) = ArrayViews.view(x.data, 1:x.N)
 """
 Sigmay expectation values of ProductState.
 """
-sy(x::ProductState) = view(x.data, x.N+1:2*x.N)
+sy(x::ProductState) = ArrayViews.view(x.data, x.N+1:2*x.N)
 """
 Sigmaz expectation values of ProductState.
 """
-sz(x::ProductState) = view(x.data, 2*x.N+1:3*x.N)
+sz(x::ProductState) = ArrayViews.view(x.data, 2*x.N+1:3*x.N)
 
 
 """

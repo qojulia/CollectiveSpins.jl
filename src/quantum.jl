@@ -23,7 +23,7 @@ sigmay = spin.sigmay(spinbasis)
 sigmaz = spin.sigmaz(spinbasis)
 sigmap = spin.sigmap(spinbasis)
 sigmam = spin.sigmam(spinbasis)
-I_spin = identity(spinbasis)
+I_spin = identityoperator(spinbasis)
 
 """
 Get basis of the given System.
@@ -114,7 +114,7 @@ function Hamiltonian(S::system.CavitySpinCollection)
     bc = basis(S.cavity)
     Hs = Hamiltonian(S.spincollection)
     Hc = Hamiltonian(S.cavity)
-    Ic = identity(basis(S.cavity))
+    Ic = identityoperator(basis(S.cavity))
     H = embed(b, 1, Hc) + tensor(Ic, Hs)
     a = SparseOperator(destroy(bc))
     at = SparseOperator(create(bc))
@@ -146,7 +146,7 @@ function JumpOperators(S::system.CavitySpinCollection)
     Γ = zeros(Float64, N, N)
     Γ[1:Nc, 1:Nc] = Γc
     Γ[Nc+1:end, Nc+1:end] = Γs
-    Ic = identity(basis(S.cavity))
+    Ic = identityoperator(basis(S.cavity))
     J = SparseOperator[embed(basis(S), 1, Jc[1])]
     for j in Js
         push!(J, tensor(Ic, j))
@@ -286,7 +286,7 @@ Arguments
 function squeeze_sx(χT::Real, ρ₀::DenseOperator)
     N = dim(ρ₀)
     basis = ρ₀.basis_l
-    totaloperator(op::DenseOperator) = sum([embed(basis, i, op) for i=1:N])/N
+    totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
     sigmax_total = totaloperator(sigmax)
     H = χT*sigmax_total^2
     T = [0.,1.]
@@ -345,7 +345,7 @@ Calculate squeezing parameter for the given state.
 function squeezingparameter(ρ::DenseOperator)
     N = dim(ρ)
     basis = ρ.basis_l
-    totaloperator(op::DenseOperator) = sum([embed(basis, i, op) for i=1:N])/N
+    totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
     S = map(totaloperator, [sigmax, sigmay, sigmaz])
     n = real([expect(s, ρ) for s=S])
     e1, e2 = orthogonal_vectors(n)
@@ -354,7 +354,7 @@ function squeezingparameter(ρ::DenseOperator)
         Sphi = sum([nphi[i]*S[i] for i=1:3])
         return real(variance(Sphi, ρ))
     end
-    varSmin = Optim.optimize(f, 0., 2.pi).f_minimum
+    varSmin = Optim.optimize(f, 0., 2*pi).f_minimum
     return sqrt(N*varSmin)/norm(n)
 end
 

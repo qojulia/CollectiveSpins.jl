@@ -61,7 +61,7 @@ function OmegaMatrix(system)
     return Ω
 end
 
-const I = identity(spinbasis)
+const I = identityoperator(spinbasis)
 
 function correlations(rho::Operator)
     N = length(rho.basis_l.bases)

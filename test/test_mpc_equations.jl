@@ -16,7 +16,7 @@ N = 2
 systemgeometry = CollectiveSpins.geometry.chain(0.3, N)
 system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gamma=γ)
 basis = CollectiveSpins.quantum.basis(system)
-I = identity(spinbasis)
+I = identityoperator(spinbasis)
 
 H = CollectiveSpins.quantum.Hamiltonian(system)
 Γ, J = CollectiveSpins.quantum.JumpOperators(system)
@@ -69,7 +69,7 @@ N = 3
 systemgeometry = CollectiveSpins.geometry.chain(0.3, N)
 system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gamma=γ)
 basis = CollectiveSpins.quantum.basis(system)
-I = identity(spinbasis)
+I = identityoperator(spinbasis)
 
 H = CollectiveSpins.quantum.Hamiltonian(system)
 Γ, J = CollectiveSpins.quantum.JumpOperators(system)
