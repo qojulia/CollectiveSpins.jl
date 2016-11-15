@@ -15,7 +15,7 @@ Defining the frequency is optional and is set to zero by default::
     >>> Spin([0,0,0]; delta=1)
     >>> Spin([0,0,0])
 
-Combining many spins into one big system can be done by using the :jl:type:`system.SpinCollection` type. All contained spins must have the same polarization axis and decay rate :math:`gamma`::
+Combining many spins into one big system can be done by using the :jl:type:`system.SpinCollection` type. All contained spins must have the same polarization axis and decay rate :math:`\gamma`::
 
     type SpinCollection <: System
         spins::Vector{Spin}
