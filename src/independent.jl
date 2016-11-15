@@ -4,6 +4,16 @@ using ArrayViews
 using QuantumOptics
 using ..interaction, ..system
 
+# Define Spin 1/2 operators
+spinbasis = SpinBasis(1//2)
+sigmax = spin.sigmax(spinbasis)
+sigmay = spin.sigmay(spinbasis)
+sigmaz = spin.sigmaz(spinbasis)
+sigmap = spin.sigmap(spinbasis)
+sigmam = spin.sigmam(spinbasis)
+I_spin = identityoperator(spinbasis)
+
+
 """
 Product state of N single spin Bloch states.
 
@@ -80,9 +90,9 @@ function densityoperator(state::Vector{Float64})
     N = dim(state)
     sx, sy, sz = splitstate(state)
     if N>1
-        return reduce(tensor, [densityoperator(sx[i], sy[i], sz[i]) for i=1:N])
+        return DenseOperator(reduce(tensor, [densityoperator(sx[i], sy[i], sz[i]) for i=1:N]))
     else
-        return densityoperator(sx[i], sy[i], sz[i])
+        return DenseOperator(densityoperator(sx[i], sy[i], sz[i]))
     end
 end
 
@@ -133,7 +143,7 @@ function timeevolution(T, gamma::Number, state0::Vector{Float64})
         push!(state_out, deepcopy(y))
     end
 
-    QuantumOptics.ode_dopri.ode(f, T, state0, fout=fout)
+    QuantumOptics.ode_dopri.ode(f, T, state0, fout)
     return t_out, state_out
 end
 
