@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="DipoleInteraction.jl" href="index.html"/>
         <link rel="next" title="Dipole-Dipole interaction" href="interaction.html"/>
         <link rel="prev" title="System" href="system.html"/> 
@@ -85,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system.html">System</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Geometry</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Geometry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interaction.html">Dipole-Dipole interaction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="effective_interaction.html">Effective Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptions.html">Theoretical descriptions</a></li>
@@ -136,6 +139,7 @@
             
   <div class="section" id="geometry">
 <span id="section-geometry"></span><h1>Geometry<a class="headerlink" href="#geometry" title="Permalink to this headline">¶</a></h1>
+<p>In order to simplify creation of various particle distributions, a few helper functions with self-explanatory names are provided:</p>
 <ul class="simple">
 <li><a class="reference internal" href="api.html#geometry.chain-f2eddff395d57b320c3a53c06bedb67a" title="geometry.chain"><code class="xref jl jl-func docutils literal"><span class="pre">geometry.chain</span></code></a></li>
 <li><a class="reference internal" href="api.html#geometry.triangle-c20a55aa5278b6b85daedab89f91fad2" title="geometry.triangle"><code class="xref jl jl-func docutils literal"><span class="pre">geometry.triangle</span></code></a></li>
@@ -145,6 +149,10 @@
 <li><a class="reference internal" href="api.html#geometry.box-7cb25e459c61e1cf62f1f94df6e43648" title="geometry.box"><code class="xref jl jl-func docutils literal"><span class="pre">geometry.box</span></code></a></li>
 <li><a class="reference internal" href="api.html#geometry.cube-3dcb536ba634387dd035197cd09c0606" title="geometry.cube"><code class="xref jl jl-func docutils literal"><span class="pre">geometry.cube</span></code></a></li>
 </ul>
+<p>They can be used directly to create a <a class="reference internal" href="api.html#system.SpinCollection" title="system.SpinCollection"><code class="xref jl jl-type docutils literal"><span class="pre">system.SpinCollection</span></code></a>:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">SpinCollection</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
 </div>
 
 

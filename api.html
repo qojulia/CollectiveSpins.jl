@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="DipoleInteraction.jl" href="index.html"/>
         <link rel="prev" title="Theoretical descriptions" href="descriptions.html"/> 
 
@@ -88,7 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="interaction.html">Dipole-Dipole interaction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="effective_interaction.html">Effective Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptions.html">Theoretical descriptions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">API</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#system">System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#geometry">Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dipole-dipole-interaction">Dipole-Dipole Interaction</a></li>
@@ -192,12 +195,9 @@ frequency.</p>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
-<li><strong>delta (default=0)</strong> &#8211;
-Detuning.</li>
-<li><strong>eta (default=0)</strong> &#8211;
-Pump strength.</li>
-<li><strong>kappa (default=0)</strong> &#8211;
-Decay rate.</li>
+<li><strong>delta (default=0)</strong> &#8211; Detuning.</li>
+<li><strong>eta (default=0)</strong> &#8211; Pump strength.</li>
+<li><strong>kappa (default=0)</strong> &#8211; Decay rate.</li>
 </ul>
 </td>
 </tr>
@@ -260,10 +260,8 @@ identical coupling for all spins.</li>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
-<li><strong>Nx (optional)</strong> &#8211;
-Number of spins into x direction.</li>
-<li><strong>Ny (optional)</strong> &#8211;
-Number of spins into y direction.</li>
+<li><strong>Nx (optional)</strong> &#8211; Number of spins into x direction.</li>
+<li><strong>Ny (optional)</strong> &#8211; Number of spins into y direction.</li>
 </ul>
 </td>
 </tr>
@@ -280,10 +278,8 @@ Number of spins into y direction.</li>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
-<li><strong>Nx (optional)</strong> &#8211;
-Number of spins into x direction.</li>
-<li><strong>Ny (optional)</strong> &#8211;
-Number of spins into y direction.</li>
+<li><strong>Nx (optional)</strong> &#8211; Number of spins into x direction.</li>
+<li><strong>Ny (optional)</strong> &#8211; Number of spins into y direction.</li>
 </ul>
 </td>
 </tr>
@@ -298,8 +294,7 @@ Number of spins into y direction.</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>a</strong> &#8211; Spin-spin distance.</td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><strong>Nr (optional)</strong> &#8211;
-Number of &#8220;rings&#8221;.</td>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><strong>Nr (optional)</strong> &#8211; Number of &#8220;rings&#8221;.</td>
 </tr>
 </tbody>
 </table>
@@ -319,12 +314,9 @@ positive x, y and z direction.</p>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
-<li><strong>Nx (optional)</strong> &#8211;
-Number of spins into x direction.</li>
-<li><strong>Ny (optional)</strong> &#8211;
-Number of spins into y direction.</li>
-<li><strong>Nz (optional)</strong> &#8211;
-Number of spins into z direction.</li>
+<li><strong>Nx (optional)</strong> &#8211; Number of spins into x direction.</li>
+<li><strong>Ny (optional)</strong> &#8211; Number of spins into y direction.</li>
+<li><strong>Nz (optional)</strong> &#8211; Number of spins into z direction.</li>
 </ul>
 </td>
 </tr>
@@ -342,12 +334,9 @@ positive x, y and z direction.</p>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
-<li><strong>Nx (optional)</strong> &#8211;
-Number of spins into x direction.</li>
-<li><strong>Ny (optional)</strong> &#8211;
-Number of spins into y direction.</li>
-<li><strong>Nz (optional)</strong> &#8211;
-Number of spins into z direction.</li>
+<li><strong>Nx (optional)</strong> &#8211; Number of spins into x direction.</li>
+<li><strong>Ny (optional)</strong> &#8211; Number of spins into y direction.</li>
+<li><strong>Nz (optional)</strong> &#8211; Number of spins into z direction.</li>
 </ul>
 </td>
 </tr>
@@ -690,8 +679,7 @@ the jump operators are changed accordingly.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last"><strong>fout (optional)</strong> &#8211;
-Function with signature fout(t, state) that is called whenever output
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last"><strong>fout (optional)</strong> &#8211; Function with signature fout(t, state) that is called whenever output
 should be generated.</p>
 </td>
 </tr>
@@ -712,8 +700,7 @@ the jump operators are changed accordingly.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last"><strong>fout (optional)</strong> &#8211;
-Function with signature fout(t, state) that is called whenever output
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last"><strong>fout (optional)</strong> &#8211; Function with signature fout(t, state) that is called whenever output
 should be generated.</p>
 </td>
 </tr>
@@ -889,8 +876,7 @@ should be generated.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last"><strong>fout (optional)</strong> &#8211;
-Function with signature fout(t, state) that is called whenever output
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last"><strong>fout (optional)</strong> &#8211; Function with signature fout(t, state) that is called whenever output
 should be generated.</p>
 </td>
 </tr>
@@ -911,12 +897,9 @@ should be generated.</p>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
-<li><strong>γ (optional)</strong> &#8211;
-Single spin decay rate.</li>
-<li><strong>δ0 (optional)</strong> &#8211;
-Phase shift for rotated symmetric meanfield time evolution.</li>
-<li><strong>fout (optional)</strong> &#8211;
-Function with signature fout(t, state) that is called whenever output
+<li><strong>γ (optional)</strong> &#8211; Single spin decay rate.</li>
+<li><strong>δ0 (optional)</strong> &#8211; Phase shift for rotated symmetric meanfield time evolution.</li>
+<li><strong>fout (optional)</strong> &#8211; Function with signature fout(t, state) that is called whenever output
 should be generated.</li>
 </ul>
 </td>
@@ -1010,8 +993,7 @@ the matrices Cxx, Cyy and Czz, respectively.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last"><strong>fout (optional)</strong> &#8211;
-Function with signature fout(t, state) that is called whenever output
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last"><strong>fout (optional)</strong> &#8211; Function with signature fout(t, state) that is called whenever output
 should be generated.</p>
 </td>
 </tr>

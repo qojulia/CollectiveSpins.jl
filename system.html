@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="DipoleInteraction.jl" href="index.html"/>
         <link rel="next" title="Geometry" href="geometry.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
@@ -84,7 +87,7 @@
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">System</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interaction.html">Dipole-Dipole interaction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="effective_interaction.html">Effective Interactions</a></li>
@@ -136,12 +139,47 @@
             
   <div class="section" id="system">
 <span id="section-system"></span><h1>System<a class="headerlink" href="#system" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="api.html#system.Spin" title="system.Spin"><code class="xref jl jl-type docutils literal"><span class="pre">system.Spin</span></code></a></li>
-<li><a class="reference internal" href="api.html#system.SpinCollection" title="system.SpinCollection"><code class="xref jl jl-type docutils literal"><span class="pre">system.SpinCollection</span></code></a></li>
-<li><a class="reference internal" href="api.html#system.CavityMode" title="system.CavityMode"><code class="xref jl jl-type docutils literal"><span class="pre">system.CavityMode</span></code></a></li>
-<li><a class="reference internal" href="api.html#system.CavitySpinCollection" title="system.CavitySpinCollection"><code class="xref jl jl-type docutils literal"><span class="pre">system.CavitySpinCollection</span></code></a></li>
-</ul>
+<p>The basic building blocks used in <strong>CollectiveSpins.jl</strong> are, not surprisingly, spins. They are defined by their position and a frequency <span class="math">\(\Delta\)</span> describing a shift relative to the frequency of the rotating frame in use:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span></span><span class="k">type</span><span class="nc"> Spin</span> <span class="o">&lt;:</span> <span class="n">System</span>
+    <span class="n">position</span><span class="p">::</span><span class="n">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
+    <span class="n">delta</span><span class="p">::</span><span class="kt">Float64</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>Defining the frequency is optional and is set to zero by default:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">Spin</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">];</span> <span class="n">delta</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Spin</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Combining many spins into one big system can be done by using the <a class="reference internal" href="api.html#system.SpinCollection" title="system.SpinCollection"><code class="xref jl jl-type docutils literal"><span class="pre">system.SpinCollection</span></code></a> type. All contained spins must have the same polarization axis and decay rate <span class="math">\(\gamma\)</span>:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span></span><span class="k">type</span><span class="nc"> SpinCollection</span> <span class="o">&lt;:</span> <span class="n">System</span>
+    <span class="n">spins</span><span class="p">::</span><span class="n">Vector</span><span class="p">{</span><span class="n">Spin</span><span class="p">}</span>
+    <span class="n">polarization</span><span class="p">::</span><span class="n">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
+    <span class="n">gamma</span><span class="p">::</span><span class="kt">Float64</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>For convenience one can create a <a class="reference internal" href="api.html#system.SpinCollection" title="system.SpinCollection"><code class="xref jl jl-type docutils literal"><span class="pre">system.SpinCollection</span></code></a> without explicitly constructing the single spins first:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">SpinCollection</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">];</span> <span class="n">gamma</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Adding a cavity can be done with the <a class="reference internal" href="api.html#system.CavityMode" title="system.CavityMode"><code class="xref jl jl-type docutils literal"><span class="pre">system.CavityMode</span></code></a> type:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span></span><span class="k">type</span><span class="nc"> CavityMode</span> <span class="o">&lt;:</span> <span class="n">System</span>
+    <span class="n">cutoff</span><span class="p">::</span><span class="kt">Int</span>
+    <span class="n">delta</span><span class="p">::</span><span class="kt">Float64</span>
+    <span class="n">eta</span><span class="p">::</span><span class="kt">Float64</span>
+    <span class="n">kappa</span><span class="p">::</span><span class="kt">Float64</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>which can be coupled to a spin collection with coupling strength g via the <a class="reference internal" href="api.html#system.CavitySpinCollection" title="system.CavitySpinCollection"><code class="xref jl jl-type docutils literal"><span class="pre">system.CavitySpinCollection</span></code></a> type:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span></span><span class="k">type</span><span class="nc"> CavitySpinCollection</span> <span class="o">&lt;:</span> <span class="n">System</span>
+    <span class="n">cavity</span><span class="p">::</span><span class="n">CavityMode</span>
+    <span class="n">spincollection</span><span class="p">::</span><span class="n">SpinCollection</span>
+    <span class="n">g</span><span class="p">::</span><span class="n">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
+<span class="k">end</span>
+</pre></div>
+</div>
 </div>
 
 

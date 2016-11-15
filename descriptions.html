@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="DipoleInteraction.jl" href="index.html"/>
         <link rel="next" title="API" href="api.html"/>
         <link rel="prev" title="Effective Interactions" href="effective_interaction.html"/> 
@@ -88,7 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interaction.html">Dipole-Dipole interaction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="effective_interaction.html">Effective Interactions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Theoretical descriptions</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Theoretical descriptions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#quantum">Quantum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#th-order-independent-spins">0th order: Independent spins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#st-order-meanfield">1st order: Meanfield</a></li>
@@ -144,12 +147,12 @@
 <span id="section-descriptions"></span><h1>Theoretical descriptions<a class="headerlink" href="#theoretical-descriptions" title="Permalink to this headline">¶</a></h1>
 <p><strong>CollectiveSpins.jl</strong> provides several different possibilities to simulate multi-spin systems. A full quantum description is available but only possible for small numbers of spins. Additionally, approximations of different orders are implemented using a cumulant expansion approach:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">quantum</span></code> - <a class="reference internal" href="#section-descriptions-quantum"><span>Quantum</span></a></li>
-<li><code class="docutils literal"><span class="pre">independent</span></code> - <a class="reference internal" href="#section-descriptions-cumulant0"><span>0th order: Independent spins</span></a></li>
-<li><code class="docutils literal"><span class="pre">meanfield</span></code> - <a class="reference internal" href="#section-descriptions-cumulant1"><span>1st order: Meanfield</span></a></li>
-<li><code class="docutils literal"><span class="pre">mpc</span></code> - <a class="reference internal" href="#section-descriptions-cumulant2"><span>2nd order: Meanfield plus Correlations (MPC)</span></a></li>
+<li><code class="docutils literal"><span class="pre">quantum</span></code> - <a class="reference internal" href="#section-descriptions-quantum"><span class="std std-ref">Quantum</span></a></li>
+<li><code class="docutils literal"><span class="pre">independent</span></code> - <a class="reference internal" href="#section-descriptions-cumulant0"><span class="std std-ref">0th order: Independent spins</span></a></li>
+<li><code class="docutils literal"><span class="pre">meanfield</span></code> - <a class="reference internal" href="#section-descriptions-cumulant1"><span class="std std-ref">1st order: Meanfield</span></a></li>
+<li><code class="docutils literal"><span class="pre">mpc</span></code> - <a class="reference internal" href="#section-descriptions-cumulant2"><span class="std std-ref">2nd order: Meanfield plus Correlations (MPC)</span></a></li>
 </ul>
-<p>All variants provide a unfied interface wherever possible:</p>
+<p>All variants provide a unified interface wherever possible:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">blochstate(phi,</span> <span class="pre">theta)</span></code></li>
 <li><code class="docutils literal"><span class="pre">densityoperator(state)</span></code></li>
@@ -161,17 +164,282 @@
 <li><code class="docutils literal"><span class="pre">squeeze(axis,</span> <span class="pre">χT,</span> <span class="pre">state)</span></code></li>
 <li><code class="docutils literal"><span class="pre">squeezingparameter(state)</span></code></li>
 </ul>
+<p>The following example should give a first idea how these implementations are used:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">QuantumOptics</span><span class="p">,</span> <span class="n">CollectiveSpins</span>
+<span class="kd">const</span> <span class="n">cs</span> <span class="o">=</span> <span class="n">CollectiveSpins</span>
+
+<span class="c"># System parameters</span>
+<span class="kd">const</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">0.18</span>
+<span class="kd">const</span> <span class="n">γ</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="kd">const</span> <span class="n">e_dipole</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.</span><span class="p">]</span>
+<span class="kd">const</span> <span class="n">T</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mf">0.05</span><span class="p">:</span><span class="mi">5</span><span class="p">;]</span>
+<span class="kd">const</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="kd">const</span> <span class="n">Ncenter</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="kd">const</span> <span class="nb">system</span> <span class="o">=</span> <span class="n">SpinCollection</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">e_dipole</span><span class="p">;</span> <span class="n">gamma</span><span class="o">=</span><span class="n">γ</span><span class="p">)</span>
+
+
+<span class="c"># Define Spin 1/2 operators</span>
+<span class="n">spinbasis</span> <span class="o">=</span> <span class="n">SpinBasis</span><span class="p">(</span><span class="mi">1</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sigmax</span> <span class="o">=</span> <span class="n">spin</span><span class="o">.</span><span class="n">sigmax</span><span class="p">(</span><span class="n">spinbasis</span><span class="p">)</span>
+<span class="n">sigmay</span> <span class="o">=</span> <span class="n">spin</span><span class="o">.</span><span class="n">sigmay</span><span class="p">(</span><span class="n">spinbasis</span><span class="p">)</span>
+<span class="n">sigmaz</span> <span class="o">=</span> <span class="n">spin</span><span class="o">.</span><span class="n">sigmaz</span><span class="p">(</span><span class="n">spinbasis</span><span class="p">)</span>
+<span class="n">sigmap</span> <span class="o">=</span> <span class="n">spin</span><span class="o">.</span><span class="n">sigmap</span><span class="p">(</span><span class="n">spinbasis</span><span class="p">)</span>
+<span class="n">sigmam</span> <span class="o">=</span> <span class="n">spin</span><span class="o">.</span><span class="n">sigmam</span><span class="p">(</span><span class="n">spinbasis</span><span class="p">)</span>
+<span class="n">I_spin</span> <span class="o">=</span> <span class="n">identityoperator</span><span class="p">(</span><span class="n">spinbasis</span><span class="p">)</span>
+
+<span class="c"># Initial state (Bloch state)</span>
+<span class="kd">const</span> <span class="n">phi</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="kd">const</span> <span class="n">theta</span> <span class="o">=</span> <span class="nb">pi</span><span class="o">/</span><span class="mf">2.</span>
+
+<span class="c"># Time evolution</span>
+
+<span class="c"># Independent</span>
+<span class="n">state0</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">independent</span><span class="o">.</span><span class="n">blochstate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">tout</span><span class="p">,</span> <span class="n">state_ind_t</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">independent</span><span class="o">.</span><span class="n">timeevolution</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">system</span><span class="p">,</span> <span class="n">state0</span><span class="p">)</span>
+
+<span class="c"># Meanfield</span>
+<span class="n">state0</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">meanfield</span><span class="o">.</span><span class="n">blochstate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">tout</span><span class="p">,</span> <span class="n">state_mf_t</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">meanfield</span><span class="o">.</span><span class="n">timeevolution</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">system</span><span class="p">,</span> <span class="n">state0</span><span class="p">)</span>
+
+<span class="c"># Meanfield + Correlations</span>
+<span class="n">state0</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">mpc</span><span class="o">.</span><span class="n">blochstate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">tout</span><span class="p">,</span> <span class="n">state_mpc_t</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">mpc</span><span class="o">.</span><span class="n">timeevolution</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">system</span><span class="p">,</span> <span class="n">state0</span><span class="p">)</span>
+
+<span class="c"># Quantum: master equation</span>
+<span class="n">sx_master</span> <span class="o">=</span> <span class="kt">Float64</span><span class="p">[]</span>
+<span class="n">sy_master</span> <span class="o">=</span> <span class="kt">Float64</span><span class="p">[]</span>
+<span class="n">sz_master</span> <span class="o">=</span> <span class="kt">Float64</span><span class="p">[]</span>
+
+<span class="n">td_ind</span> <span class="o">=</span> <span class="kt">Float64</span><span class="p">[]</span>
+<span class="n">td_mf</span>  <span class="o">=</span> <span class="kt">Float64</span><span class="p">[]</span>
+<span class="n">td_mpc</span> <span class="o">=</span> <span class="kt">Float64</span><span class="p">[]</span>
+
+<span class="n">embed</span><span class="p">(</span><span class="n">op</span><span class="p">::</span><span class="n">Operator</span><span class="p">)</span> <span class="o">=</span> <span class="n">QuantumOptics</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">quantum</span><span class="o">.</span><span class="n">basis</span><span class="p">(</span><span class="nb">system</span><span class="p">),</span> <span class="n">Ncenter</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+<span class="k">function</span><span class="nf"> fout</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">rho</span><span class="p">::</span><span class="n">Operator</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">findfirst</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">rho_ind</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">independent</span><span class="o">.</span><span class="n">densityoperator</span><span class="p">(</span><span class="n">state_ind_t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">rho_mf</span>  <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">meanfield</span><span class="o">.</span><span class="n">densityoperator</span><span class="p">(</span><span class="n">state_mf_t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">rho_mpc</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">mpc</span><span class="o">.</span><span class="n">densityoperator</span><span class="p">(</span><span class="n">state_mpc_t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">td_ind</span><span class="p">,</span> <span class="n">tracedistance</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">rho_ind</span><span class="p">))</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">td_mf</span><span class="p">,</span>  <span class="n">tracedistance</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">rho_mf</span><span class="p">))</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">td_mpc</span><span class="p">,</span> <span class="n">tracedistance</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">rho_mpc</span><span class="p">))</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">sx_master</span><span class="p">,</span> <span class="n">real</span><span class="p">(</span><span class="n">expect</span><span class="p">(</span><span class="n">embed</span><span class="p">(</span><span class="n">sigmax</span><span class="p">),</span> <span class="n">rho</span><span class="p">)))</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">sy_master</span><span class="p">,</span> <span class="n">real</span><span class="p">(</span><span class="n">expect</span><span class="p">(</span><span class="n">embed</span><span class="p">(</span><span class="n">sigmay</span><span class="p">),</span> <span class="n">rho</span><span class="p">)))</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">sz_master</span><span class="p">,</span> <span class="n">real</span><span class="p">(</span><span class="n">expect</span><span class="p">(</span><span class="n">embed</span><span class="p">(</span><span class="n">sigmaz</span><span class="p">),</span> <span class="n">rho</span><span class="p">)))</span>
+<span class="k">end</span>
+
+<span class="n">Ψ₀</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">quantum</span><span class="o">.</span><span class="n">blochstate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">theta</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">ρ₀</span> <span class="o">=</span> <span class="n">Ψ₀⊗dagger</span><span class="p">(</span><span class="n">Ψ₀</span><span class="p">)</span>
+<span class="n">cs</span><span class="o">.</span><span class="n">quantum</span><span class="o">.</span><span class="n">timeevolution</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">system</span><span class="p">,</span> <span class="n">ρ₀</span><span class="p">,</span> <span class="n">fout</span><span class="o">=</span><span class="n">fout</span><span class="p">)</span>
+
+<span class="c"># Expectation values</span>
+<span class="n">mapexpect</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span> <span class="o">=</span> <span class="n">map</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">op</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="n">Ncenter</span><span class="p">]),</span> <span class="n">states</span><span class="p">)</span>
+
+<span class="n">sx_ind</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">independent</span><span class="o">.</span><span class="n">sx</span><span class="p">,</span> <span class="n">state_ind_t</span><span class="p">)</span>
+<span class="n">sy_ind</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">independent</span><span class="o">.</span><span class="n">sy</span><span class="p">,</span> <span class="n">state_ind_t</span><span class="p">)</span>
+<span class="n">sz_ind</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">independent</span><span class="o">.</span><span class="n">sz</span><span class="p">,</span> <span class="n">state_ind_t</span><span class="p">)</span>
+
+<span class="n">sx_mf</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">meanfield</span><span class="o">.</span><span class="n">sx</span><span class="p">,</span> <span class="n">state_mf_t</span><span class="p">)</span>
+<span class="n">sy_mf</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">meanfield</span><span class="o">.</span><span class="n">sy</span><span class="p">,</span> <span class="n">state_mf_t</span><span class="p">)</span>
+<span class="n">sz_mf</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">meanfield</span><span class="o">.</span><span class="n">sz</span><span class="p">,</span> <span class="n">state_mf_t</span><span class="p">)</span>
+
+<span class="n">sx_mpc</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">mpc</span><span class="o">.</span><span class="n">sx</span><span class="p">,</span> <span class="n">state_mpc_t</span><span class="p">)</span>
+<span class="n">sy_mpc</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">mpc</span><span class="o">.</span><span class="n">sy</span><span class="p">,</span> <span class="n">state_mpc_t</span><span class="p">)</span>
+<span class="n">sz_mpc</span> <span class="o">=</span> <span class="n">mapexpect</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">mpc</span><span class="o">.</span><span class="n">sz</span><span class="p">,</span> <span class="n">state_mpc_t</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="section" id="quantum">
 <span id="section-descriptions-quantum"></span><h2>Quantum<a class="headerlink" href="#quantum" title="Permalink to this headline">¶</a></h2>
+<p>The time evolution of the <span class="math">\(N\)</span> spins in a rotating frame corresponding to <span class="math">\(\sum_i \omega_0 \sigma^z_i\)</span> is then governed by a master equation</p>
+<div class="math">
+\[\dot{\rho} = -\frac{i}{\hbar} \big[H, \rho\big] + \mathcal{L}[\rho]\]</div>
+<p>with the Hamiltonian</p>
+<div class="math">
+\[H = \sum_{ij;i \neq j} \hbar \Omega_{ij} \sigma_i^+ \sigma_j^-\]</div>
+<p>and Lindblad-term</p>
+<div class="math">
+\[\mathcal{L}[\rho] = \frac{1}{2} \sum_{i,j} \Gamma_{ij}
+                    (2\sigma_i^- \rho \sigma_j^+
+                    - \sigma_i^+ \sigma_j^- \rho
+                    - \rho \sigma_i^+ \sigma_j^-).\]</div>
+<p>The dipole-dipole interaction <span class="math">\(\Omega_{ij} = \frac{3}{4} \gamma G(k_0 r_{ij})\)</span> and the collective decay <span class="math">\(\Gamma_{ij} = \frac{3}{2} \gamma F(k_0 r_{ij})\)</span> can be obtained analytically with</p>
+<div class="math">
+\[ \begin{align}\begin{aligned}F(\xi) &amp;= \alpha \frac{\sin \xi}{\xi}
+        + \beta \left(
+              \frac{\cos \xi}{\xi^2} - \frac{\sin \xi}{\xi^3}
+        \right)\\G(\xi) &amp;= -\alpha \frac{\cos \xi}{\xi} + \beta \left(
+            \frac{\sin \xi}{\xi^2} + \frac{\cos \xi}{\xi^3}
+        \right)\end{aligned}\end{align} \]</div>
+<p>with <span class="math">\(\alpha = 1 -\cos^2 \theta\)</span> and <span class="math">\(\beta = 1-3 \cos^2 \theta\)</span>, where <span class="math">\(\theta\)</span> represents the angle between the line connecting atoms <span class="math">\(i\)</span> and <span class="math">\(j\)</span> and the common atomic dipole orientation.</p>
 </div>
 <div class="section" id="th-order-independent-spins">
 <span id="section-descriptions-cumulant0"></span><h2>0th order: Independent spins<a class="headerlink" href="#th-order-independent-spins" title="Permalink to this headline">¶</a></h2>
+<p>Each spin evolves independently according to</p>
+<div class="math">
+\[\begin{split}\langle\dot{\sigma_k^x}\rangle  &amp;=
+  -\frac{1}{2} \gamma \langle\sigma_k^x\rangle
+\\
+\langle\dot{\sigma_k^y}\rangle  &amp;=
+  -\frac{1}{2} \gamma \langle\sigma_k^y\rangle
+\\
+\langle\dot{\sigma_k^z}\rangle &amp;=
+    \gamma \big(1 - \langle\sigma_k^z\rangle\big)
+    \nonumber\\&amp;\qquad.\end{split}\]</div>
 </div>
 <div class="section" id="st-order-meanfield">
 <span id="section-descriptions-cumulant1"></span><h2>1st order: Meanfield<a class="headerlink" href="#st-order-meanfield" title="Permalink to this headline">¶</a></h2>
+<div class="math">
+\[\begin{split}\langle\dot{\sigma_k^x}\rangle  &amp;=
+  \sum_{i;i \neq k} \Omega_{ki} \langle\sigma_i^y\sigma_k^z\rangle
+  -\frac{1}{2} \gamma \langle\sigma_k^x\rangle
+  -\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \langle\sigma_i^x\sigma_k^z\rangle
+\\
+\langle\dot{\sigma_k^y}\rangle  &amp;=
+  -\sum_{i;i \neq k} \Omega_{ki} \langle\sigma_i^x\sigma_k^z\rangle
+  -\frac{1}{2} \gamma \langle\sigma_k^y\rangle
+  -\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \langle\sigma_i^y\sigma_k^z\rangle
+\\
+\langle\dot{\sigma_k^z}\rangle &amp;=
+    -i \sum_{i;i \neq k} \Omega_{ki} \Big(\langle\sigma_k^x\sigma_i^y\rangle - \langle\sigma_i^x\sigma_k^y\rangle\Big)
+    +\gamma \big(1 - \langle\sigma_k^z\rangle\big)
+    \nonumber\\&amp;\qquad
+    +\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \Big(\langle\sigma_k^x\sigma_i^x\rangle + \langle\sigma_i^y\sigma_k^y\rangle\Big)\end{split}\]</div>
 </div>
 <div class="section" id="nd-order-meanfield-plus-correlations-mpc">
 <span id="section-descriptions-cumulant2"></span><h2>2nd order: Meanfield plus Correlations (MPC)<a class="headerlink" href="#nd-order-meanfield-plus-correlations-mpc" title="Permalink to this headline">¶</a></h2>
+<div class="math">
+\[\begin{split}\langle\dot{\sigma_k^x\sigma_l^x}\rangle &amp;=
+  \sum_{j;j \neq k,l} \Omega_{kj} \langle\sigma_k^z\sigma_l^x\sigma_j^y\rangle
+   + \sum_{j;j \neq k,l} \Omega_{lj} \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+\nonumber\\&amp;\qquad
+  - \gamma \langle\sigma_k^x\sigma_l^x\rangle
+  + \Gamma_{kl} \Big(
+          \langle\sigma_k^z\sigma_l^z\rangle
+          - \frac{1}{2} \langle\sigma_k^z\rangle
+          - \frac{1}{2} \langle\sigma_l^z\rangle
+    \Big)
+\nonumber\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^x\sigma_j^x\rangle
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+\\
+\langle\dot{\sigma_k^y\sigma_l^y}\rangle
+&amp;= - \sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+    - \sum_{j;j \neq k,l} \Omega_{lj}
+      \langle\sigma_k^y\sigma_l^z\sigma_j^x\rangle
+\nonumber\\&amp;\qquad
+    - \gamma \langle\sigma_k^y\sigma_l^y\rangle
+    + \Gamma_{kl}\Big(
+          \langle\sigma_k^z\sigma_l^z\rangle
+        -\frac{1}{2} \langle\sigma_k^z\rangle
+        -\frac{1}{2} \langle\sigma_l^z\rangle
+    \Big)
+\nonumber\\&amp;\quad
+    -\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+    -\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^y\sigma_l^z\sigma_j^y\rangle
+\\
+\langle\dot{\sigma_k^z\sigma_l^z}\rangle
+&amp;= \sum_{j;j \neq k,l} \Omega_{kj} \Big(
+      \langle\sigma_k^y\sigma_l^z\sigma_j^x\rangle
+      - \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+    \Big)
+\nonumber\\&amp;\qquad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^z\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\nonumber\\&amp;\quad
+    - 2 \gamma \langle\sigma_k^z\sigma_l^z\rangle
+    + \gamma \big(\langle\sigma_l^z\rangle + \langle\sigma_k^z\rangle\big)
+\nonumber\\&amp;\quad
+    +\Gamma_{kl}\Big(
+          \langle\sigma_k^y\sigma_l^y\rangle
+          + \langle\sigma_k^x\sigma_l^x\rangle
+    \Big)
+\nonumber\\&amp;\quad
+    +\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj} \Big(
+          \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+          +\langle\sigma_k^y\sigma_l^z\sigma_j^y\rangle
+    \Big)
+\nonumber\\&amp;\qquad
+    +\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^z\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+    \Big)
+\\
+\langle\dot{\sigma_k^x\sigma_l^y}\rangle
+&amp;= \Omega_{kl}\Big(
+      \langle\sigma_k^z\rangle
+      - \langle\sigma_l^z\rangle
+    \Big)
+    +\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+\nonumber\\&amp;\qquad
+    -\sum_{j;j \neq k,l} \Omega_{lj}
+      \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+    - \gamma \langle\sigma_k^x\sigma_l^y\rangle
+\nonumber\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+\\
+\langle\dot{\sigma_k^x\sigma_l^z}\rangle
+&amp;= \Omega_{kl}
+      \langle\sigma_l^y\rangle
+    +\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^z\sigma_j^y\rangle
+\nonumber\\&amp;\quad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^x\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^x\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\nonumber\\&amp;\quad
+- \frac{3}{2} \gamma \langle\sigma_k^x\sigma_l^z\rangle
+  + \gamma \langle\sigma_k^x\rangle
+  - \Gamma_{kl}\Big(
+        \langle\sigma_k^z\sigma_l^x\rangle
+        -\frac{1}{2} \langle\sigma_l^x\rangle
+    \Big)
+\nonumber\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^z\sigma_j^x\rangle
+\nonumber\\&amp;\quad
+    + \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^x\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^x\sigma_l^y\sigma_j^y\rangle
+    \Big)
+\\
+\langle\dot{\sigma_k^y\sigma_l^z}\rangle
+&amp;= -\Omega_{kl} \langle\sigma_l^x\rangle
+    -\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^z\sigma_j^x\rangle
+\nonumber\\&amp;\quad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^y\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^y\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\nonumber\\&amp;\quad
+  - \frac{3}{2} \gamma \langle\sigma_k^y\sigma_l^z\rangle
+  + \gamma \langle\sigma_k^y\rangle
+  - \Gamma_{kl}\Big(
+          \langle\sigma_k^z\sigma_l^y\rangle
+        - \frac{1}{2}\langle\sigma_l^y\rangle
+    \Big)
+\nonumber\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^z\sigma_j^y\rangle
+\nonumber\\&amp;\quad
+    + \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^y\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^y\sigma_l^y\sigma_j^y\rangle
+    \Big)\end{split}\]</div>
 </div>
 </div>
 
