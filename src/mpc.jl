@@ -5,7 +5,7 @@ using QuantumOptics
 using ..interaction, ..system, ..quantum
 
 try
-    eval(Expr(:using, :Optim))
+    using Optim
     global optimize = Optim.optimize
 catch e
     if typeof(e) == ArgumentError

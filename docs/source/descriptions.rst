@@ -271,7 +271,10 @@ Each spin evolves independently according to
               \langle\sigma_k^z\sigma_l^x\sigma_j^x\rangle
               +\langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
         \Big)
-    \\
+
+
+.. math::
+
     \langle\dot{\sigma_k^x\sigma_l^y}\rangle
     &= \Omega_{kl}\Big(
           \langle\sigma_k^z\rangle
@@ -314,7 +317,10 @@ Each spin evolves independently according to
               \langle\sigma_k^x\sigma_l^x\sigma_j^x\rangle
               +\langle\sigma_k^x\sigma_l^y\sigma_j^y\rangle
         \Big)
-    \\
+
+
+.. math::
+
     \langle\dot{\sigma_k^y\sigma_l^z}\rangle
     &= -\Omega_{kl} \langle\sigma_l^x\rangle
         -\sum_{j;j \neq k,l} \Omega_{kj}
