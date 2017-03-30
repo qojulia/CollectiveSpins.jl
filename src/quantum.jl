@@ -48,8 +48,8 @@ theta
 function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
     N = length(phi)
     @assert length(theta)==N
-    state_g = basis_ket(spinbasis, 1)
-    state_e = basis_ket(spinbasis, 2)
+    state_g = basisstate(spinbasis, 1)
+    state_e = basisstate(spinbasis, 2)
 
     states = [cos(theta[k]/2)*state_g + exp(1im*phi[k])*sin(theta[k]/2)*state_e for k=1:N]
     return reduce(tensor, states)
@@ -61,8 +61,8 @@ function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
 end
 
 function blochstate(phi::Real, theta::Real, N::Int=1)
-    state_g = basis_ket(spinbasis, 1)
-    state_e = basis_ket(spinbasis, 2)
+    state_g = basisstate(spinbasis, 1)
+    state_e = basisstate(spinbasis, 2)
     state = cos(theta/2)*state_g + exp(1im*phi)*sin(theta/2)*state_e
     if N>1
         return reduce(tensor, [state for i=1:N])
