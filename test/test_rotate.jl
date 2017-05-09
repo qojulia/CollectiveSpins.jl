@@ -1,8 +1,10 @@
 using Base.Test
 using QuantumOptics, CollectiveSpins
-const cs = CollectiveSpins
 
-const e_dipole = [0, 0, 1]
+@testset "rotate" begin
+
+cs = CollectiveSpins
+e_dipole = [0, 0, 1]
 
 function compare_rotate(;Tend=0., phi=0., theta=0., N=1., α=0., axis=[1.,0.,0.])
     system = SpinCollection(geometry.chain(0.9, N), e_dipole)
@@ -57,3 +59,5 @@ td_mpc_mf, td_master_mf, td_master_mpc = compare_rotate(Tend=1., phi=0.3, theta=
 @test td_mpc_mf < 0.1
 @test td_master_mf < 0.1
 @test td_master_mpc < 0.01
+
+end # testset

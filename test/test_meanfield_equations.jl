@@ -2,10 +2,12 @@ using Base.Test
 using QuantumOptics
 using CollectiveSpins
 
-const edipole = [0, 0, 1]
-const γ = 1
-const N = 2
-const T = [0:0.1:1;]
+@testset "meanfield-equations" begin
+
+edipole = [0, 0, 1]
+γ = 1
+N = 2
+T = [0:0.1:1;]
 
 spinbasis = SpinBasis(1//2)
 sx = sigmax(spinbasis)
@@ -27,8 +29,8 @@ Jdagger = [dagger(j) for j=J]
 Ψ₀ = CollectiveSpins.quantum.blochstate(0., pi/2., N)
 ρ₀ = Ψ₀ ⊗ dagger(Ψ₀)
 
-const phi1 = 1.3
-const phi2 = 0.8
+phi1 = 1.3
+phi2 = 0.8
 
 function test_meanfield(t, ρ)
     dρ_h = -1im*(H*ρ - ρ*H)
@@ -118,3 +120,5 @@ function test_meanfield(t, ρ)
 end
 
 CollectiveSpins.quantum.timeevolution(T, system, ρ₀; fout=test_meanfield)
+
+end # testset

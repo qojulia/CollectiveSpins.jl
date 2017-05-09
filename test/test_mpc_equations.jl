@@ -2,9 +2,11 @@ using Base.Test
 using QuantumOptics
 using CollectiveSpins
 
-const edipole = [0, 0, 1]
-const γ = 1
-const T = [0:0.1:1;]
+@testset "mpc-equations" begin
+
+edipole = [0, 0, 1]
+γ = 1
+T = [0:0.1:1;]
 
 spinbasis = SpinBasis(1//2)
 sx = sigmax(spinbasis)
@@ -135,3 +137,5 @@ function test_mpc_3particles(t, ρ::DenseOperator)
 end
 
 CollectiveSpins.quantum.timeevolution(T, system, ρ₀; fout=test_mpc_3particles)
+
+end # testset

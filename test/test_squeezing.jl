@@ -1,6 +1,9 @@
 using Base.Test
 using QuantumOptics, CollectiveSpins
-const cs = CollectiveSpins
+
+@testset "squeezing" begin
+
+cs = CollectiveSpins
 
 function compare_squeezing(;phi=0., theta=0., N=1., χT=0., axis=[1.,0.,0.])
     state0 = cs.mpc.blochstate(phi, theta, N)
@@ -22,3 +25,5 @@ td = compare_squeezing(phi=0.7, theta=1.34, N=5, χT=0.5, axis=[5.,2.,1.])
 
 td = compare_squeezing(phi=0., theta=0., N=5, χT=2.5, axis=[0.,0.,1.])
 @test td < 1e-12
+
+end # testset

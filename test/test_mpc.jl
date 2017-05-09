@@ -1,6 +1,9 @@
 using Base.Test
 using QuantumOptics, CollectiveSpins
-const cs = CollectiveSpins
+
+@testset "mpc" begin
+
+cs = CollectiveSpins
 
 # System parameters
 function test_2spin()
@@ -71,3 +74,5 @@ end
 
 test_2spin()
 test_3spin()
+
+end # testset

@@ -2,10 +2,13 @@ using Base.Test
 using CollectiveSpins.effective_interaction
 using CollectiveSpins.effective_interaction_simple
 
-const a = 0.3
-const b = 0.7
-const c = 0.4
-const eps = 1e-12
+
+@testset "effective-interaction" begin
+
+a = 0.3
+b = 0.7
+c = 0.4
+eps = 1e-12
 
 Ωeff0, Γeff0 = effective_interaction_simple.triangle_orthogonal(a)
 Ωeff1, Γeff1 = effective_interaction.triangle_orthogonal(a)
@@ -66,3 +69,5 @@ const eps = 1e-12
 Ωeff1, Γeff1 = effective_interaction.hexagonallattice3d_orthogonal(a, b, 4)
 @test abs(Ωeff0-Ωeff1)<eps
 @test abs(Γeff0-Γeff1)<eps
+
+end # testset

@@ -1,24 +1,27 @@
 using Base.Test
 using QuantumOptics, CollectiveSpins
-const cs = CollectiveSpins
+
+@testset "symmetric-equations" begin
+
+cs = CollectiveSpins
 
 # System parameters
-const a = 0.18
-const γ = 1
-const e_dipole = [0, 0, 1]
-const T = [0:0.05:5;]
+a = 0.18
+γ = 1
+e_dipole = [0, 0, 1]
+T = [0:0.05:5;]
 
 
 # =========== Test square configuration =========================
 
-const system_square = SpinCollection(cs.geometry.square(a), e_dipole; gamma=γ)
-const N_square = length(system_square.spins)
+system_square = SpinCollection(cs.geometry.square(a), e_dipole; gamma=γ)
+N_square = length(system_square.spins)
 
 # Initial state (Bloch state)
-const phi0_square = [0. for i=1:N_square]
-const phi1_square = [0., 0.5*pi, 1.5*pi, 1.*pi]
-const phi2_square = [0., 1.*pi, 1.*pi, 2.*pi]
-const theta_square = ones(Float64, N_square)*pi/2.
+phi0_square = [0. for i=1:N_square]
+phi1_square = [0., 0.5*pi, 1.5*pi, 1.*pi]
+phi2_square = [0., 1.*pi, 1.*pi, 2.*pi]
+theta_square = ones(Float64, N_square)*pi/2.
 
 
 # Meanfield
@@ -73,15 +76,15 @@ end
 
 # =========== Test cube configuration ===========================
 
-const system_cube = SpinCollection(cs.geometry.cube(a), e_dipole; gamma=γ)
-const N_cube = length(system_cube.spins)
+system_cube = SpinCollection(cs.geometry.cube(a), e_dipole; gamma=γ)
+N_cube = length(system_cube.spins)
 
 # Initial state (Bloch state)
 
-const dphi1_cube = pi
-const phi0_cube = [0. for i=1:N_cube]
-const phi1_cube = [0., 0., 0., 0., dphi1_cube, dphi1_cube, dphi1_cube, dphi1_cube]
-const theta_cube = ones(Float64, N_cube)*pi/2.
+dphi1_cube = pi
+phi0_cube = [0. for i=1:N_cube]
+phi1_cube = [0., 0., 0., 0., dphi1_cube, dphi1_cube, dphi1_cube, dphi1_cube]
+theta_cube = ones(Float64, N_cube)*pi/2.
 
 # Meanfield
 state0_mf = cs.meanfield.blochstate(phi0_cube, theta_cube)
@@ -120,3 +123,5 @@ for i=1:length(T)
     @test cs.meanfield.sy(state1_mf_rotated)[1]-cs.meanfield.sy(state1_mfsym_t[i])[1] < 1e-8
     @test cs.meanfield.sz(state1_mf_rotated)[1]-cs.meanfield.sz(state1_mfsym_t[i])[1] < 1e-8
 end
+
+end # testset

@@ -1,6 +1,10 @@
 using Base.Test
 using QuantumOptics, CollectiveSpins
-const cs = CollectiveSpins
+
+
+@testset "geometry" begin
+
+cs = CollectiveSpins
 
 @test typeof(cs.geometry.chain(2, 2)) == Vector{Vector{Float64}}
 @test length(cs.geometry.chain(1., 8)) == 8
@@ -54,3 +58,5 @@ for i=0:3
     plane_shifted = Vector{Float64}[x-Float64[0.,0.,i*2] for x=plane]
     @test plane_shifted == rect
 end
+
+end # testset
