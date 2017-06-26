@@ -290,7 +290,7 @@ function squeeze_sx(χT::Real, ρ₀::DenseOperator)
     sigmax_total = totaloperator(sigmax)
     H = χT*sigmax_total^2
     T = [0.,1.]
-    t, states = timeevolution_simple.master(T, ρ₀, H, [])
+    t, states = QuantumOptics.timeevolution.master(T, ρ₀, H, [])
     return states[end]
 end
 
@@ -316,7 +316,7 @@ function squeeze{T<:Real}(axis::Vector{T}, χT::Real, ρ₀::DenseOperator)
     σ = map(totaloperator, [sigmax, sigmay, sigmaz])
     σn = sum([axis[i]*σ[i] for i=1:3])
     H = χT*σn^2
-    tout, states = timeevolution_simple.master([0,1], ρ₀, H, [])
+    tout, states = QuantumOptics.timeevolution.master([0,1], ρ₀, H, [])
     return states[end]
 end
 
