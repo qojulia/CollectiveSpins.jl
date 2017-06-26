@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Effective Interactions · CollectiveSpins.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/highlightjs/default.css" rel="stylesheet" type="text/css"/><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>CollectiveSpins.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Introduction</a></li><li><a class="toctext" href="installation.html">Installation</a></li><li><a class="toctext" href="geometry.html">Geometry</a></li><li><a class="toctext" href="interaction.html">Dipole-Dipole interaction</a></li><li class="current"><a class="toctext" href="effective_interaction.html">Effective Interactions</a><ul class="internal"><li><a class="toctext" href="#Rotated-effective-interactions-1">Rotated effective interactions</a></li></ul></li><li><a class="toctext" href="system.html">System</a></li><li><a class="toctext" href="descriptions.html">Theoretical Descriptions</a></li><li><a class="toctext" href="api.html">API</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="effective_interaction.html">Effective Interactions</a></li></ul><a class="edit-page" href="https://github.com/bastikr/CollectiveSpins.jl/tree/4ff2ef98fab52bc58e94599adf482f3d160ae654/docs/src/effective_interaction.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Effective Interactions</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Effective-Interactions-1" href="#Effective-Interactions-1">Effective Interactions</a></h1><p>Effective interactions occur in the equations of motion of large spin systems that have certain symmetries so that the dynamics of every single spin is identical:</p><div>\[\begin{align*}
+\langle\dot{\sigma^x}\rangle &amp;=
+  \Omega^{\mathrm{eff}}\langle\sigma^y\rangle\langle\sigma^z\rangle
+  -\frac{1}{2} \Big(
+      \gamma
+    -\Gamma^{\mathrm{eff}}\langle\sigma^z\rangle
+  \Big) \langle\sigma^x\rangle,
+\\
+\langle\dot{\sigma^y}\rangle &amp;=
+  -\Omega^{\mathrm{eff}}\langle\sigma^x\rangle\langle\sigma^z\rangle
+  -\frac{1}{2} \Big(
+    \gamma
+    -\Gamma^{\mathrm{eff}}\langle\sigma^z\rangle
+  \Big) \langle\sigma^y\rangle,
+\\
+\langle\dot{\sigma^z}\rangle &amp;=
+    -\gamma \big(1 + \langle\sigma^z\rangle\big)
+    -\frac{1}{2} \Gamma^{\mathrm{eff}} \Big(\langle\sigma^x\rangle^2 + \langle\sigma^y\rangle^2\Big).
+\end{align*}\]</div><p>These quantities encapsulate the influence of all spins onto one single spin:</p><div>\[\begin{align*}
+\Omega^\mathrm{eff} = \sum_{j=2}^N \Omega_{1j}
+\\
+\Gamma^\mathrm{eff} = \sum_{j=2}^N \Gamma_{1j}.
+\end{align*}\]</div><p>The following functions can be used to easily calculate them for common examples:</p><ul><li><p><a href="api.html#CollectiveSpins.effective_interaction.triangle_orthogonal"><code>CollectiveSpins.effective_interaction.triangle_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.square_orthogonal"><code>CollectiveSpins.effective_interaction.square_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.rectangle_orthogonal"><code>CollectiveSpins.effective_interaction.rectangle_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.cube_orthogonal"><code>CollectiveSpins.effective_interaction.cube_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.box_orthogonal"><code>CollectiveSpins.effective_interaction.box_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.chain"><code>CollectiveSpins.effective_interaction.chain</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.chain_orthogonal"><code>CollectiveSpins.effective_interaction.chain_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.squarelattice_orthogonal"><code>CollectiveSpins.effective_interaction.squarelattice_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.hexagonallattice_orthogonal"><code>CollectiveSpins.effective_interaction.hexagonallattice_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.cubiclattice_orthogonal"><code>CollectiveSpins.effective_interaction.cubiclattice_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.tetragonallattice_orthogonal"><code>CollectiveSpins.effective_interaction.tetragonallattice_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction.hexagonallattice3d_orthogonal"><code>CollectiveSpins.effective_interaction.hexagonallattice3d_orthogonal</code></a></p></li></ul><h2><a class="nav-anchor" id="Rotated-effective-interactions-1" href="#Rotated-effective-interactions-1">Rotated effective interactions</a></h2><p>If we allow for the individual atomic states to bare a spatially dependent phase of <span>$\Delta \phi$</span> on the excited state, i.e. <span>$|\psi_k{\rangle} = \frac{1}{\sqrt{2}} \left( |g{\rangle} + \exp (i \phi_k) |e{\rangle} \right)$</span>,  we can absorb this into our equations efficiently. Using the abbreviations <span>$\Omega_{kj}^\mathrm{cos} = \Omega_{kj} \cos(\phi_k - \phi_j)$</span> and <span>$\Omega_{kj}^\mathrm{sin} = \Omega_{kj} \sin(\phi_k - \phi_j)$</span> we obtain the following modified equations of motion</p><div>\[\begin{align*}
+\frac{d}{dt}\langle\tilde{\sigma}_k^x\rangle
+&amp;= \sum_{j;j \neq k} \Omega_{kj}^\mathrm{sin} \langle\tilde{\sigma}_j^x\sigma_k^z\rangle
+        + \sum_{j;j \neq k} \Omega_{kj}^\mathrm{cos} \langle\tilde{\sigma}_j^y\sigma_k^z\rangle
+    -\frac{1}{2} \gamma \langle\tilde{\sigma}_k^x\rangle
+    +\frac{1}{2} \sum_{j;j \neq k} \Gamma_{kj}^\mathrm{cos} \langle\tilde{\sigma}_j^x \sigma_k^z\rangle
+        -\frac{1}{2}\sum_{j;j \neq k} \Gamma_{kj}^\mathrm{sin} \langle\tilde{\sigma}_j^y \sigma_k^z\rangle
+\\
+\frac{d}{dt}\langle\tilde{\sigma}_k^y\rangle
+&amp;= -\sum_{j;j \neq k} \Omega_{kj}^\mathrm{cos} \langle\tilde{\sigma}_j^x\sigma_k^z\rangle
+        + \sum_{j;j \neq k} \Omega_{kj}^\mathrm{sin} \langle\tilde{\sigma}_j^y\sigma_k^z\rangle
+    -\frac{1}{2} \gamma \langle\tilde{\sigma}_k^y\rangle
+    +\frac{1}{2} \sum_{j;j \neq k} \Gamma_{kj}^\mathrm{sin} \langle\tilde{\sigma}_j^x \sigma_k^z\rangle
+    +\frac{1}{2} \sum_{j;j \neq k} \Gamma_{kj}^\mathrm{cos} \langle\tilde{\sigma}_j^y \sigma_k^z\rangle
+\\
+\frac{d}{dt}\langle\sigma_k^z\rangle
+&amp;= -\sum_{j;j \neq k} \Omega_{kj}^\mathrm{sin} (
+            \langle\tilde{\sigma}_j^x \tilde{\sigma}_k^x\rangle
+            + \langle\tilde{\sigma}_j^y \tilde{\sigma}_k^y\rangle)
+    +\sum_{j;j \neq k} \Omega_{kj}^\mathrm{cos} (
+            \langle\tilde{\sigma}_j^x \tilde{\sigma}_k^y\rangle
+            - \langle\tilde{\sigma}_j^y \tilde{\sigma}_k^x\rangle)
+  \nonumber\\&amp;\qquad
+    -\gamma (1+ \langle\sigma_k^z\rangle)
+    -\frac{1}{2} \sum_{j;j \neq k} \Gamma_{kj}^\mathrm{cos} (
+            \langle\tilde{\sigma}_j^x \tilde{\sigma}_k^x\rangle
+            + \langle\tilde{\sigma}_j^y \tilde{\sigma}_k^y\rangle)
+    -\frac{1}{2} \sum_{j;j \neq k} \Gamma_{kj}^\mathrm{sin} (
+            \langle\tilde{\sigma}_j^x \tilde{\sigma}_k^y\rangle
+            - \langle\tilde{\sigma}_j^y \tilde{\sigma}_k^x\rangle).
+\end{align*}\]</div><p>We see that the following definitions prove to be very helpful</p><div>\[\begin{align*}
+\Omega_k^\mathrm{cos} &amp;= \sum_{j;j \neq k} \Omega_{kj} \cos(\phi_k-\phi_j)
+\qquad
+\Omega_k^\mathrm{sin} = \sum_{j;j \neq k} \Omega_{kj} \sin(\phi_k-\phi_j)
+\\
+\Gamma_k^\mathrm{cos} &amp;= \sum_{j;j \neq k} \Gamma_{kj} \cos(\phi_k-\phi_j)
+\qquad
+\Gamma_k^\mathrm{sin} = \sum_{j;j \neq k} \Gamma_{kj} \sin(\phi_k-\phi_j)
+\end{align*}\]</div><p>Again, if we consider highly symmetric configurations where <span>$\Omega^\mathrm{f} = \Omega^\mathrm{f}_k$</span> and <span>$\Gamma^\mathrm{f} = \Gamma^\mathrm{f}_k$</span> and the rotated states are initially identical we can define the effective rotated quantities</p><div>\[\begin{align*}
+\tilde{\Omega}^\mathrm{eff} &amp;= \Omega^\mathrm{cos} - \frac{1}{2} \Gamma^\mathrm{sin}
+\\
+\tilde{\Gamma}^\mathrm{eff} &amp;= \Gamma^\mathrm{cos} + 2 \Omega^\mathrm{sin}
+\end{align*}\]</div><p>which lead to a closed set of simplified effective equations as well, i.e.</p><div>\[\begin{align*}
+\frac{d}{dt}\langle\tilde{\sigma}^x\rangle  &amp;=
+  \tilde{\Omega}^{\mathrm{eff}}\langle\tilde{\sigma}^y\rangle\langle\sigma^z\rangle
+  -\frac{1}{2} \gamma \langle\tilde{\sigma}^x\rangle
+  +\frac{1}{2} \tilde{\Gamma}^{\mathrm{eff}} \langle\tilde{\sigma}^x\rangle\langle\sigma^z\rangle
+\\
+\frac{d}{dt}\langle\tilde{\sigma}^y\rangle  &amp;=
+  -\tilde{\Omega}^{\mathrm{eff}}\langle\tilde{\sigma}^x\rangle\langle\sigma^z\rangle
+  -\frac{1}{2} \gamma \langle\tilde{\sigma}^y\rangle
+  +\frac{1}{2} \tilde{\Gamma}^{\mathrm{eff}} \langle\tilde{\sigma}^y\rangle\langle\sigma^z\rangle
+\\
+\frac{d}{dt}\langle\sigma^z\rangle  &amp;=
+    -\gamma \big(1 + \langle\sigma^z\rangle\big)
+    -\frac{1}{2} \tilde{\Gamma}^{\mathrm{eff}} \Big(\langle\tilde{\sigma}^x\rangle^2 + \langle\tilde{\sigma}^y\rangle^2\Big)
+\end{align*}\]</div><p>The calculation of these quantities for a few systems is implemented by:</p><ul><li><p><a href="api.html#CollectiveSpins.effective_interaction_rotated.square_orthogonal"><code>CollectiveSpins.effective_interaction_rotated.square_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction_rotated.cube_orthogonal"><code>CollectiveSpins.effective_interaction_rotated.cube_orthogonal</code></a></p></li><li><p><a href="api.html#CollectiveSpins.effective_interaction_rotated.chain_orthogonal"><code>CollectiveSpins.effective_interaction_rotated.chain_orthogonal</code></a></p></li></ul><footer><hr/><a class="previous" href="interaction.html"><span class="direction">Previous</span><span class="title">Dipole-Dipole interaction</span></a><a class="next" href="system.html"><span class="direction">Next</span><span class="title">System</span></a></footer></article></body></html>
