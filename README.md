@@ -2,10 +2,23 @@
 
 **CollectiveSpins.jl** is a numerical framework written in [Julia](http://julialang.org/) used to simulate quantum systems consisting of spatially distributed spins coupled via dipole-dipole interaction.
 
-[![Travis build status](https://api.travis-ci.org/bastikr/CollectiveSpins.jl.png?branch=master)](https://travis-ci.org/bastikr/CollectiveSpins.jl)
-[![Windows build status](https://ci.appveyor.com/api/projects/status/t83f2bqfpumn6d96/branch/master?svg=true)](https://ci.appveyor.com/project/bastikr/quantumoptics-jl/branch/master)
-[![Test coverage status on coveralls](https://coveralls.io/repos/github/bastikr/CollectiveSpins.jl/badge.svg?branch=master)](https://coveralls.io/github/bastikr/CollectiveSpins.jl?branch=master)
-[![Test coverage status on codecov](https://codecov.io/gh/bastikr/CollectiveSpins.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/bastikr/CollectiveSpins.jl)
+
+## Development status
+
+  * Linux/Mac build: [![Travis build status][travis-img]][travis-url]
+  * Windows build: [![Windows build status][appveyor-img]][appveyor-url]
+  * Test coverage:
+        [![Test coverage status on coveralls][coveralls-img]][coveralls-url]
+        [![Test coverage status on codecov][codecov-img]][codecov-url]
+
+
+## Installation
+
+**CollectiveSpins.jl** is not an officially registered package but it nevertheless can be installed using julia's package manager:
+
+```julia
+julia> Pkg.clone("https://github.com/bastikr/CollectiveSpins.jl.git")
+```
 
 
 ## Example
@@ -34,6 +47,20 @@ tout, ρt = CollectiveSpins.quantum.timeevolution(T, system, Ψ0)
 
 ## Documentation
 
-The documentation written with [Sphinx](http://www.sphinx-doc.org/) using the [Sphinx-Julia](https://github.com/bastikr/sphinx-julia>) plugin is available at
+The documentation written with [Sphinx](http://www.sphinx-doc.org/) using the [Sphinx-Julia](https://github.com/bastikr/sphinx-julia>) plugin is available at https://bastikr.github.io/CollectiveSpins.jl/
 
-    https://bastikr.github.io/CollectiveSpins.jl/
+
+[Julia]: http://julialang.org
+[qojulia]: https://github.com/qojulia
+
+[travis-url]: https://travis-ci.org/bastikr/CollectiveSpins.jl
+[travis-img]: https://api.travis-ci.org/bastikr/CollectiveSpins.jl.png?branch=master
+
+[appveyor-url]: https://ci.appveyor.com/project/bastikr/collectivespins-jl/branch/master
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/t83f2bqfpumn6d96/branch/master?svg=true
+
+[coveralls-url]: https://coveralls.io/github/bastikr/CollectiveSpins.jl?branch=master
+[coveralls-img]: https://coveralls.io/repos/github/bastikr/CollectiveSpins.jl/badge.svg?branch=master
+
+[codecov-url]: https://codecov.io/gh/bastikr/CollectiveSpins.jl
+[codecov-img]: https://codecov.io/gh/bastikr/CollectiveSpins.jl/branch/master/graph/badge.svg
