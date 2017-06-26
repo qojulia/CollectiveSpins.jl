@@ -21,5 +21,7 @@ makedocs(
 
 deploydocs(
     repo = "github.com/bastikr/CollectiveSpins.jl.git",
-    deps = Deps.pip("pygments", "mkdocs", "python-markdown-math")
+    target = "build",
+    deps = nothing,
+    make = nothing
 )
