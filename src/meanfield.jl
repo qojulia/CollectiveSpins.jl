@@ -20,12 +20,9 @@ Class describing a Meanfield state (Product state).
 
 The data layout is [sx1 sx2 ... sy1 sy2 ... sz1 sz2 ...]
 
-Arguments
----------
-N
-    Number of spins.
-data
-    Vector of length 3*N.
+# Arguments
+* `N`: Number of spins.
+* `data`: Vector of length 3*N.
 """
 type ProductState
     N::Int
@@ -33,35 +30,23 @@ type ProductState
 end
 
 """
+    meanfield.ProductState(N)
+
 Meanfield state with all Pauli expectation values equal to zero.
-
-Arguments
----------
-
-N
-    Number of spins.
 """
 ProductState(N::Int) = ProductState(N, zeros(Float64, 3*N))
 
 """
-Meanfield state created from vector.
+    meanfield.ProductState(data)
 
-Arguments
----------
-
-data
-    Real valued vector of length 3*spinnumber.
+Meanfield state created from real valued vector of length 3*spinnumber.
 """
 ProductState(data::Vector{Float64}) = ProductState(dim(data), data)
 
 """
-Create Meanfield state from density operator.
+    meafield.ProductState(rho)
 
-Arguments
----------
-
-rho
-    Density operator.
+Meanfield state from density operator.
 """
 function ProductState(rho::DenseOperator)
     N = quantum.dim(rho)
@@ -78,15 +63,11 @@ function ProductState(rho::DenseOperator)
 end
 
 """
-Product state of N single spin Bloch states.
+    meanfield.blochstate(phi, theta[, N=1])
 
-Arguments
----------
+Product state of `N` single spin Bloch states.
 
-phi
-    Azimuthal angle(s).
-theta
-    Polar angle(s).
+All spins have the same azimuthal angle `phi` and polar angle `theta`.
 """
 function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
     N = length(phi)
@@ -113,6 +94,8 @@ function blochstate(phi::Real, theta::Real, N::Int=1)
 end
 
 """
+    meanfield.dim(state)
+
 Number of spins described by this state.
 """
 function dim{T<:Real}(state::Vector{T})
@@ -122,42 +105,24 @@ function dim{T<:Real}(state::Vector{T})
 end
 
 """
-Split vector assumed to be in ProductState layout into sx, sy and sz parts.
+    meanfield.splitstate(N, data)
+    meanfield.splitstate(state)
+
+Split state into sx, sy and sz parts.
 """
 splitstate(N::Int, data::Vector{Float64}) = ArrayViews.view(data, 0*N+1:1*N), ArrayViews.view(data, 1*N+1:2*N), ArrayViews.view(data, 2*N+1:3*N)
-
-"""
-Split ProductState into sx, sy and sz parts.
-"""
 splitstate(state::ProductState) = splitstate(state.N, state.data)
 
 
 """
-Create single spin density operator.
+    meanfield.densityoperator(sx, sy, sz)
+    meanfield.densityoperator(state)
 
-Arguments
----------
-
-sx
-    sigmax expectation value.
-sy
-    sigmay expectation value.
-sz
-    sigmaz expectation value.
+Create density operator from independent sigma expectation values.
 """
 function densityoperator(sx::Real, sy::Real, sz::Real)
     return 0.5*(I + sx*sigmax + sy*sigmay + sz*sigmaz)
 end
-
-"""
-Create density operator from ProductState.
-
-Arguments
----------
-
-state
-    ProductState
-"""
 function densityoperator(state::ProductState)
     sx, sy, sz = splitstate(state)
     rho = densityoperator(sx[1], sy[1], sz[1])
@@ -168,37 +133,37 @@ function densityoperator(state::ProductState)
 end
 
 """
-Sigmax expectation values of ProductState.
+    meanfield.sx(state)
+
+Sigma x expectation values of state.
 """
 sx(x::ProductState) = ArrayViews.view(x.data, 1:x.N)
+
 """
-Sigmay expectation values of ProductState.
+    meanfield.sy(state)
+
+Sigma y expectation values of state.
 """
 sy(x::ProductState) = ArrayViews.view(x.data, x.N+1:2*x.N)
+
 """
-Sigmaz expectation values of ProductState.
+    meanfield.sz(state)
+
+Sigma z expectation values of state.
 """
 sz(x::ProductState) = ArrayViews.view(x.data, 2*x.N+1:3*x.N)
 
 
 """
+    meanfield.timeevolution(T, S::SpinCollection, state0[; fout])
+
 Meanfield time evolution.
 
-Arguments
----------
-
-T
-    Points of time for which output will be generated.
-S
-    SpinCollection describing the system.
-state0
-    Initial ProductState.
-
-Keyword Arguments
------------------
-
-fout (optional)
-    Function with signature fout(t, state) that is called whenever output
+# Arguments
+* `T`: Points of time for which output will be generated.
+* `S`: [`SpinCollection`](@ref) describing the system.
+* `state0`: Initial ProductState.
+* `fout` (optional): Function with signature `fout(t, state)` that is called whenever output
     should be generated.
 """
 function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=nothing)
@@ -241,30 +206,18 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
 end
 
 """
+    meanfield.timeevolution_symmetric(T, state0, Ωeff, Γeff[; γ, δ0, fout])
+
 Symmetric meanfield time evolution.
 
-Arguments
----------
-
-T
-    Points of time for which output will be generated.
-state0
-    Initial ProductState.
-Ωeff
-    Effective dipole-dipole interaction.
-Γeff
-    Effective collective decay rate.
-
-
-Keyword Arguments
------------------
-
-γ (optional)
-    Single spin decay rate.
-δ0 (optional)
-    Phase shift for rotated symmetric meanfield time evolution.
-fout (optional)
-    Function with signature fout(t, state) that is called whenever output
+# Arguments
+* `T`: Points of time for which output will be generated.
+* `state0`: Initial ProductState.
+* `Ωeff`: Effective dipole-dipole interaction.
+* `Γeff`: Effective collective decay rate.
+* `γ=1`: Single spin decay rate.
+* `δ0=0`: Phase shift for rotated symmetric meanfield time evolution.
+* `fout` (optional): Function with signature `fout(t, state)` that is called whenever output
     should be generated.
 """
 function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Real; γ::Real=1.0, δ0::Real=0., fout=nothing)
@@ -293,17 +246,14 @@ end
 
 
 """
-Rotations on the Bloch sphere for the given ProductState.
+    meanfield.rotate(axis, angles, state)
 
-Arguments
----------
+Rotations on the Bloch sphere for the given [`ProductState`](@ref).
 
-axis
-    Rotation axis.
-angles
-    Rotation angle(s).
-state
-    ProductState that should be rotated.
+# Arguments
+* `axis`: Rotation axis.
+* `angles`: Rotation angle(s).
+* `state`: [`ProductState`](@ref) that should be rotated.
 """
 function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state::ProductState)
     @assert length(axis)==3

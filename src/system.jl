@@ -24,13 +24,9 @@ A class representing a single spin.
 A spin is defined by its position and its detuning to a main
 frequency.
 
-Arguments
----------
-
-position
-    A vector defining a point in R3.
-delta
-    Detuning.
+# Arguments
+* `position`: A vector defining a point in R3.
+* `delta`: Detuning.
 """
 type Spin <: System
     position::Vector{Float64}
@@ -44,15 +40,10 @@ end
 """
 A class representing a system consisting of many spins.
 
-Arguments
----------
-
-spins
-    Vector of spins.
-polarization
-    Unit vector defining the polarization axis.
-gamma
-    Decay rate. (Has to be the same for all spins.)
+# Arguments
+* `spins`: Vector of spins.
+* `polarization`: Unit vector defining the polarization axis.
+* `gamma`: Decay rate. (Has to be the same for all spins.)
 """
 type SpinCollection <: System
     spins::Vector{Spin}
@@ -67,22 +58,11 @@ end
 """
 Create a SpinCollection without explicitely creating single spins.
 
-Arguments
----------
-
-positions
-    Vector containing the positions of all single spins.
-polarization
-    Unit vector defining the polarization axis.
-
-
-Keyword Arguments
------------------
-
-delta (default=0)
-    Detuning.
-gamma (default=1)
-    Decay rate. (Has to be the same for all spins.
+# Arguments
+* `positions`: Vector containing the positions of all single spins.
+* `polarization`: Unit vector defining the polarization axis.
+* `delta=0`: Detuning.
+* `gamma=0`: Decay rate. (Has to be the same for all spins.
 """
 function SpinCollection{T1<:Real, T2<:Real}(positions::Vector{Vector{T1}}, polarization::Vector{T2}; delta::Real=0., gamma::Real=1.)
     SpinCollection(Spin[Spin(p; delta=delta) for p=positions], polarization; gamma=gamma)
@@ -92,21 +72,11 @@ end
 """
 A class representing a single mode in a cavity.
 
-Arguments
----------
-
-cutoff
-    Number of included Fock states.
-
-Keyword Arguments
------------------
-
-delta (default=0)
-    Detuning.
-eta (default=0)
-    Pump strength.
-kappa (default=0)
-    Decay rate.
+# Arguments
+* `cutoff`: Number of included Fock states.
+* `delta=0` Detuning.
+* `eta=0`: Pump strength.
+* `kappa=0`: Decay rate.
 """
 type CavityMode <: System
     cutoff::Int
@@ -122,15 +92,10 @@ end
 """
 A class representing a cavity coupled to many spins.
 
-Arguments
----------
-
-cavity
-    A CavityMode.
-spincollection
-    A SpinCollection.
-g
-    A vector defing the coupling strengths between the i-th spin and
+# Arguments
+* `cavity`: A CavityMode.
+* `spincollection`: A SpinCollection.
+* `g`: A vector defing the coupling strengths between the i-th spin and
     the cavity mode. Alternatively a single number can be given for
     identical coupling for all spins.
 """

@@ -71,17 +71,15 @@ end
 # end
 
 """
+    effective_interaction_rotated.square_orthogonal(a, Nδ)
+
 Effective Omega and Gamma for a square.
 
 The polarization axis is orthogonal to the square plane.
 
-Arguments
----------
-
-a
-    Edge length.
-dϕ
-    Phase shift.
+# Arguments
+* `a`: Edge length.
+* `Nδ`: Phase shift (Number of atoms in 2π).
 """
 function square_orthogonal(a::Float64, Nδ::Int)
     @assert 0 <= Nδ < 4
@@ -102,17 +100,15 @@ end
 # end
 
 """
+    effective_interaction_rotated.cube_orthogonal(a, dϕ)
+
 Effective Omega and Gamma for a cube.
 
 The polarization axis is orthogonal to the xy faces.
 
-Arguments
----------
-
-a
-    edge length.
-dϕ
-    Phase shift.
+# Arguments
+* `a`: edge length.
+* `dϕ`: Phase shift.
 """
 function cube_orthogonal(a::Float64, dϕ)
     omega_eff, gamma_eff = square_orthogonal(a, 0)
@@ -164,20 +160,17 @@ end
 # end
 
 """
+    effective_interaction_rotated.chain_orthogonal(a, N, dϕ)
+
 Effective Omega and Gamma for an infinite chain.
 
 The polarization axis is orthogonal to the chain and the calculation is
 done by adding N spins left and N spins right of a central spin.
 
-Arguments
----------
-
-a
-    Spin-spin distance.
-N
-    Number of included spins.
-dϕ
-    Phase shift between neighboring spins.
+# Arguments
+* `a`: Spin-spin distance.
+* `N`: Number of included spins.
+* `dϕ`: Phase shift between neighboring spins.
 """
 function chain_orthogonal(a::Float64, N::Int, dϕ::Float64)
     omega_eff::Float64 = 0.
