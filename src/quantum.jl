@@ -237,7 +237,7 @@ function timeevolution(T, S::system.System, ρ₀::Union{StateVector, DenseOpera
     b = basis(S)
     H = Hamiltonian(S)
     Γ, J = JumpOperators(S)
-    return QuantumOptics.timeevolution.master_h(T, ρ₀, H, J; fout=fout, Gamma=Γ, kwargs...)
+    return QuantumOptics.timeevolution.master_h(T, ρ₀, H, J; fout=fout, rates=Γ, kwargs...)
 end
 
 
