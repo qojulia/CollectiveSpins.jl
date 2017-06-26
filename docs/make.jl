@@ -18,3 +18,8 @@ makedocs(
     sitename = "CollectiveSpins.jl",
     pages = pages
     )
+
+deploydocs(
+    repo = "github.com/bastikr/CollectiveSpins.jl.git",
+    deps = Deps.pip("pygments", "mkdocs", "python-markdown-math")
+)
