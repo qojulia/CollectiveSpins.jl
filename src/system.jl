@@ -1,6 +1,6 @@
 module system
 
-# using QuantumOptics
+using Compat
 
 export Spin, SpinCollection, CavityMode, CavitySpinCollection
 
@@ -15,7 +15,7 @@ Currently there are following concrete systems:
 * CavityMode
 * CavitySpinCollection
 """
-abstract System
+@compat abstract type System end
 
 
 """
