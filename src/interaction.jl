@@ -4,23 +4,21 @@ using ..system
 
 
 """
-The in the context of dipole-dipole interaction usual F function
+    interaction.F(ξ, θ)
+
+The in the context of dipole-dipole interaction usual ``F`` function.
 
 It is related to the collective decay,
-:math:`\\Gamma_{ij} = \\frac{3}{2}\\gamma F_\\theta(k_0 r)`, and is
-defined explicitly by:
+:``Γ_{ij} = \\frac{3}{2}γ F_θ(k_0 r)``, and is defined explicitly by:
 
-.. math::
+```math
+F_θ(ξ) = (1-\\cos^2 θ) \\frac{\\sin ξ}{ξ}
+         + (1-3*\\cos^2 θ) \\Big(\\frac{\\cos ξ}{ξ^2} - \\frac{\\sin ξ}{ξ^3}\\Big)
+```
 
-    F_\\theta(\\xi) = (1-\\cos^2 \\theta) \\frac{\\sin \\xi}{\\xi}
-                      + (1-3*\\cos^2 \\theta) \\Big(
-                            \\frac{\\cos \\xi}{\\xi^2}
-                            - \\frac{\\sin \\xi}{\\xi^3}
-                        \\Big)
-
-Special consideration is given to small values of :math:`\\xi` which can lead to
+Special consideration is given to small values of ``ξ`` which can lead to
 numerical problems. To circumvent this a second order Taylor series around the
-point :math:`\\xi=0` is used.
+point ``ξ=0`` is used.
 """
 function F(ξ, θ)
     cosθpow2 = cos(θ)^2
@@ -33,19 +31,16 @@ function F(ξ, θ)
 end
 
 """
-The in the context of dipole-dipole interaction usual G function
+    interaction.G(ξ, θ)
+
+The in the context of dipole-dipole interaction usual ``G`` function.
 
 It is related to the collective coupling,
-:math:`\\Omega_{ij} = \\frac{3}{4} \\gamma G_\\theta(k_0 r_{ij})`, and
-is defined explicitly by:
+``Ω_{ij} = \\frac{3}{4}γ G_θ(k_0 r_{ij})``, and is defined explicitly by:
 
-.. math::
-
-    G_\\theta(\\xi) = -(1-\\cos^2 \\theta) \\frac{\\cos \\xi}{\\xi}
-                      + (1-3*\\cos^2 \\theta) \\Big(
-                            \\frac{\\sin \\xi}{\\xi^2}
-                            + \\frac{\\cos \\xi}{\\xi^3}
-                        \\Big)
+```math
+G_θ(ξ) = -(1-\\cos^2 θ) \\frac{\\cos ξ}{ξ}
+         + (1-3*\\cos^2 θ) \\Big(\\frac{\\sin ξ}{ξ^2} + \\frac{\\cos ξ}{ξ^3}\\Big)
 """
 function G(ξ, θ)
     cosθpow2 = cos(θ)^2
@@ -54,6 +49,8 @@ function G(ξ, θ)
 end
 
 """
+    interaction.F_orthogonal(ξ)
+
 Optimized F function for polarization axis orthogonal to spin connection line.
 """
 function F_orthogonal(ξ)
@@ -62,6 +59,8 @@ function F_orthogonal(ξ)
 end
 
 """
+    interaction.G_orthogonal(ξ)
+
 Optimized F function for polarization axis orthogonal to spin connection line.
 """
 function G_orthogonal(ξ)
@@ -70,7 +69,9 @@ function G_orthogonal(ξ)
 end
 
 """
-Angle between the vectors x_j-x_i and e.
+    interaction.Theta(xi, xj, e)
+
+Angle between the vectors `x_j`-`x_i` and `e`.
 """
 function Theta(xi, xj, e)
     s = dot((xj-xi)/norm(xj-xi), e/norm(e))
@@ -81,102 +82,88 @@ end
 
 
 """
+    interaction.Omega(a, Θ, γ)
+
 Dipole-dipole interaction frequency.
 
 Calculates
 
-.. math::
+```math
+Ω(a, θ, γ) = \\frac{3}{4}γ G_θ(2π a)
+```
 
-    \\Omega(a, \\theta, \\gamma) = \\frac{3}{4}\\gamma G_\\theta(2\\pi a)
-
-Arguments
----------
-
-a
-    Distance between dipoles normalized by transition wavelength.
-θ
-    Angle between the line connecting the two dipoles and the
-    polarization axis.
-γ
-    Single spin decay rate.
+# Arguments
+* `a`: Distance between dipoles normalized by transition wavelength.
+* `θ`: Angle between the line connecting the two dipoles and the polarization axis.
+* `γ`: Single spin decay rate.
 """
 Omega(a, θ, γ) = 3/4*γ*G(2*pi*a, θ)
 
 """
+    interaction.Omega(xi, xj, e, γ)
+
 Dipole-dipole interaction frequency.
 
 Calculates
 
-.. math::
+```math
+Ω(|x_j-x_i|, θ, γ) = \\frac{3}{4}γ G_θ(2π |x_j - x_i|)
+```
 
-    \\Omega(|x_j-x_i|, \\theta, \\gamma) = \\frac{3}{4}\\gamma G_\\theta(2\\pi |x_j - x_i|)
+with ``θ = ∠(x_j-x_i, e)``.
 
-with :math:`\\theta = \\angle(x_j-x_i, e)`.
-
-Arguments
----------
-
-xi
-    Position of first spin.
-xj
-    Position of second spin.
-e
-    Polarization axis.
-γ
-    Single spin decay rate.
+# Arguments
+* `xi`: Position of first spin.
+* `xj`: Position of second spin.
+* `e`: Polarization axis.
+* `γ`: Single spin decay rate.
 """
 Omega(xi::Vector, xj::Vector, e::Vector, γ) = (xi==xj ? 0 : Omega(norm(xj-xi), Theta(xi, xj, e), γ))
 
 
 """
+    interaction.Gamma(a, θ, γ)
+
 Collective decay rate.
 
 Calculates
 
-.. math::
+```math
+Γ(a, θ, γ) = \\frac{3}{2}γ F_θ(2π a)
+```
 
-    \\Gamma(a, \\theta, \\gamma) = \\frac{3}{2}\\gamma F_\\theta(2\\pi a)
-
-Arguments
----------
-
-a
-    Distance between dipoles normalized by transition wavelength.
-θ
-    Angle between the line connecting the two dipoles and the
-    polarization axis.
-γ
-    Single spin decay rate.
+# Arguments
+* `a`: Distance between dipoles normalized by transition wavelength.
+* `θ`: Angle between the line connecting the two dipoles and the polarization axis.
+* `γ`: Single spin decay rate.
 """
 Gamma(a, θ, γ) = 3/2*γ*F(2*pi*a, θ)
 
 """
+    interaction.Gamma(xi, xj, e, γ)
+
 Collective decay rate.
 
 Calculates
 
-.. math::
+```math
+Γ(|x_j-x_i|, θ, γ) = \\frac{3}{2}γ F_θ(2π |x_j - x_i|)
+```
 
-    \\Gamma(|x_j-x_i|, \\theta, \\gamma) = \\frac{3}{2}\\gamma F_\\theta(2\\pi |x_j - x_i|)
+with ``θ = ∠(x_j-x_i, e)``.
 
-with :math:`\\theta = \\angle(x_j-x_i, e)`.
-
-Arguments
----------
-
-xi
-    Position of first spin.
-xi
-    Position of second spin.
-e
-    Polarization axis.
-γ
-    Single spin decay rate.
+# Arguments
+* `xi`: Position of first spin.
+* `xj`: Position of second spin.
+* `e`: Polarization axis.
+* `γ`: Single spin decay rate.
 """
 Gamma(xi::Vector, xj::Vector, e::Vector, γ) = (xi==xj ? γ : Gamma(norm(xj-xi), Theta(xi, xj, e), γ))
 
 
 """
+    interaction.OmegaMatrix(S::SpinCollection)
+
 Matrix of the dipole-dipole interaction for a given SpinCollection.
 """
 function OmegaMatrix(S::system.SpinCollection)
@@ -194,6 +181,8 @@ end
 
 
 """
+    interaction.GammaMatrix(S::SpinCollection)
+
 Matrix of the collective decay rate for a given SpinCollection.
 """
 function GammaMatrix(S::system.SpinCollection)

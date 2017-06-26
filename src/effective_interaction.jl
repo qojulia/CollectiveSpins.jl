@@ -65,15 +65,11 @@ end
 # Finite symmetric systems
 
 """
-Effective Omega and Gamma for a equilateral triangle.
+    effective_interaction.triangle_orthogonal(a)
+
+Effective Omega and Gamma for a equilateral triangle with edge length `a`.
 
 The polarization axis is orthogonal to the triangle plane.
-
-Arguments
----------
-
-a
-    Edge length.
 """
 function triangle_orthogonal(a::Float64)
     omega_eff = 2*Omega_orthogonal(a)
@@ -82,15 +78,11 @@ function triangle_orthogonal(a::Float64)
 end
 
 """
-Effective Omega and Gamma for a square.
+    effective_interaction.square_orthogonal(a)
+
+Effective Omega and Gamma for a square with edge length `a`.
 
 The polarization axis is orthogonal to the square plane.
-
-Arguments
----------
-
-a
-    Edge length.
 """
 function square_orthogonal(a::Float64)
     omega_eff = 2*Omega_orthogonal(a) + Omega_orthogonal(sqrt(2.)*a)
@@ -99,17 +91,11 @@ function square_orthogonal(a::Float64)
 end
 
 """
-Effective Omega and Gamma for a rectangle.
+    effective_interaction.rectangle_orthogonal(a, b)
+
+Effective Omega and Gamma for a rectangle with edge lengths `a` and `b`.
 
 The polarization axis is orthogonal to the rectangle plane.
-
-Arguments
----------
-
-a
-    1st edge length.
-b
-    2nd edge length.
 """
 function rectangle_orthogonal(a::Float64, b::Float64)
     d = sqrt(a^2 + b^2)
@@ -122,15 +108,11 @@ function rectangle_orthogonal(a::Float64, b::Float64)
 end
 
 """
-Effective Omega and Gamma for a cube.
+    effective_interaction.cube_orthogonal(a)
+
+Effective Omega and Gamma for a cube with edge length `a`
 
 The polarization axis is orthogonal to the xy faces.
-
-Arguments
----------
-
-a
-    edge length.
 """
 function cube_orthogonal(a::Float64)
     omega_eff, gamma_eff = square_orthogonal(a)
@@ -143,19 +125,11 @@ function cube_orthogonal(a::Float64)
 end
 
 """
-Effective Omega and Gamma for a box.
+    effective_interaction.box_orthogonal(a, b, c)
+
+Effective Omega and Gamma for a box with edge lengths `a`, `b` and `c`.
 
 The polarization axis is orthogonal to the top face.
-
-Arguments
----------
-
-a
-    1st edge length.
-b
-    2nd edge length.
-c
-    3rd edge length.
 """
 function box_orthogonal(a::Float64, b::Float64, c::Float64)
     omega_eff, gamma_eff = rectangle_orthogonal(a, b)
@@ -184,20 +158,17 @@ end
 
 # Infinite 1D symmetric systems
 """
-Effective Omega and Gamma for a infinite chain.
+    effective_interaction.chain(a, Θ, N)
+
+Effective Omega and Gamma for an infinite chain.
 
 The calculation is done by adding N spins left and N spins right of a
 central spin.
 
-Arguments
----------
-
-a
-    Spin-spin distance.
-θ
-    Angle between polarization axis and spin chain.
-N
-    Number of included spins.
+# Arguments
+* `a`: Spin-spin distance.
+* `θ`: Angle between polarization axis and spin chain.
+* `N`: Number of included spins.
 """
 function chain(a::Float64, Θ, N::Int)
     omega_eff::Float64 = 0.
@@ -212,18 +183,16 @@ function chain(a::Float64, Θ, N::Int)
 end
 
 """
-Effective Omega and Gamma for an infinite chain.
+    effective_interaction.chain_orthogonal(a, N)
 
-The polarization axis is orthogonal to the chain and the calculation is
-done by adding N spins left and N spins right of a central spin.
+Effective Omega and Gamma for an infinite chain with orthogonal polarization axis.
 
-Arguments
----------
+The calculation is done by adding N spins left and N spins right of a
+central spin.
 
-a
-    Spin-spin distance.
-N
-    Number of included spins.
+# Arguments
+* `a`: Spin-spin distance.
+* `N`: Number of included spins.
 """
 function chain_orthogonal(a::Float64, N::Int)
     omega_eff::Float64 = 0.
@@ -240,19 +209,17 @@ end
 
 # Infinite 2D symmetric systems
 """
+    effective_interaction.squarelattice_orthogonal(a, N)
+
 Effective Omega and Gamma for a infinite square lattice.
 
 The polarization axis is orthogonal to the square lattice plane and the
 calculation is done by creating a (2N+1)*(2N+1) square lattice
 and calculate the combined interaction for the central spin.
 
-Arguments
----------
-
-a
-    Spin-spin distance.
-N
-    Number of included spins.
+# Arguments
+* `a`: Spin-spin distance.
+* `N`: Number of included spins.
 """
 function squarelattice_orthogonal(a::Float64, N::Int)
     omega_eff::Float64 = 0.
@@ -276,19 +243,17 @@ function squarelattice_orthogonal(a::Float64, N::Int)
 end
 
 """
+    effective_interaction.hexagonallattice_orthogonal(a, N)
+
 Effective Omega and Gamma for a infinite hexagonal lattice.
 
 The polarization axis is orthogonal to the square lattice plane and the
 calculation is done by creating hexagonal lattice consisting of
 N rings and calculate the combined interaction for the central spin.
 
-Arguments
----------
-
-a
-    Spin-spin distance.
-N
-    Number of included spins.
+# Arguments
+* `a`: Spin-spin distance.
+* `N`: Number of included spins.
 """
 function hexagonallattice_orthogonal(a::Float64, N::Int)
     omega_eff::Float64 = 0.
@@ -327,19 +292,17 @@ end
 
 # Infinite 3D symmetric systems
 """
+    effective_interaction.cubiclattice_orthogonal(a, N)
+
 Effective Omega and Gamma for a infinite cubic lattice.
 
 The polarization axis is orthogonal to the top face of a unit cell and the
 calculation is done by creating a (2N+1)*(2N+1)*(2N+1) cubic lattice
 and calculate the combined interaction for the central spin.
 
-Arguments
----------
-
-a
-    Spin-spin distance.
-N
-    Number of included spins.
+# Arguments
+* `a`: Spin-spin distance.
+* `N`: Number of included spins.
 """
 function cubiclattice_orthogonal(a::Float64, N::Int)
     omega_eff, gamma_eff = squarelattice_orthogonal(a, N)
@@ -369,21 +332,18 @@ function cubiclattice_orthogonal(a::Float64, N::Int)
 end
 
 """
+    effective_interaction.tetragonallattice_orthogonal(a, b, N)
+
 Effective Omega and Gamma for a infinite tetragonal lattice.
 
 The polarization axis is orthogonal to the top face of a unit cell and the
 calculation is done by creating a (2N+1)*(2N+1)*(2N+1) tetragonal lattice
 and calculate the combined interaction for the central spin.
 
-Arguments
----------
-
-a
-    Spin-spin distance for bottom side square.
-b
-    Height of the unit cell.
-N
-    Number of included spins.
+# Arguments
+* `a`: Spin-spin distance for bottom side square.
+* `b`: Height of the unit cell.
+* `N`: Number of included spins.
 """
 function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
     omega_eff, gamma_eff = squarelattice_orthogonal(a, N)
@@ -411,6 +371,8 @@ function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
 end
 
 """
+    effective_interaction.hexagonallattice3d_orthogonal(a, b, N)
+
 Effective Omega and Gamma for a infinite 3D hexagonal lattice.
 
 The lattice consists of stacked planes of hexagonal lattices where the
@@ -419,15 +381,10 @@ calculation is done by creating hexagonal lattices with N rings, stacking
 2N+1 lattices of this kind above each other and calculating the combined
 interaction for the central spin.
 
-Arguments
----------
-
-a
-    Spin-spin distance for hexagons.
-b
-    Distance between planes of hexagonal lattices
-N
-    Number of included spins.
+# Arguments
+* `a`: Spin-spin distance for hexagons.
+* `b`: Distance between planes of hexagonal lattices
+* `N`: Number of included spins.
 """
 function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
     omega_eff, gamma_eff::Float64 = hexagonallattice_orthogonal(a, N)
