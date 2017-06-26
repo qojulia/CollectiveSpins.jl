@@ -7,7 +7,8 @@ pages = [
     "interaction.md",
     "effective_interaction.md",
     "system.md",
-    "descriptions.md"
+    "descriptions.md",
+    "api.md"
 ]
 
 makedocs(
