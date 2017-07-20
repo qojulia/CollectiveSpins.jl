@@ -661,7 +661,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "CollectiveSpins.meanfield.densityoperator",
     "category": "Function",
-    "text": "mpc.densityoperator(state)\n\nCreate density operator from MPCState.\n\n\n\nmeanfield.densityoperator(sx, sy, sz)\nmeanfield.densityoperator(state)\n\nCreate density operator from independent sigma expectation values.\n\n\n\n"
+    "text": "meanfield.densityoperator(sx, sy, sz)\nmeanfield.densityoperator(state)\n\nCreate density operator from independent sigma expectation values.\n\n\n\nmpc.densityoperator(state)\n\nCreate density operator from MPCState.\n\n\n\n"
 },
 
 {
