@@ -47,7 +47,7 @@ tout, ρt = CollectiveSpins.quantum.timeevolution(T, system, Ψ0)
 
 ## Documentation
 
-The documentation written with [Documenter.jl][documenter] and can be found at
+The documentation is generated with [Documenter.jl][documenter] and can be found at
 
 https://bastikr.github.io/CollectiveSpins.jl/latest
 
