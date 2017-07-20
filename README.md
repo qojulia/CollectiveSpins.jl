@@ -47,11 +47,14 @@ tout, ρt = CollectiveSpins.quantum.timeevolution(T, system, Ψ0)
 
 ## Documentation
 
-The documentation written with [Sphinx](http://www.sphinx-doc.org/) using the [Sphinx-Julia](https://github.com/bastikr/sphinx-julia>) plugin is available at https://bastikr.github.io/CollectiveSpins.jl/
+The documentation written with [Documenter.jl][documenter] and can be found at
+
+https://bastikr.github.io/CollectiveSpins.jl/latest
 
 
 [Julia]: http://julialang.org
 [qojulia]: https://github.com/qojulia
+[documenter]: https://github.com/JuliaDocs/Documenter.jl
 
 [travis-url]: https://travis-ci.org/bastikr/CollectiveSpins.jl
 [travis-img]: https://api.travis-ci.org/bastikr/CollectiveSpins.jl.png?branch=master
