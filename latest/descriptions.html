@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Theoretical Descriptions · CollectiveSpins.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/highlightjs/default.css" rel="stylesheet" type="text/css"/><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>CollectiveSpins.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Introduction</a></li><li><a class="toctext" href="installation.html">Installation</a></li><li><a class="toctext" href="geometry.html">Geometry</a></li><li><a class="toctext" href="interaction.html">Dipole-Dipole interaction</a></li><li><a class="toctext" href="effective_interaction.html">Effective Interactions</a></li><li><a class="toctext" href="system.html">System</a></li><li class="current"><a class="toctext" href="descriptions.html">Theoretical Descriptions</a><ul class="internal"><li><a class="toctext" href="#descriptions-quantum-1">Quantum</a></li><li><a class="toctext" href="#descriptions-cumulant0-1">0th order: Independent spins</a></li><li><a class="toctext" href="#descriptions-cumulant1-1">1st order: Meanfield</a></li><li><a class="toctext" href="#descriptions-cumulant2-1">2nd order: Meanfield plus Correlations (MPC)</a></li></ul></li><li><a class="toctext" href="api.html">API</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="descriptions.html">Theoretical Descriptions</a></li></ul><a class="edit-page" href="https://github.com/bastikr/CollectiveSpins.jl/tree/91e6922d7d508e9fbd317acb036225b92c5e199a/docs/src/descriptions.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Theoretical Descriptions</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Theoretical-Descriptions-1" href="#Theoretical-Descriptions-1">Theoretical Descriptions</a></h1><p><strong>CollectiveSpins.jl</strong> provides several different possibilities to simulate multi-spin systems. A full quantum description is available but only possible for small numbers of spins. Additionally, approximations of different orders are implemented using a cumulant expansion approach:</p><ul><li><p><code>quantum</code> - <a href="descriptions.html#descriptions-quantum-1">descriptions-quantum</a></p></li><li><p><code>independent</code> - <a href="descriptions.html#descriptions-cumulant0-1">descriptions-cumulant0</a></p></li><li><p><code>meanfield</code> - <a href="descriptions.html#descriptions-cumulant1-1">descriptions-cumulant1</a></p></li><li><p><code>mpc</code> - <a href="descriptions.html#descriptions-cumulant2-1">descriptions-cumulant2</a></p></li></ul><p>All variants provide a unified interface wherever possible:</p><ul><li><p><code>blochstate(phi, theta)</code></p></li><li><p><code>densityoperator(state)</code></p></li><li><p><code>sx(state)</code></p></li><li><p><code>sy(state)</code></p></li><li><p><code>sz(state)</code></p></li><li><p><code>timeevolution(T, system, state0; fout=nothing)</code></p></li><li><p><code>rotate(axis, angles, state)</code></p></li><li><p><code>squeeze(axis, χT, state)</code></p></li><li><p><code>squeezingparameter(state)</code></p></li></ul><p>The following example should give a first idea how these implementations are used:</p><pre><code class="language-julia">using QuantumOptics, CollectiveSpins
+const cs = CollectiveSpins
+
+# System parameters
+const a = 0.18
+const γ = 1.
+const e_dipole = [0,0,1.]
+const T = [0:0.05:5;]
+const N = 5
+const Ncenter = 3
+
+const system = SpinCollection(cs.geometry.chain(a, N), e_dipole; gamma=γ)
+
+
+# Define Spin 1/2 operators
+spinbasis = SpinBasis(1//2)
+sigmax = spin.sigmax(spinbasis)
+sigmay = spin.sigmay(spinbasis)
+sigmaz = spin.sigmaz(spinbasis)
+sigmap = spin.sigmap(spinbasis)
+sigmam = spin.sigmam(spinbasis)
+I_spin = identityoperator(spinbasis)
+
+# Initial state (Bloch state)
+const phi = 0.
+const theta = pi/2.
+
+# Time evolution
+
+# Independent
+state0 = cs.independent.blochstate(phi, theta, N)
+tout, state_ind_t = cs.independent.timeevolution(T, system, state0)
+
+# Meanfield
+state0 = cs.meanfield.blochstate(phi, theta, N)
+tout, state_mf_t = cs.meanfield.timeevolution(T, system, state0)
+
+# Meanfield + Correlations
+state0 = cs.mpc.blochstate(phi, theta, N)
+tout, state_mpc_t = cs.mpc.timeevolution(T, system, state0)
+
+# Quantum: master equation
+sx_master = Float64[]
+sy_master = Float64[]
+sz_master = Float64[]
+
+td_ind = Float64[]
+td_mf  = Float64[]
+td_mpc = Float64[]
+
+embed(op::Operator) = QuantumOptics.embed(cs.quantum.basis(system), Ncenter, op)
+
+function fout(t, rho::Operator)
+    i = findfirst(T, t)
+    rho_ind = cs.independent.densityoperator(state_ind_t[i])
+    rho_mf  = cs.meanfield.densityoperator(state_mf_t[i])
+    rho_mpc = cs.mpc.densityoperator(state_mpc_t[i])
+    push!(td_ind, tracedistance(rho, rho_ind))
+    push!(td_mf,  tracedistance(rho, rho_mf))
+    push!(td_mpc, tracedistance(rho, rho_mpc))
+    push!(sx_master, real(expect(embed(sigmax), rho)))
+    push!(sy_master, real(expect(embed(sigmay), rho)))
+    push!(sz_master, real(expect(embed(sigmaz), rho)))
+end
+
+Ψ₀ = cs.quantum.blochstate(phi,theta,N)
+ρ₀ = Ψ₀⊗dagger(Ψ₀)
+cs.quantum.timeevolution(T, system, ρ₀, fout=fout)
+
+# Expectation values
+mapexpect(op, states) = map(s-&gt;(op(s)[Ncenter]), states)
+
+sx_ind = mapexpect(cs.independent.sx, state_ind_t)
+sy_ind = mapexpect(cs.independent.sy, state_ind_t)
+sz_ind = mapexpect(cs.independent.sz, state_ind_t)
+
+sx_mf = mapexpect(cs.meanfield.sx, state_mf_t)
+sy_mf = mapexpect(cs.meanfield.sy, state_mf_t)
+sz_mf = mapexpect(cs.meanfield.sz, state_mf_t)
+
+sx_mpc = mapexpect(cs.mpc.sx, state_mpc_t)
+sy_mpc = mapexpect(cs.mpc.sy, state_mpc_t)
+sz_mpc = mapexpect(cs.mpc.sz, state_mpc_t)</code></pre><h2><a class="nav-anchor" id="descriptions-quantum-1" href="#descriptions-quantum-1">Quantum</a></h2><p>The time evolution of the <span>$N$</span> spins in a rotating frame corresponding to <span>$\sum_i \omega_0 \sigma^z_i$</span> is then governed by a master equation</p><div>\[\dot{\rho} = -\frac{i}{\hbar} \big[H, \rho\big] + \mathcal{L}[\rho]\]</div><p>with the Hamiltonian</p><div>\[H = \sum_{ij;i \neq j} \hbar \Omega_{ij} \sigma_i^+ \sigma_j^-\]</div><p>and Lindblad-term</p><div>\[\mathcal{L}[\rho] = \frac{1}{2} \sum_{i,j} \Gamma_{ij}
+                    (2\sigma_i^- \rho \sigma_j^+
+                    - \sigma_i^+ \sigma_j^- \rho
+                    - \rho \sigma_i^+ \sigma_j^-).\]</div><p>The dipole-dipole interaction <span>$\Omega_{ij} = \frac{3}{4} \gamma G(k_0 r_{ij})$</span> and the collective decay <span>$\Gamma_{ij} = \frac{3}{2} \gamma F(k_0 r_{ij})$</span> can be obtained analytically with</p><div>\[\begin{align*}
+F(\xi) &amp;= \alpha \frac{\sin \xi}{\xi}
+        + \beta \left(
+              \frac{\cos \xi}{\xi^2} - \frac{\sin \xi}{\xi^3}
+        \right)
+\\
+G(\xi) &amp;= -\alpha \frac{\cos \xi}{\xi} + \beta \left(
+            \frac{\sin \xi}{\xi^2} + \frac{\cos \xi}{\xi^3}
+        \right)
+\end{align*}\]</div><p>with <span>$\alpha = 1 -\cos^2 \theta$</span> and <span>$\beta = 1-3 \cos^2 \theta$</span>, where <span>$\theta$</span> represents the angle between the line connecting atoms <span>$i$</span> and <span>$j$</span> and the common atomic dipole orientation.</p><h2><a class="nav-anchor" id="descriptions-cumulant0-1" href="#descriptions-cumulant0-1">0th order: Independent spins</a></h2><p>Each spin evolves independently according to</p><div>\[\begin{align*}
+\langle\dot{\sigma_k^x}\rangle  &amp;=
+  -\frac{1}{2} \gamma \langle\sigma_k^x\rangle
+\\
+\langle\dot{\sigma_k^y}\rangle  &amp;=
+  -\frac{1}{2} \gamma \langle\sigma_k^y\rangle
+\\
+\langle\dot{\sigma_k^z}\rangle &amp;=
+    \gamma \big(1 - \langle\sigma_k^z\rangle\big)
+\end{align*}\]</div><h2><a class="nav-anchor" id="descriptions-cumulant1-1" href="#descriptions-cumulant1-1">1st order: Meanfield</a></h2><div>\[\begin{align*}
+\langle\dot{\sigma_k^x}\rangle  &amp;=
+  \sum_{i;i \neq k} \Omega_{ki} \langle\sigma_i^y\sigma_k^z\rangle
+  -\frac{1}{2} \gamma \langle\sigma_k^x\rangle
+  -\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \langle\sigma_i^x\sigma_k^z\rangle
+\\
+\langle\dot{\sigma_k^y}\rangle  &amp;=
+  -\sum_{i;i \neq k} \Omega_{ki} \langle\sigma_i^x\sigma_k^z\rangle
+  -\frac{1}{2} \gamma \langle\sigma_k^y\rangle
+  -\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \langle\sigma_i^y\sigma_k^z\rangle
+\\
+\langle\dot{\sigma_k^z}\rangle &amp;=
+    -i \sum_{i;i \neq k} \Omega_{ki} \Big(\langle\sigma_k^x\sigma_i^y\rangle - \langle\sigma_i^x\sigma_k^y\rangle\Big)
+    +\gamma \big(1 - \langle\sigma_k^z\rangle\big)
+    \\&amp;\qquad
+    +\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \Big(\langle\sigma_k^x\sigma_i^x\rangle + \langle\sigma_i^y\sigma_k^y\rangle\Big)
+  \end{align*}\]</div><h2><a class="nav-anchor" id="descriptions-cumulant2-1" href="#descriptions-cumulant2-1">2nd order: Meanfield plus Correlations (MPC)</a></h2><div>\[\begin{align*}
+\langle\dot{\sigma_k^x\sigma_l^x}\rangle &amp;=
+  \sum_{j;j \neq k,l} \Omega_{kj} \langle\sigma_k^z\sigma_l^x\sigma_j^y\rangle
+   + \sum_{j;j \neq k,l} \Omega_{lj} \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+\\&amp;\qquad
+  - \gamma \langle\sigma_k^x\sigma_l^x\rangle
+  + \Gamma_{kl} \Big(
+          \langle\sigma_k^z\sigma_l^z\rangle
+          - \frac{1}{2} \langle\sigma_k^z\rangle
+          - \frac{1}{2} \langle\sigma_l^z\rangle
+    \Big)
+\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^x\sigma_j^x\rangle
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+\\
+\langle\dot{\sigma_k^y\sigma_l^y}\rangle
+&amp;= - \sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+    - \sum_{j;j \neq k,l} \Omega_{lj}
+      \langle\sigma_k^y\sigma_l^z\sigma_j^x\rangle
+\\&amp;\qquad
+    - \gamma \langle\sigma_k^y\sigma_l^y\rangle
+    + \Gamma_{kl}\Big(
+          \langle\sigma_k^z\sigma_l^z\rangle
+        -\frac{1}{2} \langle\sigma_k^z\rangle
+        -\frac{1}{2} \langle\sigma_l^z\rangle
+    \Big)
+\\&amp;\quad
+    -\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+    -\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^y\sigma_l^z\sigma_j^y\rangle
+\\
+\langle\dot{\sigma_k^z\sigma_l^z}\rangle
+&amp;= \sum_{j;j \neq k,l} \Omega_{kj} \Big(
+      \langle\sigma_k^y\sigma_l^z\sigma_j^x\rangle
+      - \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+    \Big)
+\\&amp;\qquad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^z\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\\&amp;\quad
+    - 2 \gamma \langle\sigma_k^z\sigma_l^z\rangle
+    + \gamma \big(\langle\sigma_l^z\rangle + \langle\sigma_k^z\rangle\big)
+\\&amp;\quad
+    +\Gamma_{kl}\Big(
+          \langle\sigma_k^y\sigma_l^y\rangle
+          + \langle\sigma_k^x\sigma_l^x\rangle
+    \Big)
+\\&amp;\quad
+    +\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj} \Big(
+          \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+          +\langle\sigma_k^y\sigma_l^z\sigma_j^y\rangle
+    \Big)
+\\&amp;\qquad
+    +\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^z\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+    \Big)
+\end{align*}\]</div><div>\[\begin{align*}
+\langle\dot{\sigma_k^x\sigma_l^y}\rangle
+&amp;= \Omega_{kl}\Big(
+      \langle\sigma_k^z\rangle
+      - \langle\sigma_l^z\rangle
+    \Big)
+    +\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+\\&amp;\qquad
+    -\sum_{j;j \neq k,l} \Omega_{lj}
+      \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+    - \gamma \langle\sigma_k^x\sigma_l^y\rangle
+\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+\\
+\langle\dot{\sigma_k^x\sigma_l^z}\rangle
+&amp;= \Omega_{kl}
+      \langle\sigma_l^y\rangle
+    +\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^z\sigma_j^y\rangle
+\\&amp;\quad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^x\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^x\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\\&amp;\quad
+- \frac{3}{2} \gamma \langle\sigma_k^x\sigma_l^z\rangle
+  + \gamma \langle\sigma_k^x\rangle
+  - \Gamma_{kl}\Big(
+        \langle\sigma_k^z\sigma_l^x\rangle
+        -\frac{1}{2} \langle\sigma_l^x\rangle
+    \Big)
+\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^z\sigma_j^x\rangle
+\\&amp;\quad
+    + \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^x\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^x\sigma_l^y\sigma_j^y\rangle
+    \Big)
+\end{align*}\]</div><div>\[\begin{align*}
+\langle\dot{\sigma_k^y\sigma_l^z}\rangle
+&amp;= -\Omega_{kl} \langle\sigma_l^x\rangle
+    -\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^z\sigma_j^x\rangle
+\\&amp;\quad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^y\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^y\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\\&amp;\quad
+  - \frac{3}{2} \gamma \langle\sigma_k^y\sigma_l^z\rangle
+  + \gamma \langle\sigma_k^y\rangle
+  - \Gamma_{kl}\Big(
+          \langle\sigma_k^z\sigma_l^y\rangle
+        - \frac{1}{2}\langle\sigma_l^y\rangle
+    \Big)
+\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^z\sigma_j^y\rangle
+\\&amp;\quad
+    + \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^y\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^y\sigma_l^y\sigma_j^y\rangle
+    \Big)
+\end{align*}\]</div><footer><hr/><a class="previous" href="system.html"><span class="direction">Previous</span><span class="title">System</span></a><a class="next" href="api.html"><span class="direction">Next</span><span class="title">API</span></a></footer></article></body></html>
