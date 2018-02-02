@@ -17,7 +17,7 @@
 **CollectiveSpins.jl** is not an officially registered package but it nevertheless can be installed using julia's package manager:
 
 ```julia
-julia> Pkg.clone("https://github.com/bastikr/CollectiveSpins.jl.git")
+julia> Pkg.clone("https://github.com/qojulia/CollectiveSpins.jl.git")
 ```
 
 
