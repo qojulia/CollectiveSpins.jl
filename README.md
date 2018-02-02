@@ -49,21 +49,21 @@ tout, ρt = CollectiveSpins.quantum.timeevolution(T, system, Ψ0)
 
 The documentation is generated with [Documenter.jl][documenter] and can be found at
 
-https://bastikr.github.io/CollectiveSpins.jl/latest
+https://qojulia.github.io/CollectiveSpins.jl/latest
 
 
 [Julia]: http://julialang.org
 [qojulia]: https://github.com/qojulia
 [documenter]: https://github.com/JuliaDocs/Documenter.jl
 
-[travis-url]: https://travis-ci.org/bastikr/CollectiveSpins.jl
-[travis-img]: https://api.travis-ci.org/bastikr/CollectiveSpins.jl.png?branch=master
+[travis-url]: https://travis-ci.org/qojulia/CollectiveSpins.jl
+[travis-img]: https://api.travis-ci.org/qojulia/CollectiveSpins.jl.png?branch=master
 
-[appveyor-url]: https://ci.appveyor.com/project/bastikr/collectivespins-jl/branch/master
+[appveyor-url]: https://ci.appveyor.com/project/qojulia/collectivespins-jl/branch/master
 [appveyor-img]: https://ci.appveyor.com/api/projects/status/t83f2bqfpumn6d96/branch/master?svg=true
 
-[coveralls-url]: https://coveralls.io/github/bastikr/CollectiveSpins.jl?branch=master
-[coveralls-img]: https://coveralls.io/repos/github/bastikr/CollectiveSpins.jl/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/qojulia/CollectiveSpins.jl?branch=master
+[coveralls-img]: https://coveralls.io/repos/github/qojulia/CollectiveSpins.jl/badge.svg?branch=master
 
-[codecov-url]: https://codecov.io/gh/bastikr/CollectiveSpins.jl
-[codecov-img]: https://codecov.io/gh/bastikr/CollectiveSpins.jl/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/qojulia/CollectiveSpins.jl
+[codecov-img]: https://codecov.io/gh/qojulia/CollectiveSpins.jl/branch/master/graph/badge.svg
