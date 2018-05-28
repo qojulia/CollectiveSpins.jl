@@ -1,6 +1,5 @@
 module independent
 
-using ArrayViews
 using QuantumOptics
 using ..interaction, ..system
 
@@ -57,7 +56,7 @@ Split state into sx, sy and sz parts.
 """
 function splitstate(state::Vector{Float64})
     N = dim(state)
-    return ArrayViews.view(state, 0*N+1:1*N), ArrayViews.view(state, 1*N+1:2*N), ArrayViews.view(state, 2*N+1:3*N)
+    return view(state, 0*N+1:1*N), view(state, 1*N+1:2*N), view(state, 2*N+1:3*N)
 end
 
 """
@@ -84,21 +83,21 @@ end
 
 Sigma x expectation values of state.
 """
-sx(state::Vector{Float64}) = ArrayViews.view(state, 1:dim(state))
+sx(state::Vector{Float64}) = view(state, 1:dim(state))
 
 """
     independent.sy(state)
 
 Sigma y expectation values of state.
 """
-sy(state::Vector{Float64}) = ArrayViews.view(state, dim(state)+1:2*dim(state))
+sy(state::Vector{Float64}) = view(state, dim(state)+1:2*dim(state))
 
 """
     independent.sz(state)
 
 Sigma z expectation values of state.
 """
-sz(state::Vector{Float64}) = ArrayViews.view(state, 2*dim(state)+1:3*dim(state))
+sz(state::Vector{Float64}) = view(state, 2*dim(state)+1:3*dim(state))
 
 
 """

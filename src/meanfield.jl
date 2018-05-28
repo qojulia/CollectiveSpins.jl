@@ -2,7 +2,6 @@ module meanfield
 
 export ProductState, densityoperator
 
-using ArrayViews
 using QuantumOptics
 using ..interaction, ..system
 
@@ -110,7 +109,7 @@ end
 
 Split state into sx, sy and sz parts.
 """
-splitstate(N::Int, data::Vector{Float64}) = ArrayViews.view(data, 0*N+1:1*N), ArrayViews.view(data, 1*N+1:2*N), ArrayViews.view(data, 2*N+1:3*N)
+splitstate(N::Int, data::Vector{Float64}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
 splitstate(state::ProductState) = splitstate(state.N, state.data)
 
 
@@ -137,21 +136,21 @@ end
 
 Sigma x expectation values of state.
 """
-sx(x::ProductState) = ArrayViews.view(x.data, 1:x.N)
+sx(x::ProductState) = view(x.data, 1:x.N)
 
 """
     meanfield.sy(state)
 
 Sigma y expectation values of state.
 """
-sy(x::ProductState) = ArrayViews.view(x.data, x.N+1:2*x.N)
+sy(x::ProductState) = view(x.data, x.N+1:2*x.N)
 
 """
     meanfield.sz(state)
 
 Sigma z expectation values of state.
 """
-sz(x::ProductState) = ArrayViews.view(x.data, 2*x.N+1:3*x.N)
+sz(x::ProductState) = view(x.data, 2*x.N+1:3*x.N)
 
 
 """

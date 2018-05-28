@@ -1,6 +1,5 @@
 module mpc
 
-using ArrayViews
 using QuantumOptics
 using ..interaction, ..system, ..quantum
 
@@ -175,15 +174,15 @@ Returns sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz.
 """
 function splitstate(N::Int, data::Vector{Float64})
     data = reshape(data, 3*N, 2*N+1)
-    sx = ArrayViews.view(data, 0*N+1:1*N, 2*N+1)
-    sy = ArrayViews.view(data, 1*N+1:2*N, 2*N+1)
-    sz = ArrayViews.view(data, 2*N+1:3*N, 2*N+1)
-    Cxx = ArrayViews.view(data, 0*N+1:1*N, 0*N+1:1*N)
-    Cyy = ArrayViews.view(data, 1*N+1:2*N, 0*N+1:1*N)
-    Czz = ArrayViews.view(data, 2*N+1:3*N, 0*N+1:1*N)
-    Cxy = ArrayViews.view(data, 0*N+1:1*N, 1*N+1:2*N)
-    Cxz = ArrayViews.view(data, 1*N+1:2*N, 1*N+1:2*N)
-    Cyz = ArrayViews.view(data, 2*N+1:3*N, 1*N+1:2*N)
+    sx = view(data, 0*N+1:1*N, 2*N+1)
+    sy = view(data, 1*N+1:2*N, 2*N+1)
+    sz = view(data, 2*N+1:3*N, 2*N+1)
+    Cxx = view(data, 0*N+1:1*N, 0*N+1:1*N)
+    Cyy = view(data, 1*N+1:2*N, 0*N+1:1*N)
+    Czz = view(data, 2*N+1:3*N, 0*N+1:1*N)
+    Cxy = view(data, 0*N+1:1*N, 1*N+1:2*N)
+    Cxz = view(data, 1*N+1:2*N, 1*N+1:2*N)
+    Cyz = view(data, 2*N+1:3*N, 1*N+1:2*N)
     return sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz
 end
 splitstate(state::MPCState) = splitstate(state.N, state.data)
@@ -281,58 +280,58 @@ end
 
 Sigma x expectation values of state.
 """
-sx(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 2*x.N+1)
+sx(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 2*x.N+1)
 
 """
     mpc.sy(state)
 
 Sigma y expectation values of state.
 """
-sy(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 2*x.N+1)
+sy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 2*x.N+1)
 
 """
     mpc.sz(state)
 
 Sigma z expectation values of state.
 """
-sz(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 2*x.N+1)
+sz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 2*x.N+1)
 
 """
     mpc.Cxx(state)
 
 Sigmax-Sigmax correlation values of MPCState.
 """
-Cxx(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 0*x.N+1:1*x.N)
+Cxx(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 0*x.N+1:1*x.N)
 """
     mpc.Cyy(state)
 
 Sigmay-Sigmay correlation values of MPCState.
 """
-Cyy(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 0*x.N+1:1*x.N)
+Cyy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 0*x.N+1:1*x.N)
 """
     mpc.Czz(state)
 
 Sigmaz-Sigmaz correlation values of MPCState.
 """
-Czz(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 0*x.N+1:1*x.N)
+Czz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 0*x.N+1:1*x.N)
 """
     mpc.Cxy(state)
 
 Sigmax-Sigmay correlation values of MPCState.
 """
-Cxy(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 1*x.N+1:2*x.N)
+Cxy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 1*x.N+1:2*x.N)
 """
     mpc.Cxz(state)
 
 Sigmax-Sigmaz correlation values of MPCState.
 """
-Cxz(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 1*x.N+1:2*x.N)
+Cxz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 1*x.N+1:2*x.N)
 """
     mpc.Cyz(state)
 
 Sigmay-Sigmaz correlation values of MPCState.
 """
-Cyz(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 1*x.N+1:2*x.N)
+Cyz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 1*x.N+1:2*x.N)
 
 """
     mpc.correlation(s1, s2, s3, C12, C13, C23)
