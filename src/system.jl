@@ -1,7 +1,5 @@
 module system
 
-using Compat
-
 export Spin, SpinCollection, CavityMode, CavitySpinCollection
 
 
@@ -15,7 +13,7 @@ Currently there are following concrete systems:
 * CavityMode
 * CavitySpinCollection
 """
-@compat abstract type System end
+abstract type System end
 
 
 """
@@ -28,10 +26,10 @@ frequency.
 * `position`: A vector defining a point in R3.
 * `delta`: Detuning.
 """
-type Spin <: System
+struct Spin <: System
     position::Vector{Float64}
     delta::Float64
-    function Spin{T<:Real}(position::Vector{T}; delta::Real=0.)
+    function Spin(position::Vector{T}; delta::Real=0.) where T<:Real
         new(position, delta)
     end
 end
@@ -45,7 +43,7 @@ A class representing a system consisting of many spins.
 * `polarization`: Unit vector defining the polarization axis.
 * `gamma`: Decay rate. (Has to be the same for all spins.)
 """
-type SpinCollection <: System
+struct SpinCollection <: System
     spins::Vector{Spin}
     polarization::Vector{Float64}
     gamma::Float64
@@ -78,7 +76,7 @@ A class representing a single mode in a cavity.
 * `eta=0`: Pump strength.
 * `kappa=0`: Decay rate.
 """
-type CavityMode <: System
+struct CavityMode <: System
     cutoff::Int
     delta::Float64
     eta::Float64
@@ -99,7 +97,7 @@ A class representing a cavity coupled to many spins.
     the cavity mode. Alternatively a single number can be given for
     identical coupling for all spins.
 """
-type CavitySpinCollection <: System
+struct CavitySpinCollection <: System
     cavity::CavityMode
     spincollection::SpinCollection
     g::Vector{Float64}

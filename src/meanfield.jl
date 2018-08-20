@@ -5,6 +5,8 @@ export ProductState, densityoperator
 using QuantumOptics
 using ..interaction, ..system
 
+import OrdinaryDiffEq
+
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
 I = full(identityoperator(spinbasis))
@@ -171,7 +173,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
     γ = S.gamma
-    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         @inbounds for k=1:N
@@ -196,11 +198,12 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
             push!(t_out, t)
             push!(state_out, ProductState(N, deepcopy(y)))
         end
-
-        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
-        return t_out, state_out
+        
+        prob = OrdinaryDiffEq.ODEProblem(f, state0.dat, (T[1], T[end]))
+        sol = OrdinaryDiffEq.solve(prob, OrdinaryDiffEq.DP5())
+        return sol.t, sol.u
     else
-        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
+        # return TODO: (f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
     end
 end
 
@@ -222,7 +225,7 @@ Symmetric meanfield time evolution.
 function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Real; γ::Real=1.0, δ0::Real=0., fout=nothing)
     N = 1
     @assert state0.N==N
-    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         dsx[1] = -δ0*sy[1] + Ωeff*sy[1]*sz[1] - 0.5*γ*sx[1] + 0.5*Γeff*sx[1]*sz[1]
@@ -236,10 +239,13 @@ function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Re
             push!(t_out, t)
             push!(state_out, ProductState(N, deepcopy(y)))
         end
-        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
-        return t_out, state_out
+        
+        prob = OrdinaryDiffEq.problem(f, state0.data, (T[1], T[end]))
+        sol= OrdinaryDiffEq.solve(prob, OrdinaryDiffEq.DP5())
+        
+        return sol.t, sol.u
     else
-        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
+        # return TODO: (f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
     end
 end
 
