@@ -114,7 +114,7 @@ function cube_orthogonal(a::Float64, dϕ)
     omega_eff, gamma_eff = square_orthogonal(a, 0)
     sqrt2 = sqrt(2.)
     sqrt3 = sqrt(3.)
-    Θdiag = atan2(sqrt2, 1.)
+    Θdiag = atan(sqrt2, 1.)
     omega_eff += (Omega(a, 0.) + 2*Omega(sqrt(2.)*a, pi/4.) + Omega(sqrt3*a, Θdiag))*cos(dϕ)
     gamma_eff += (Gamma(a, 0.) + 2*Gamma(sqrt(2.)*a, pi/4.) + Gamma(sqrt3*a, Θdiag))*cos(dϕ)
     return omega_eff, gamma_eff

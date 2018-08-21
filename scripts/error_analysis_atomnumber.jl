@@ -6,7 +6,7 @@ using PyCall
 const γ = 1.
 const e_dipole = [0,0,1.]
 const T = [0:0.1:2.5]
-const D = exp(linspace(log(0.1), log(100), 100))
+const D = exp(range(log(0.1), stop=log(100), length=100))
 
 plt.figure("trace_distance", figsize=(6,4))
 plt.figure("sz_distance", figsize=(6,4))
@@ -54,8 +54,8 @@ for atomnumber=2:6
 
         # Meanfield timeevolution
         N = length(system.atoms)
-        sz0 = zeros(Complex128, N)
-        sp0 = zeros(Complex128, N) .- 0.5
+        sz0 = zeros(ComplexF64, N)
+        sp0 = zeros(ComplexF64, N) .- 0.5
 
         T_mf, sz_mf, sp_mf = meanfield_timeevolution(T, system, sz0, sp0)
 
@@ -66,12 +66,12 @@ for atomnumber=2:6
 
         # Correlation included timeevolution
         N = length(system.atoms)
-        sz0 = zeros(Complex128, N)
-        sp0 = zeros(Complex128, N) .- 0.5
-        Cpm0 = zeros(Complex128, N, N)
-        Cpz0 = zeros(Complex128, N, N)
-        Cpp0 = zeros(Complex128, N, N)
-        Czz0 = zeros(Complex128, N, N)
+        sz0 = zeros(ComplexF64, N)
+        sp0 = zeros(ComplexF64, N) .- 0.5
+        Cpm0 = zeros(ComplexF64, N, N)
+        Cpz0 = zeros(ComplexF64, N, N)
+        Cpp0 = zeros(ComplexF64, N, N)
+        Czz0 = zeros(ComplexF64, N, N)
 
         T_cor, sz_cor, sp_cor, C_cor = correlation_timeevolution(T, system, sz0, sp0, Cpm0, Cpz0, Cpp0, Czz0)
 

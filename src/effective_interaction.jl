@@ -118,7 +118,7 @@ function cube_orthogonal(a::Float64)
     omega_eff, gamma_eff = square_orthogonal(a)
     sqrt2 = sqrt(2.)
     sqrt3 = sqrt(3.)
-    Θdiag = atan2(sqrt2, 1.)
+    Θdiag = atan(sqrt2, 1.)
     omega_eff += Omega(a, 0.) + 2*Omega(sqrt(2.)*a, pi/4.) + Omega(sqrt3*a, Θdiag)
     gamma_eff += Gamma(a, 0.) + 2*Gamma(sqrt(2.)*a, pi/4.) + Gamma(sqrt3*a, Θdiag)
     return omega_eff, gamma_eff
@@ -355,7 +355,7 @@ function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
             for nz=1:N
                 nzpow2 = nz^2
                 d = sqrt(a^2*nrpow2 + b^2*nzpow2)
-                θ = atan2(a*nr, b*nz)
+                θ = atan(a*nr, b*nz)
                 omega_eff += multiplicity*Omega(d, θ)
                 gamma_eff += multiplicity*Gamma(d, θ)
             end

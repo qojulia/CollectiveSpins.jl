@@ -43,7 +43,7 @@ Product state of `N` single spin Bloch states.
 
 All spins have the same azimuthal angle `phi` and polar angle `theta`.
 """
-function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
+function blochstate(phi::Vector{T1}, theta::Vector{T2}) where {T1<:Real, T2<:Real}
     N = length(phi)
     @assert length(theta)==N
     state_g = basisstate(spinbasis, 1)
@@ -241,7 +241,7 @@ Rotations on the Bloch sphere for the given density operator.
 * `angles`: Rotation angle(s).
 * `ρ`: Density operator that should be rotated.
 """
-function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, ρ::DenseOperator)
+function rotate(axis::Vector{T1}, angles::Vector{T2}, ρ::DenseOperator) where {T1<:Real, T2<:Real}
     N = dim(ρ)
     @assert length(axis)==3
     @assert length(angles)==N
@@ -257,7 +257,7 @@ function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, ρ::De
     return ρ
 end
 
-rotate{T<:Real}(axis::Vector{T}, angle::Real, ρ::DenseOperator) = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
+rotate(axis::Vector{T}, angle::Real, ρ::DenseOperator) where {T<:Real} = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
 
 """
     quantum.squeeze_sx(χT, ρ₀)
@@ -289,7 +289,7 @@ Spin squeezing along an arbitrary axis.
 * `χT`: Squeezing strength.
 * `ρ₀`: Operator that should be squeezed.
 """
-function squeeze{T<:Real}(axis::Vector{T}, χT::Real, ρ₀::DenseOperator)
+function squeeze(axis::Vector{T}, χT::Real, ρ₀::DenseOperator) where T<:Real
     @assert length(axis)==3
     axis = axis/norm(axis)
     N = dim(ρ₀)

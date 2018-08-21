@@ -20,7 +20,7 @@ Product state of `N` single spin Bloch states.
 
 All spins have the same azimuthal angle `phi` and polar angle `theta`.
 """
-function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
+function blochstate(phi::Vector{T1}, theta::Vector{T2}) where {T1<:Real, T2<:Real}
     N = length(phi)
     @assert length(theta)==N
     state = zeros(Float64, 3*N)

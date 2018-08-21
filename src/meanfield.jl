@@ -25,7 +25,7 @@ The data layout is [sx1 sx2 ... sy1 sy2 ... sz1 sz2 ...]
 * `N`: Number of spins.
 * `data`: Vector of length 3*N.
 """
-type ProductState
+mutable struct ProductState
     N::Int
     data::Vector{Float64}
 end
@@ -70,7 +70,7 @@ Product state of `N` single spin Bloch states.
 
 All spins have the same azimuthal angle `phi` and polar angle `theta`.
 """
-function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
+function blochstate(phi::Vector{T1}, theta::Vector{T2}) where {T1<:Real, T2<:Real}
     N = length(phi)
     @assert length(theta)==N
     state = ProductState(N)
@@ -99,7 +99,7 @@ end
 
 Number of spins described by this state.
 """
-function dim{T<:Real}(state::Vector{T})
+function dim(state::Vector{T}) where T<:Real
     N, rem = divrem(length(state), 3)
     @assert rem==0
     return N
@@ -260,7 +260,7 @@ Rotations on the Bloch sphere for the given [`ProductState`](@ref).
 * `angles`: Rotation angle(s).
 * `state`: [`ProductState`](@ref) that should be rotated.
 """
-function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state::ProductState)
+function rotate(axis::Vector{T1}, angles::Vector{T2}, state::ProductState) where {T1<:Real, T2<:Real}
     @assert length(axis)==3
     @assert length(angles)==state.N
     w = axis/norm(axis)
@@ -276,6 +276,6 @@ function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state:
     return state_rot
 end
 
-rotate{T<:Real}(axis::Vector{T}, angle::Real, state::ProductState) = rotate(axis, ones(Float64, state.N)*angle, state)
+rotate(axis::Vector{T}, angle::Real, state::ProductState) where {T<:Real} = rotate(axis, ones(Float64, state.N)*angle, state)
 
 end # module

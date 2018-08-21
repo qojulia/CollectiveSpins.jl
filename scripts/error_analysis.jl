@@ -23,7 +23,7 @@ const odir = parameters["o"]
 @assert isdir(odir)
 
 # Integration
-const T = float(eval(parse(parameters["T"])))
+const T = float(eval(Meta.parse(parameters["T"])))
 @assert T[1]<T[end]
 
 # System parameters
@@ -38,7 +38,7 @@ const theta = float(parameters["theta"])
 using QuantumOptics, CollectiveSpins
 const cs = CollectiveSpins
 
-const edipole = float(eval(parse(parameters["edipole"])))
+const edipole = float(eval(Meta.parse(parameters["edipole"])))
 const geomN = int(parameters["N"])
 const d = float(parameters["d"])
 const geomstring = parameters["geometry"]

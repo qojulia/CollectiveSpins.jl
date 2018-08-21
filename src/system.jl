@@ -47,7 +47,7 @@ struct SpinCollection <: System
     spins::Vector{Spin}
     polarization::Vector{Float64}
     gamma::Float64
-    function SpinCollection{T<:Real}(spins::Vector{Spin}, polarization::Vector{T}; gamma::Real=1.)
+    function SpinCollection(spins::Vector{Spin}, polarization::Vector{T}; gamma::Real=1.) where T<:Real
         new(spins, polarization/norm(polarization), gamma)
     end
 end
@@ -62,7 +62,7 @@ Create a SpinCollection without explicitely creating single spins.
 * `delta=0`: Detuning.
 * `gamma=0`: Decay rate. (Has to be the same for all spins.
 """
-function SpinCollection{T1<:Real, T2<:Real}(positions::Vector{Vector{T1}}, polarization::Vector{T2}; delta::Real=0., gamma::Real=1.)
+function SpinCollection(positions::Vector{Vector{T1}}, polarization::Vector{T2}; delta::Real=0., gamma::Real=1.) where {T1<:Real, T2<:Real}
     SpinCollection(Spin[Spin(p; delta=delta) for p=positions], polarization; gamma=gamma)
 end
 
@@ -101,7 +101,7 @@ struct CavitySpinCollection <: System
     cavity::CavityMode
     spincollection::SpinCollection
     g::Vector{Float64}
-    function CavitySpinCollection{T<:Real}(cavity::CavityMode, spincollection::SpinCollection, g::Vector{T})
+    function CavitySpinCollection(cavity::CavityMode, spincollection::SpinCollection, g::Vector{T}) where T<:Real
         @assert length(g) == length(spincollection.spins)
         new(cavity, spincollection, g)
     end

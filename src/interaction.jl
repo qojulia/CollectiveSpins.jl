@@ -75,8 +75,8 @@ Angle between the vectors `x_j`-`x_i` and `e`.
 """
 function Theta(xi, xj, e)
     s = dot((xj-xi)/norm(xj-xi), e/norm(e))
-    s = (s>1.?1.:s)
-    s = (s<-1.?-1.:s)
+    s = (s>1. ? 1. : s)
+    s = (s<-1. ? -1. : s)
     return acos(s)
 end
 

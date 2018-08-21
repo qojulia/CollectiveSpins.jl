@@ -13,8 +13,8 @@ system = CascadedDecaySystem(atoms, γ)
 
 # Meanfield timeevolution
 N = length(system.atoms)
-sz0 = zeros(Complex128, N)
-sp0 = zeros(Complex128, N) .- 0.5
+sz0 = zeros(ComplexF64, N)
+sp0 = zeros(ComplexF64, N) .- 0.5
 
 println("meanfield +z")
 @time T_mf, sz_mf, sp_mf = meanfield_timeevolution(T, system, sz0, sp0)
@@ -32,12 +32,12 @@ println("meanfield xyz")
 
 # Correlation included timeevolution
 N = length(system.atoms)
-sz0 = zeros(Complex128, N)
-sp0 = zeros(Complex128, N) .- 0.5
-Cpm0 = zeros(Complex128, N, N)
-Cpz0 = zeros(Complex128, N, N)
-Cpp0 = zeros(Complex128, N, N)
-Czz0 = zeros(Complex128, N, N)
+sz0 = zeros(ComplexF64, N)
+sp0 = zeros(ComplexF64, N) .- 0.5
+Cpm0 = zeros(ComplexF64, N, N)
+Cpz0 = zeros(ComplexF64, N, N)
+Cpp0 = zeros(ComplexF64, N, N)
+Czz0 = zeros(ComplexF64, N, N)
 
 println("correlation +z")
 @time T_cor, sz_cor, sp_cor = correlation_timeevolution(T, system, sz0, sp0, Cpm0, Cpz0, Cpp0, Czz0)
