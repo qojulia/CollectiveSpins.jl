@@ -3,6 +3,7 @@ module CollectiveSpins
 export Spin, SpinCollection, CavityMode, CavitySpinCollection,
         geometry
 
+
 include("system.jl")
 include("geometry.jl")
 include("interaction.jl")

@@ -1,3 +1,4 @@
 julia 0.7
 QuantumOptics 0.6
 OrdinaryDiffEq 4.10
+Optim 0.16

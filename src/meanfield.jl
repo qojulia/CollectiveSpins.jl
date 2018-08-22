@@ -2,19 +2,19 @@ module meanfield
 
 export ProductState, densityoperator
 
-using QuantumOptics
+using QuantumOptics, LinearAlgebra
 using ..interaction, ..system
 
 import OrdinaryDiffEq
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
-I = full(identityoperator(spinbasis))
-sigmax = full(spin.sigmax(spinbasis))
-sigmay = full(spin.sigmay(spinbasis))
-sigmaz = full(spin.sigmaz(spinbasis))
-sigmap = full(spin.sigmap(spinbasis))
-sigmam = full(spin.sigmam(spinbasis))
+I = dense(identityoperator(spinbasis))
+sigmax = dense(spin.sigmax(spinbasis))
+sigmay = dense(spin.sigmay(spinbasis))
+sigmaz = dense(spin.sigmaz(spinbasis))
+sigmap = dense(spin.sigmap(spinbasis))
+sigmam = dense(spin.sigmam(spinbasis))
 
 """
 Class describing a Meanfield state (Product state).

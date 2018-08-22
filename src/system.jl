@@ -2,6 +2,7 @@ module system
 
 export Spin, SpinCollection, CavityMode, CavitySpinCollection
 
+using LinearAlgebra
 
 """
 Abstract base class for all systems defined in this library.

@@ -1,10 +1,10 @@
 module quantum
 
 using ..interaction, ..system
-using QuantumOptics
+using QuantumOptics, LinearAlgebra
 
 try
-    eval(Expr(:using, :Optim))
+    eval(Expr(:toplevel,:(import Optim)))
     global optimize = Optim.optimize
 catch e
     if typeof(e) == ArgumentError

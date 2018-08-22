@@ -1,6 +1,6 @@
 module mpc
 
-using QuantumOptics
+using QuantumOptics, LinearAlgebra
 using ..interaction, ..system, ..quantum
 
 try
@@ -20,11 +20,11 @@ export MPCState, densityoperator
 
 
 spinbasis = SpinBasis(1//2)
-sigmax = full(spin.sigmax(spinbasis))
-sigmay = full(spin.sigmay(spinbasis))
-sigmaz = full(spin.sigmaz(spinbasis))
-sigmap = full(spin.sigmap(spinbasis))
-sigmam = full(spin.sigmam(spinbasis))
+sigmax = dense(spin.sigmax(spinbasis))
+sigmay = dense(spin.sigmay(spinbasis))
+sigmaz = dense(spin.sigmaz(spinbasis))
+sigmap = dense(spin.sigmap(spinbasis))
+sigmam = dense(spin.sigmam(spinbasis))
 
 """
 Class describing a MPC state (Product state + Correlations).
@@ -339,7 +339,7 @@ Cyz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 1*x.N+1:
 3-spin correlation value.
 """
 function correlation(s1::T, s2::T, s3::T, C12::T, C13::T, C23::T) where T<:Real
-    return -2.*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
+    return -2.0*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
 end
 
 """
@@ -367,7 +367,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
         @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
-            dsz[k] = -γ*(1.+sz[k])
+            dsz[k] = -γ*(1.0+sz[k])
             for j=1:N
                 if j==k
                     continue
@@ -515,7 +515,7 @@ function var_Sx(state0::MPCState)
         end
         exp_Sx2 += Cxx[k,l]
     end
-    return 1./N + 1./N^2*exp_Sx2 - 1./N^2*exp_Sx_2
+    return 1.0/N + 1.0/N^2*exp_Sx2 - 1.0/N^2*exp_Sx_2
 end
 
 """
@@ -535,7 +535,7 @@ function var_Sy(state0::MPCState)
         end
         exp_Sy2 += Cyy[k,l]
     end
-    return 1./N + 1./N^2*exp_Sy2 - 1./N^2*exp_Sy_2
+    return 1.0/N + 1.0/N^2*exp_Sy2 - 1.0/N^2*exp_Sy_2
 end
 
 """
@@ -555,7 +555,7 @@ function var_Sz(state0::MPCState)
         end
         exp_Sz2 += Czz[k,l]
     end
-    return 1./N + 1./N^2*exp_Sz2 - 1./N^2*exp_Sz_2
+    return 1.0/N + 1.0/N^2*exp_Sz2 - 1.0/N^2*exp_Sz_2
 end
 
 """
@@ -570,7 +570,7 @@ Spin squeezing along sx.
 function squeeze_sx(χT::Real, state0::MPCState)
     T = [0,1.]
     N = state0.N
-    χeff = 4.*χT/N^2
+    χeff = 4.0*χT/N^2
     function f(t, y::Vector{Float64}, dy::Vector{Float64})
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
@@ -674,14 +674,14 @@ Calculate squeezing parameter for the given `state`.
 function squeezingparameter(state::MPCState)
     N = state.N
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = map(sum, splitstate(state))
-    n = 1./N*[sx, sy, sz]
+    n = 1.0/N*[sx, sy, sz]
     e1, e2 = orthogonal_vectors(n)
     function f(phi)
         nphi = cos(phi)*e1 + sin(phi)*e2
         nx = nphi[1]
         ny = nphi[2]
         nz = nphi[3]
-        Sphi2 = 1./N^2*(N+nx*nx*Cxx + ny*ny*Cyy + nz*nz*Czz +
+        Sphi2 = 1.0/N^2*(N+nx*nx*Cxx + ny*ny*Cyy + nz*nz*Czz +
                 2*nx*ny*Cxy + 2*nx*nz*Cxz + 2*ny*nz*Cyz)
         return Sphi2
     end

@@ -6,7 +6,7 @@ function Omega(a, θ)
     ξ = 2*pi*a
     cosθpow2 = cos(θ)^2
     cosξdivξ = cos(ξ)/ξ
-    return 3./4*((1.-3.*cosθpow2) * (sin(ξ)+cosξdivξ)/ξ^2 - (1.-cosθpow2)*cosξdivξ)
+    return 3.0/4*((1.0-3.0*cosθpow2) * (sin(ξ)+cosξdivξ)/ξ^2 - (1.0-cosθpow2)*cosξdivξ)
 end
 
 function Gamma(a, θ)
@@ -24,7 +24,7 @@ function OmegaGamma(a, cosθpow2)
     #cosθpow2 = cos(θ)^2
     cosξ = cospi(2*a)
     sinξ = sinpi(2*a)
-    omega = 0.75*((1.-3.*cosθpow2) * (sinξ+cosξ/(2*pi*a))/(2*pi*a)^2 - (1.-cosθpow2)*cosξ/(2*pi*a))
+    omega = 0.75*((1.0-3.0*cosθpow2) * (sinξ+cosξ/(2*pi*a))/(2*pi*a)^2 - (1.0-cosθpow2)*cosξ/(2*pi*a))
     gamma = 1.5*((1-cosθpow2)*sinξ/(2*pi*a) + (1-3*cosθpow2) * (cosξ-sinξ/(2*pi*a))/(2*pi*a)^2)
     return omega, gamma
 end
@@ -40,13 +40,13 @@ end
 function Omega_orthogonal(a)
     ξ = 2*pi*a
     cosξdξ = cos(ξ)/ξ
-    return 3./4.*(-cosξdξ + (sin(ξ)+cosξdξ)/ξ^2)
+    return 3.0/4.0*(-cosξdξ + (sin(ξ)+cosξdξ)/ξ^2)
 end
 
 function Gamma_orthogonal(a)
     ξ = 2*a
     sincξ = sinc(ξ)
-    return 3./2.*(sincξ + (cospi(ξ)-sincξ)/(pi*ξ)^2)
+    return 3.0/2.0*(sincξ + (cospi(ξ)-sincξ)/(pi*ξ)^2)
 end
 
 
@@ -260,7 +260,7 @@ function hexagonallattice_orthogonal(a::Float64, N::Int)
     gamma_eff::Float64 = 0.
     for n=1:2:N
         nv1x = -0.5*n
-        nv1y_square = 3./4*n^2
+        nv1y_square = 3.0/4*n^2
         d = a*sqrt(nv1y_square + nv1x^2)
         omega_eff += 6*Omega_orthogonal(d)
         gamma_eff += 6*Gamma_orthogonal(d)
@@ -272,7 +272,7 @@ function hexagonallattice_orthogonal(a::Float64, N::Int)
     end
     for n=2:2:N
         nv1x = -0.5*n
-        nv1y_square = 3./4*n^2
+        nv1y_square = 3.0/4*n^2
         d = a*sqrt(nv1y_square + nv1x^2)
         omega_eff += 6*Omega_orthogonal(d)
         gamma_eff += 6*Gamma_orthogonal(d)
@@ -392,7 +392,7 @@ function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
     b2 = b^2
     for n=1:2:N
         nv1x = -0.5*n
-        nv1y_square = 3./4*n^2
+        nv1y_square = 3.0/4*n^2
         nr_square = a2*(nv1y_square + nv1x^2)
         for iz=1:N
             nz_square = iz^2*b2
@@ -416,7 +416,7 @@ function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
     end
     for n=2:2:N
         nv1x = -0.5*n
-        nv1y_square = 3./4*n^2
+        nv1y_square = 3.0/4*n^2
         nr_square = a2*(nv1y_square + nv1x^2)
         for iz=1:N
             nz_square = iz^2*b2
