@@ -199,7 +199,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
             push!(state_out, ProductState(N, deepcopy(y)))
         end
         
-        prob = OrdinaryDiffEq.ODEProblem(f, state0.dat, (T[1], T[end]))
+        prob = OrdinaryDiffEq.ODEProblem(f, state0.data, (T[1], T[end]))
         sol = OrdinaryDiffEq.solve(prob, OrdinaryDiffEq.DP5())
         return sol.t, sol.u
     else
