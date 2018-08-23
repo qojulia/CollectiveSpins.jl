@@ -167,7 +167,10 @@ Meanfield time evolution.
 * `fout` (optional): Function with signature `fout(t, state)` that is called whenever output
     should be generated.
 """
-function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=nothing)
+function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=nothing,
+            alg::OrdinaryDiffEq.OrdinaryDiffEqAlgorithm = OrdinaryDiffEq.DP5(),
+            callback = nothing,
+            kwargs...)
     N = length(S.spins)
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
@@ -191,25 +194,33 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
         end
     end
 
-    if fout==nothing
-        t_out = Float64[]
-        state_out = ProductState[]
-        function fout_(t, u::Vector{Float64})
-            push!(t_out, t)
-            push!(state_out, ProductState(N, deepcopy(u)))
-        end
-        out = DiffEqCallbacks.SavedValues(Float64,ProductState)
-        scb = DiffEqCallbacks.SavingCallback(fout_,out,saveat=T,
-                                             save_everystep=false,
-                                             save_start = false)
-                                            
+    if isa(fout, Nothing)
+        fout_(t::Float64, u::Vector{Float64}) = ProductState(N, deepcopy(u))
     else
-        # return TODO: (f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
+        fout_ = fout
     end
-      
+    fout_diff(u::Vector{Float64}, t::Float64, integrator) = fout_(t, u)
+
+    out_type = pure_inference(fout_, Tuple{eltype(T),typeof(state0)})
+    out = DiffEqCallbacks.SavedValues(Float64,ProductState)
+    scb = DiffEqCallbacks.SavingCallback(fout_diff,out,saveat=T,
+                                        save_everystep=false,
+                                        save_start = false)
+
     prob = OrdinaryDiffEq.ODEProblem(f, state0.data, (T[1], T[end]))
-    sol = OrdinaryDiffEq.solve(prob, OrdinaryDiffEq.DP5(); callback=scb)
-    return sol
+
+    full_cb = OrdinaryDiffEq.CallbackSet(callback, scb)
+
+    sol = OrdinaryDiffEq.solve(prob, alg;
+            reltol=1.0e-6,
+            abstol=1.0e-8,
+            save_everystep = false,
+            save_start = false,
+            save_end = false,
+            callback=full_cb,
+            kwargs...)
+
+    return out.t, out.saveval
 end
 
 """
@@ -244,10 +255,10 @@ function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Re
             push!(t_out, t)
             push!(state_out, ProductState(N, deepcopy(y)))
         end
-        
+
         prob = OrdinaryDiffEq.problem(f, state0.data, (T[1], T[end]))
         sol= OrdinaryDiffEq.solve(prob, OrdinaryDiffEq.DP5())
-        
+
         return sol.t, sol.u
     else
         # return TODO: (f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
@@ -282,5 +293,7 @@ function rotate(axis::Vector{T1}, angles::Vector{T2}, state::ProductState) where
 end
 
 rotate(axis::Vector{T}, angle::Real, state::ProductState) where {T<:Real} = rotate(axis, ones(Float64, state.N)*angle, state)
+
+Base.@pure pure_inference(fout,T) = Core.Compiler.return_type(fout, T)
 
 end # module
