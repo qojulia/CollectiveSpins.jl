@@ -1,5 +1,6 @@
 using Test
 using QuantumOptics, CollectiveSpins
+using Statistics
 
 @testset "symmetric-equations" begin
 
@@ -19,8 +20,8 @@ N_square = length(system_square.spins)
 
 # Initial state (Bloch state)
 phi0_square = [0. for i=1:N_square]
-phi1_square = [0., 0.5*pi, 1.5*pi, 1.*pi]
-phi2_square = [0., 1.*pi, 1.*pi, 2.*pi]
+phi1_square = [0., 0.5*pi, 1.5*pi, 1.0*pi]
+phi2_square = [0., 1.0*pi, 1.0*pi, 2.0*pi]
 theta_square = ones(Float64, N_square)*pi/2.
 
 

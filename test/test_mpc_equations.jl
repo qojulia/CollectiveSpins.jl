@@ -57,7 +57,7 @@ function test_mpc_2particles(t, ρ)
     # <sx>, <sy>, <sz>
     dsxx_mpc = -expect(sx⊗sx, ρ) + Γ[1,2]*(expect(sz⊗sz, ρ) + 0.5*expect(sz⊗I, ρ) + 0.5*expect(I⊗sz, ρ))
     dsyy_mpc = -expect(sy⊗sy, ρ) + Γ[1,2]*(expect(sz⊗sz, ρ) + 0.5*expect(sz⊗I, ρ) + 0.5*expect(I⊗sz, ρ))
-    dszz_mpc = -2.*expect(sz⊗sz, ρ) - 0.5*expect(sz⊗I, ρ) - 0.5*expect(I⊗sz, ρ) +  Γ[1,2]*(expect(sx⊗sx, ρ) + expect(sy⊗sy, ρ))
+    dszz_mpc = -2.0*expect(sz⊗sz, ρ) - 0.5*expect(sz⊗I, ρ) - 0.5*expect(I⊗sz, ρ) +  Γ[1,2]*(expect(sx⊗sx, ρ) + expect(sy⊗sy, ρ))
     println("$(dsxx_master) <-> $(dsxx_mpc)")
     #@test abs(dsxx_master - dsxx_mpc) < 1e-12
     #@test abs(dsyy_master - dsyy_mpc) < 1e-12
@@ -122,7 +122,7 @@ function test_mpc_3particles(t, ρ::DenseOperator)
     # <sx>, <sy>, <sz>
     dsxx_mpc = -expect(sx⊗sx⊗I, ρ) + Γ[1,2]*(expect(sz⊗sz⊗I, ρ) + 0.5*expect(sz⊗I⊗I, ρ) + 0.5*expect(I⊗sz⊗I, ρ)) + 0.5*Γ[1,3]*expect(sz⊗sx⊗sx, ρ) + 0.5*Γ[2,3]*expect(sx⊗sz⊗sx, ρ)
     dsyy_mpc = -expect(sy⊗sy⊗I, ρ) + Γ[1,2]*(expect(sz⊗sz⊗I, ρ) + 0.5*expect(sz⊗I⊗I, ρ) + 0.5*expect(I⊗sz⊗I, ρ)) + 0.5*Γ[1,3]*expect(sz⊗sy⊗sy, ρ) + 0.5*Γ[2,3]*expect(sy⊗sz⊗sy, ρ)
-    dszz_mpc = -2.*expect(sz⊗sz⊗I, ρ) - expect(sz⊗I⊗I, ρ) - expect(I⊗sz⊗I, ρ) +  Γ[1,2]*(expect(sx⊗sx⊗I, ρ) + expect(sy⊗sy⊗I, ρ)) - 0.5*Γ[1,3]*(expect(sx⊗sz⊗sx, ρ) + expect(sy⊗sz⊗sy, ρ)) - 0.5*Γ[2,3]*(expect(sz⊗sx⊗sx, ρ) + expect(sz⊗sy⊗sy, ρ))
+    dszz_mpc = -2.0*expect(sz⊗sz⊗I, ρ) - expect(sz⊗I⊗I, ρ) - expect(I⊗sz⊗I, ρ) +  Γ[1,2]*(expect(sx⊗sx⊗I, ρ) + expect(sy⊗sy⊗I, ρ)) - 0.5*Γ[1,3]*(expect(sx⊗sz⊗sx, ρ) + expect(sy⊗sz⊗sy, ρ)) - 0.5*Γ[2,3]*(expect(sz⊗sx⊗sx, ρ) + expect(sz⊗sy⊗sy, ρ))
     dsxy_mpc = -expect(sx⊗sy⊗I, ρ) + 0.5*Γ[1,3]*expect(sz⊗sy⊗sx, ρ) + 0.5*Γ[2,3]*expect(sx⊗sz⊗sy, ρ)
     dsxz_mpc = -1.5*expect(sx⊗sz⊗I, ρ) - expect(sx⊗I⊗I, ρ) - Γ[1,2]*(expect(sz⊗sx⊗I, ρ) + 0.5*expect(I⊗sx⊗I, ρ)) + 0.5*Γ[1,3]*expect(sz⊗sz⊗sx, ρ) - 0.5*Γ[2,3]*(expect(sx⊗sx⊗sx, ρ) + expect(sx⊗sy⊗sy, ρ))
     dsyz_mpc = -1.5*expect(sy⊗sz⊗I, ρ) - expect(sy⊗I⊗I, ρ) - Γ[1,2]*(expect(sz⊗sy⊗I, ρ) + 0.5*expect(I⊗sy⊗I, ρ)) + 0.5*Γ[1,3]*expect(sz⊗sz⊗sy, ρ) - 0.5*Γ[2,3]*(expect(sy⊗sx⊗sx, ρ) + expect(sy⊗sy⊗sy, ρ))

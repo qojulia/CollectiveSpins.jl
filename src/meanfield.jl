@@ -5,7 +5,7 @@ export ProductState, densityoperator
 using QuantumOptics, LinearAlgebra
 using ..interaction, ..system
 
-import OrdinaryDiffEq
+import OrdinaryDiffEq, DiffEqCallbacks
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
@@ -194,17 +194,22 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     if fout==nothing
         t_out = Float64[]
         state_out = ProductState[]
-        function fout_(t, y::Vector{Float64})
+        function fout_(t, u::Vector{Float64})
             push!(t_out, t)
-            push!(state_out, ProductState(N, deepcopy(y)))
+            push!(state_out, ProductState(N, deepcopy(u)))
         end
-        
-        prob = OrdinaryDiffEq.ODEProblem(f, state0.data, (T[1], T[end]))
-        sol = OrdinaryDiffEq.solve(prob, OrdinaryDiffEq.DP5())
-        return sol.t, sol.u
+        out = DiffEqCallbacks.SavedValues(Float64,ProductState)
+        scb = DiffEqCallbacks.SavingCallback(fout_,out,saveat=T,
+                                             save_everystep=false,
+                                             save_start = false)
+                                            
     else
         # return TODO: (f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
     end
+      
+    prob = OrdinaryDiffEq.ODEProblem(f, state0.data, (T[1], T[end]))
+    sol = OrdinaryDiffEq.solve(prob, OrdinaryDiffEq.DP5(); callback=scb)
+    return sol
 end
 
 """
