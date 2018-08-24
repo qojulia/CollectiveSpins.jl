@@ -12,8 +12,9 @@ system = CollectiveSpins.SpinCollection(geometry, e)
 # Initial quantum state
 phi = 0.
 theta = pi/2
-Ψ0 = CollectiveSpins.meanfield.blochstate(phi, theta, N)
+Ψ0 = CollectiveSpins.mpc.blochstate(phi, theta, N)
 
 # Perform time evolution according to master equation
 T = [0:0.05:5.;]
-tout, ρt = CollectiveSpins.meanfield.timeevolution(T, system, Ψ0)
+tout, ρt = CollectiveSpins.mpc.timeevolution(T, system, Ψ0)
+tout2, ρt2 = CollectiveSpins.mpc.timeevolution(T, system, ρt[end])

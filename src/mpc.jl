@@ -3,6 +3,8 @@ module mpc
 using QuantumOptics, LinearAlgebra
 using ..interaction, ..system, ..quantum
 
+import ..integrate
+
 try
     using Optim
     global optimize = Optim.optimize
@@ -188,7 +190,7 @@ end
 splitstate(state::MPCState) = splitstate(state.N, state.data)
 
 function covarianceoperator(productstate::Vector{DenseOperator}, operators::Vector{DenseOperator}, indices::Vector{Int})
-    x = DenseOperator[(i in indices ? operators[findfirst(indices, i)] : productstate[i]) for i=1:length(productstate)]
+    x = DenseOperator[(i in indices ? operators[something(findfirst(isequal(i), indices), 0)] : productstate[i]) for i=1:length(productstate)]
     return tensor(x...)
 end
 
@@ -361,7 +363,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     Γ = interaction.GammaMatrix(S)
     γ = S.gamma
 
-    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         @inbounds for k=1:N
@@ -423,18 +425,13 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
         end
     end
 
-    if fout==nothing
-        t_out = Float64[]
-        state_out = MPCState[]
-        function fout_(t, state::Vector{Float64})
-            push!(t_out, t)
-            push!(state_out, MPCState(N, deepcopy(state)))
-        end
-        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
-        return t_out, state_out
+    if isa(fout, Nothing)
+      fout_(t::Float64, u::Vector{Float64}) = MPCState(N, deepcopy(u))
     else
-        return QuantumOptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MPCState(N,y)))
+      fout_ = fout
     end
+    
+    return integrate(T, f, state0, fout_)
 end
 
 function axisangle2rotmatrix(axis::Vector{T}, angle::Real) where T<:Real
@@ -571,7 +568,7 @@ function squeeze_sx(χT::Real, state0::MPCState)
     T = [0,1.]
     N = state0.N
     χeff = 4.0*χT/N^2
-    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         for k=1:N
@@ -616,13 +613,10 @@ function squeeze_sx(χT::Real, state0::MPCState)
         end
     end
 
-    state_out = Vector{Float64}[]
-    function fout_(t, state::Vector{Float64})
-        push!(state_out, deepcopy(state))
-    end
+    fout_(t::Float64, u::Vector{Float64}) = MPCState(N, deepcopy(u))
+    time_out, state_out = integrate(T, f, state0, fout_)
 
-    QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
-    return MPCState(N, state_out[end])
+    return state_out[end]
 end
 
 """

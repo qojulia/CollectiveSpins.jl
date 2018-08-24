@@ -3,6 +3,8 @@ module independent
 using QuantumOptics
 using ..interaction, ..system
 
+import ..integrate
+
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
 sigmax = spin.sigmax(spinbasis)
@@ -113,7 +115,7 @@ Independent time evolution.
 function timeevolution(T, gamma::Number, state0::Vector{Float64})
     N = dim(state0)
     γ = gamma
-    function f(t, s::Vector{Float64}, ds::Vector{Float64})
+    function f(ds::Vector{Float64}, s::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(s)
         dsx, dsy, dsz = splitstate(ds)
         @inbounds for k=1:N
@@ -123,15 +125,9 @@ function timeevolution(T, gamma::Number, state0::Vector{Float64})
         end
     end
 
-    t_out = Float64[]
-    state_out = Vector{Float64}[]
-    function fout(t, y::Vector{Float64})
-        push!(t_out, t)
-        push!(state_out, deepcopy(y))
-    end
-
-    QuantumOptics.ode_dopri.ode(f, T, state0, fout)
-    return t_out, state_out
+    fout_(t::Float64, u::Vector{Float64}) = deepcopy(u)
+    
+    return integrate(T, f, state0, fout_)
 end
 
 """
