@@ -3,7 +3,7 @@ module mpc
 using QuantumOptics, LinearAlgebra
 using ..interaction, ..system, ..quantum
 
-import ..integrate
+import ..integrate, ..recast!, ..recast
 
 try
     using Optim
@@ -149,10 +149,10 @@ end
 
 function integersqrt(N::Int)
     n = sqrt(N)
-    if abs(int(n)-n)>10*eps(n)
+    if abs(trunc(Int, n)-n)>10*eps(n)
         error("N is not a square of an integer.")
     end
-    return int(n)
+    return trunc(Int, n)
 end
 
 """
@@ -344,6 +344,15 @@ function correlation(s1::T, s2::T, s3::T, C12::T, C13::T, C23::T) where T<:Real
     return -2.0*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
 end
 
+# Recasting for ODE Solver
+function recast(state::MPCState)
+  return state.data
+end
+
+function recast!(state::MPCState, x::Vector{Float64})
+  state = MPCState(x)
+end
+
 """
     mpc.timeevolution(T, S::SpinCollection, state0[; fout])
 
@@ -426,9 +435,9 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     end
 
     if isa(fout, Nothing)
-      fout_(t::Float64, u::Vector{Float64}) = MPCState(N, deepcopy(u))
+      fout_(t::Float64, state::MPCState) = deepcopy(state)
     else
-      fout_ = fout
+    fout_ = fout
     end
     
     return integrate(T, f, state0, fout_)
@@ -613,7 +622,7 @@ function squeeze_sx(χT::Real, state0::MPCState)
         end
     end
 
-    fout_(t::Float64, u::Vector{Float64}) = MPCState(N, deepcopy(u))
+    fout_(t::Float64, state::MPCState) = deepcopy(state)
     time_out, state_out = integrate(T, f, state0, fout_)
 
     return state_out[end]

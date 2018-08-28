@@ -11,10 +11,15 @@ system = CollectiveSpins.SpinCollection(geometry, e)
 
 # Initial quantum state
 phi = 0.
-theta = pi/2
+theta = 0
 Ψ0 = CollectiveSpins.mpc.blochstate(phi, theta, N)
+
+# Fout test
+
+function fexp(t, state)
+	return CollectiveSpins.mpc.sx(state)
+	end
 
 # Perform time evolution according to master equation
 T = [0:0.05:5.;]
-tout, ρt = CollectiveSpins.mpc.timeevolution(T, system, Ψ0)
-tout2, ρt2 = CollectiveSpins.mpc.timeevolution(T, system, ρt[end])
+X, Y = CollectiveSpins.mpc.timeevolution(T, system, Ψ0)
