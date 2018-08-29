@@ -1,23 +1,19 @@
 import OrdinaryDiffEq, DiffEqCallbacks
 
-function recast! end
-
-function recast end
-
 """
 integrate()
 """
-function integrate(T::Vector{Float64}, f:: Function, state0, fout::Function;
+function integrate(T::Vector{Float64}, f:: Function, state0::S, fout::Function;
                     alg::OrdinaryDiffEq.OrdinaryDiffEqAlgorithm = OrdinaryDiffEq.DP5(),
-                    callback = nothing, kwargs...)
+                    callback = nothing, kwargs...) where S
 
-    x0 = recast(state0)
-    state = deepcopy(state0)
-    
-    function fout_diff(u::Vector{Float64}, t::Float64, integrator)
-    recast!(state, u)
-    fout(t, state)
+    if isa(state0, Vector{Float64})
+        x0 = state
+    else
+        x0 = state0.data
     end
+    
+    fout_diff(u::Vector{Float64}, t::Float64, integrator) = fout(t, S(deepcopy(u)))        
 
     out_type = pure_inference(fout, Tuple{eltype(T),typeof(state0)})
     out = DiffEqCallbacks.SavedValues(Float64,out_type)

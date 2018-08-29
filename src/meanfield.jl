@@ -192,7 +192,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     end
 
     if isa(fout, Nothing)
-        fout_(t::Float64, u::Vector{Float64}) = ProductState(N, deepcopy(u))
+        fout_(t::Float64, state::ProductState) = deepcopy(state)
     else
         fout_ = fout
     end
@@ -227,7 +227,7 @@ function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Re
     end
     
     if isa(fout, Nothing)
-        fout_(t::Float64, u::Vector{Float64}) = ProductState(N, deepcopy(u))
+        fout_(t::Float64, state::ProductState) = deepcopy(state)
     else
         fout_ = fout
     end

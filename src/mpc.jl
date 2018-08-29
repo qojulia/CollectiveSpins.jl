@@ -3,7 +3,7 @@ module mpc
 using QuantumOptics, LinearAlgebra
 using ..interaction, ..system, ..quantum
 
-import ..integrate, ..recast!, ..recast
+import ..integrate
 
 try
     using Optim
@@ -342,15 +342,6 @@ Cyz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 1*x.N+1:
 """
 function correlation(s1::T, s2::T, s3::T, C12::T, C13::T, C23::T) where T<:Real
     return -2.0*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
-end
-
-# Recasting for ODE Solver
-function recast(state::MPCState)
-  return state.data
-end
-
-function recast!(state::MPCState, x::Vector{Float64})
-  state = MPCState(x)
 end
 
 """
