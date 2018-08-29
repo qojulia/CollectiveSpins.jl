@@ -20,7 +20,7 @@ end
 # Finite symmetric systems
 
 function triangle_orthogonal(a::Float64)
-    positions = Vector{Float64}[[a,0,0], [a/2, sqrt(3./4)*a,0]]
+    positions = Vector{Float64}[[a,0,0], [a/2, sqrt(3. /4)*a,0]]
     S = SpinCollection(positions, e_z; gamma=gamma)
     return effective_interactions(S)
 end
@@ -119,7 +119,7 @@ end
 
 function hexagonallattice_orthogonal(a::Float64, N::Int)
     positions = Vector{Float64}[]
-    ax = sqrt(3./4)*a
+    ax = sqrt(3.0/4)*a
     for iy=1:N
         push!(positions, [0, iy*a, 0])
         push!(positions, [0, -iy*a, 0])
@@ -172,7 +172,7 @@ end
 
 function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
     positions = Vector{Float64}[]
-    ax = sqrt(3./4)*a
+    ax = sqrt(3.0/4)*a
     for iz=-N:N
         for iy=1:N
             push!(positions, [0, iy*a, iz*b])

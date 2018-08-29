@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 using QuantumOptics, CollectiveSpins
 
 @testset "mpc" begin
@@ -12,7 +12,7 @@ function test_2spin()
     e_dipole = [0, 0, 1]
     T = [0:0.05:5.;]
     phi = [0.3, 0.8]
-    theta = [1./2*pi, 3./2*pi]
+    theta = [1.0/2*pi, 3.0/2*pi]
 
     system = SpinCollection(Vector{Float64}[[0, 0, 0], [a, 0, 0]], e_dipole; gamma=γ)
     N = length(system.spins)
@@ -23,7 +23,7 @@ function test_2spin()
 
     # Quantum: master equation
     function fout(t, rho::Operator)
-        i = findfirst(T, t)
+        i = something(findfirst(isequal(t), T), 0)
         rho_mpc = cs.mpc.densityoperator(state_mpc_t[i])
         @test tracedistance(rho, rho_mpc)<1e-5
     end
@@ -40,7 +40,7 @@ function test_3spin()
     e_dipole = [0, 0, 1]
     T = [0:0.05:5.;]
     phi = [0.3, 0.8, 1.6]
-    theta = [1./2*pi, 3./2*pi, 1.2*pi]
+    theta = [1.0/2*pi, 3.0/2*pi, 1.2*pi]
 
     system = SpinCollection(cs.geometry.triangle(a), e_dipole; gamma=γ)
     N = length(system.spins)
@@ -55,7 +55,7 @@ function test_3spin()
 
     # Quantum: master equation
     function fout(t, rho::Operator)
-        i = findfirst(T, t)
+        i = something(findfirst(isequal(t), T), 0)
         rho_mf = cs.meanfield.densityoperator(state_mf_t[i])
         rho_mpc = cs.mpc.densityoperator(state_mpc_t[i])
         td_mf = tracedistance(rho, rho_mf)

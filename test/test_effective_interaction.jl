@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 using CollectiveSpins.effective_interaction
 using CollectiveSpins.effective_interaction_simple
 

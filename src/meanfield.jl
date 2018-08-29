@@ -2,18 +2,19 @@ module meanfield
 
 export ProductState, densityoperator
 
-using ArrayViews
-using QuantumOptics
+import ..integrate
+
+using QuantumOptics, LinearAlgebra
 using ..interaction, ..system
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
-I = full(identityoperator(spinbasis))
-sigmax = full(spin.sigmax(spinbasis))
-sigmay = full(spin.sigmay(spinbasis))
-sigmaz = full(spin.sigmaz(spinbasis))
-sigmap = full(spin.sigmap(spinbasis))
-sigmam = full(spin.sigmam(spinbasis))
+I = dense(identityoperator(spinbasis))
+sigmax = dense(spin.sigmax(spinbasis))
+sigmay = dense(spin.sigmay(spinbasis))
+sigmaz = dense(spin.sigmaz(spinbasis))
+sigmap = dense(spin.sigmap(spinbasis))
+sigmam = dense(spin.sigmam(spinbasis))
 
 """
 Class describing a Meanfield state (Product state).
@@ -24,7 +25,7 @@ The data layout is [sx1 sx2 ... sy1 sy2 ... sz1 sz2 ...]
 * `N`: Number of spins.
 * `data`: Vector of length 3*N.
 """
-type ProductState
+mutable struct ProductState
     N::Int
     data::Vector{Float64}
 end
@@ -69,7 +70,7 @@ Product state of `N` single spin Bloch states.
 
 All spins have the same azimuthal angle `phi` and polar angle `theta`.
 """
-function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
+function blochstate(phi::Vector{T1}, theta::Vector{T2}) where {T1<:Real, T2<:Real}
     N = length(phi)
     @assert length(theta)==N
     state = ProductState(N)
@@ -98,7 +99,7 @@ end
 
 Number of spins described by this state.
 """
-function dim{T<:Real}(state::Vector{T})
+function dim(state::Vector{T}) where T<:Real
     N, rem = divrem(length(state), 3)
     @assert rem==0
     return N
@@ -110,7 +111,7 @@ end
 
 Split state into sx, sy and sz parts.
 """
-splitstate(N::Int, data::Vector{Float64}) = ArrayViews.view(data, 0*N+1:1*N), ArrayViews.view(data, 1*N+1:2*N), ArrayViews.view(data, 2*N+1:3*N)
+splitstate(N::Int, data::Vector{Float64}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
 splitstate(state::ProductState) = splitstate(state.N, state.data)
 
 
@@ -137,21 +138,21 @@ end
 
 Sigma x expectation values of state.
 """
-sx(x::ProductState) = ArrayViews.view(x.data, 1:x.N)
+sx(x::ProductState) = view(x.data, 1:x.N)
 
 """
     meanfield.sy(state)
 
 Sigma y expectation values of state.
 """
-sy(x::ProductState) = ArrayViews.view(x.data, x.N+1:2*x.N)
+sy(x::ProductState) = view(x.data, x.N+1:2*x.N)
 
 """
     meanfield.sz(state)
 
 Sigma z expectation values of state.
 """
-sz(x::ProductState) = ArrayViews.view(x.data, 2*x.N+1:3*x.N)
+sz(x::ProductState) = view(x.data, 2*x.N+1:3*x.N)
 
 
 """
@@ -172,7 +173,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
     γ = S.gamma
-    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         @inbounds for k=1:N
@@ -190,19 +191,13 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
         end
     end
 
-    if fout==nothing
-        t_out = Float64[]
-        state_out = ProductState[]
-        function fout_(t, y::Vector{Float64})
-            push!(t_out, t)
-            push!(state_out, ProductState(N, deepcopy(y)))
-        end
-
-        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
-        return t_out, state_out
+    if isa(fout, Nothing)
+        fout_(t::Float64, state::ProductState) = deepcopy(state)
     else
-        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
+        fout_ = fout
     end
+    
+    return integrate(T, f, state0, fout_)
 end
 
 """
@@ -223,25 +218,22 @@ Symmetric meanfield time evolution.
 function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Real; γ::Real=1.0, δ0::Real=0., fout=nothing)
     N = 1
     @assert state0.N==N
-    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         dsx[1] = -δ0*sy[1] + Ωeff*sy[1]*sz[1] - 0.5*γ*sx[1] + 0.5*Γeff*sx[1]*sz[1]
         dsy[1] = δ0*sx[1] - Ωeff*sx[1]*sz[1] - 0.5*γ*sy[1] + 0.5*Γeff*sy[1]*sz[1]
         dsz[1] = -γ*(1+sz[1]) - 0.5*Γeff*(sx[1]^2+sy[1]^2)
     end
-    if fout==nothing
-        t_out = Float64[]
-        state_out = ProductState[]
-        function fout_(t, y::Vector{Float64})
-            push!(t_out, t)
-            push!(state_out, ProductState(N, deepcopy(y)))
-        end
-        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
-        return t_out, state_out
+    
+    if isa(fout, Nothing)
+        fout_(t::Float64, state::ProductState) = deepcopy(state)
     else
-        return QuantumOptics.ode_dopri.ode(f, T, state0.data, (t,y)->fout(t, ProductState(N,y)))
+        fout_ = fout
     end
+    
+    return integrate(T, f, state0, fout_)
+
 end
 
 
@@ -255,7 +247,7 @@ Rotations on the Bloch sphere for the given [`ProductState`](@ref).
 * `angles`: Rotation angle(s).
 * `state`: [`ProductState`](@ref) that should be rotated.
 """
-function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state::ProductState)
+function rotate(axis::Vector{T1}, angles::Vector{T2}, state::ProductState) where {T1<:Real, T2<:Real}
     @assert length(axis)==3
     @assert length(angles)==state.N
     w = axis/norm(axis)
@@ -271,6 +263,8 @@ function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state:
     return state_rot
 end
 
-rotate{T<:Real}(axis::Vector{T}, angle::Real, state::ProductState) = rotate(axis, ones(Float64, state.N)*angle, state)
+rotate(axis::Vector{T}, angle::Real, state::ProductState) where {T<:Real} = rotate(axis, ones(Float64, state.N)*angle, state)
+
+Base.@pure pure_inference(fout,T) = Core.Compiler.return_type(fout, T)
 
 end # module

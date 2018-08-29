@@ -57,7 +57,7 @@ The hexagonal lattice consists of `Nr` rings.
 """
 function hexagonal(a::Real; Nr::Int=1)
     positions = Vector{Float64}[]
-    ax = sqrt(3./4)*a
+    ax = sqrt(3.0/4)*a
     for ix=-Nr:Nr
         if isodd(ix)
             Ny = div(2*Nr+1-abs(ix),2)

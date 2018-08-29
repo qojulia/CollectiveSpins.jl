@@ -106,7 +106,7 @@ function write_head(f, system, parameters)
     write(f, "</head>\n")
 end
 
-function write_state{T}(f, statetype, state::Vector{T}; parameter=nothing, time=true)
+function write_state(f, statetype, state::Vector{T}; parameter=nothing, time=true) where T
     writetime = time ? " writetime = \"$(escape_xml(string(now())))\"" : ""
     statetype = escape_xml(statetype)
     datatype = escape_xml(string(T))
@@ -121,15 +121,15 @@ function write_state{T}(f, statetype, state::Vector{T}; parameter=nothing, time=
     write(f, "</state>\n")
 end
 
-function write_state_meanfield{T}(f, state::Vector{T}, parameter)
+function write_state_meanfield(f, state::Vector{T}, parameter) where T
     write_state(f, state, parameter, "meanfield")
 end
 
-function write_state_mpc{T}(f, state::Vector{T}, parameter)
+function write_state_mpc(f, state::Vector{T}, parameter) where T
     write_state(f, state, parameter, "mpc")
 end
 
-function write_state_densityoperator{T}(f, state::Matrix{T}, parameter)
+function write_state_densityoperator(f, state::Matrix{T}, parameter) where T
     write_state(f, vec(state.data), parameter, "densityoperator")
 end
 

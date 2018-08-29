@@ -1,6 +1,7 @@
 module interaction
 
 using ..system
+using LinearAlgebra
 
 
 """
@@ -45,7 +46,7 @@ G_θ(ξ) = -(1-\\cos^2 θ) \\frac{\\cos ξ}{ξ}
 function G(ξ, θ)
     cosθpow2 = cos(θ)^2
     cosξdivξ = cos(ξ)/ξ
-    return (1.-3.*cosθpow2) * (sin(ξ)+cosξdivξ)/ξ^2 - (1.-cosθpow2)*cosξdivξ
+    return (1.0-3.0*cosθpow2) * (sin(ξ)+cosξdivξ)/ξ^2 - (1.0-cosθpow2)*cosξdivξ
 end
 
 """
@@ -75,8 +76,8 @@ Angle between the vectors `x_j`-`x_i` and `e`.
 """
 function Theta(xi, xj, e)
     s = dot((xj-xi)/norm(xj-xi), e/norm(e))
-    s = (s>1.?1.:s)
-    s = (s<-1.?-1.:s)
+    s = (s>1. ? 1. : s)
+    s = (s<-1. ? -1. : s)
     return acos(s)
 end
 

@@ -68,7 +68,7 @@ const Ncenter = 5#int(N/2)+1
 embed(op::Operator) = QuantumOptics.embed(cs.quantum.basis(system), Ncenter, op)
 
 function fout(t, rho::Operator)
-    i = findfirst(T, t)
+    i = something(findfirst(isequal(t), T), 0)
     rho_ind = cs.independent.densityoperator(state_ind_t[i])
     rho_mf  = cs.meanfield.densityoperator(state_mf_t[i])
     rho_mpc = cs.mpc.densityoperator(state_mpc_t[i])

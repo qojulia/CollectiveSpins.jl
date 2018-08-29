@@ -9,7 +9,7 @@ const γ = 1.
 plt.figure(1, figsize=(6,4))
 plt.figure(2, figsize=(6,4))
 
-for Θ=linspace(0,pi/2,11)
+for Θ=range(0, stop=pi/2, length=11)
     Ω = [Omega(a, Θ, γ) for a=A]
     Γ = [Gamma(a, Θ, γ) for a=A]
 

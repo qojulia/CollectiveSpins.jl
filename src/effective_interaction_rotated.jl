@@ -6,7 +6,7 @@ function Omega(a, θ)
     ξ = 2*pi*a
     cosθpow2 = cos(θ)^2
     cosξdivξ = cos(ξ)/ξ
-    return 3./4*((1.-3.*cosθpow2) * (sin(ξ)+cosξdivξ)/ξ^2 - (1.-cosθpow2)*cosξdivξ)
+    return 3.0/4*((1.0-3.0*cosθpow2) * (sin(ξ)+cosξdivξ)/ξ^2 - (1.0-cosθpow2)*cosξdivξ)
 end
 
 function Gamma(a, θ)
@@ -24,7 +24,7 @@ function OmegaGamma(a, cosθpow2)
     #cosθpow2 = cos(θ)^2
     cosξ = cospi(2*a)
     sinξ = sinpi(2*a)
-    omega = 0.75*((1.-3.*cosθpow2) * (sinξ+cosξ/(2*pi*a))/(2*pi*a)^2 - (1.-cosθpow2)*cosξ/(2*pi*a))
+    omega = 0.75*((1.0-3.0*cosθpow2) * (sinξ+cosξ/(2*pi*a))/(2*pi*a)^2 - (1.0-cosθpow2)*cosξ/(2*pi*a))
     gamma = 1.5*((1-cosθpow2)*sinξ/(2*pi*a) + (1-3*cosθpow2) * (cosξ-sinξ/(2*pi*a))/(2*pi*a)^2)
     return omega, gamma
 end
@@ -40,13 +40,13 @@ end
 function Omega_orthogonal(a)
     ξ = 2*pi*a
     cosξdξ = cos(ξ)/ξ
-    return 3./4.*(-cosξdξ + (sin(ξ)+cosξdξ)/ξ^2)
+    return 3.0/4.0*(-cosξdξ + (sin(ξ)+cosξdξ)/ξ^2)
 end
 
 function Gamma_orthogonal(a)
     ξ = 2*a
     sincξ = sinc(ξ)
-    return 3./2.*(sincξ + (cospi(ξ)-sincξ)/(pi*ξ)^2)
+    return 3.0/2.0*(sincξ + (cospi(ξ)-sincξ)/(pi*ξ)^2)
 end
 
 
@@ -83,7 +83,7 @@ The polarization axis is orthogonal to the square plane.
 """
 function square_orthogonal(a::Float64, Nδ::Int)
     @assert 0 <= Nδ < 4
-    δ = 2.*pi*Nδ/4
+    δ = 2.0*pi*Nδ/4
     Ωcos = 2*Omega_orthogonal(a)*cos(δ) + Omega_orthogonal(sqrt(2.)*a)*cos(2*δ)
     Γcos = 2*Gamma_orthogonal(a)*cos(δ) + Gamma_orthogonal(sqrt(2.)*a)*cos(2*δ)
     return Ωcos, Γcos
@@ -114,7 +114,7 @@ function cube_orthogonal(a::Float64, dϕ)
     omega_eff, gamma_eff = square_orthogonal(a, 0)
     sqrt2 = sqrt(2.)
     sqrt3 = sqrt(3.)
-    Θdiag = atan2(sqrt2, 1.)
+    Θdiag = atan(sqrt2, 1.)
     omega_eff += (Omega(a, 0.) + 2*Omega(sqrt(2.)*a, pi/4.) + Omega(sqrt3*a, Θdiag))*cos(dϕ)
     gamma_eff += (Gamma(a, 0.) + 2*Gamma(sqrt(2.)*a, pi/4.) + Gamma(sqrt3*a, Θdiag))*cos(dϕ)
     return omega_eff, gamma_eff

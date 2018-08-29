@@ -5,7 +5,7 @@ using PyCall
 const T = [0:0.01:1]
 const γ = 1.
 const edipole = [0,0,1.]
-const D = linspace(1.65,1.67,20)
+const D = range(1.65, stop=1.67, length=20)
 
 # Initial state (Bloch state)
 const phi = 0.

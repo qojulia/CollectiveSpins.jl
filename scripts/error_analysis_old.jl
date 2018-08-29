@@ -17,11 +17,11 @@ end
 parameters = parse_args(s)
 
 const opath = parameters["opath"]
-const T = float(eval(parse(parameters["T"])))
+const T = float(eval(Meta.parse(parameters["T"])))
 @assert T[1]<T[end]
 const γ = float(parameters["gamma"])
 @assert 0<γ
-const edipole = float(eval(parse(parameters["edipole"])))
+const edipole = float(eval(Meta.parse(parameters["edipole"])))
 
 # Initial state (Bloch state)
 const phi = float(parameters["initialstate_phi"])
@@ -34,7 +34,7 @@ const sz0 = cos(theta)
 
 using QuantumOptics, CollectiveSpins
 const geomstring = parameters["geometry"]
-const systemgeometry = eval(parse("CollectiveSpins.geometry.$geomstring"))
+const systemgeometry = eval(Meta.parse("CollectiveSpins.geometry.$geomstring"))
 const system = SpinCollection(systemgeometry, edipole, γ)
 const N = length(system.spins)
 

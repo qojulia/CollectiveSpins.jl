@@ -1,8 +1,9 @@
 module mpc
 
-using ArrayViews
-using QuantumOptics
+using QuantumOptics, LinearAlgebra
 using ..interaction, ..system, ..quantum
+
+import ..integrate
 
 try
     using Optim
@@ -21,11 +22,11 @@ export MPCState, densityoperator
 
 
 spinbasis = SpinBasis(1//2)
-sigmax = full(spin.sigmax(spinbasis))
-sigmay = full(spin.sigmay(spinbasis))
-sigmaz = full(spin.sigmaz(spinbasis))
-sigmap = full(spin.sigmap(spinbasis))
-sigmam = full(spin.sigmam(spinbasis))
+sigmax = dense(spin.sigmax(spinbasis))
+sigmay = dense(spin.sigmay(spinbasis))
+sigmaz = dense(spin.sigmaz(spinbasis))
+sigmap = dense(spin.sigmap(spinbasis))
+sigmam = dense(spin.sigmam(spinbasis))
 
 """
 Class describing a MPC state (Product state + Correlations).
@@ -44,7 +45,7 @@ the matrices Cxx, Cyy and Czz, respectively.
 * `N`: Number of spins.
 * `data`: Vector of length (3*N)*(2*N+1).
 """
-type MPCState
+mutable struct MPCState
     N::Int
     data::Vector{Float64}
 end
@@ -100,7 +101,7 @@ Product state of `N` single spin Bloch states.
 
 All spins have the same azimuthal angle `phi` and polar angle `theta`.
 """
-function blochstate{T1<:Real,T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
+function blochstate(phi::Vector{T1}, theta::Vector{T2}) where {T1<:Real,T2<:Real}
     N = length(phi)
     @assert length(theta)==N
     state = MPCState(N)
@@ -148,10 +149,10 @@ end
 
 function integersqrt(N::Int)
     n = sqrt(N)
-    if abs(int(n)-n)>10*eps(n)
+    if abs(trunc(Int, n)-n)>10*eps(n)
         error("N is not a square of an integer.")
     end
-    return int(n)
+    return trunc(Int, n)
 end
 
 """
@@ -159,7 +160,7 @@ end
 
 Number of spins described by this state.
 """
-function dim{T<:Real}(state::Vector{T})
+function dim(state::Vector{T}) where T<:Real
     x, rem = divrem(length(state), 3)
     @assert rem==0
     N, rem = divrem(-1 + integersqrt(1+8*x), 4)
@@ -175,21 +176,21 @@ Returns sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz.
 """
 function splitstate(N::Int, data::Vector{Float64})
     data = reshape(data, 3*N, 2*N+1)
-    sx = ArrayViews.view(data, 0*N+1:1*N, 2*N+1)
-    sy = ArrayViews.view(data, 1*N+1:2*N, 2*N+1)
-    sz = ArrayViews.view(data, 2*N+1:3*N, 2*N+1)
-    Cxx = ArrayViews.view(data, 0*N+1:1*N, 0*N+1:1*N)
-    Cyy = ArrayViews.view(data, 1*N+1:2*N, 0*N+1:1*N)
-    Czz = ArrayViews.view(data, 2*N+1:3*N, 0*N+1:1*N)
-    Cxy = ArrayViews.view(data, 0*N+1:1*N, 1*N+1:2*N)
-    Cxz = ArrayViews.view(data, 1*N+1:2*N, 1*N+1:2*N)
-    Cyz = ArrayViews.view(data, 2*N+1:3*N, 1*N+1:2*N)
+    sx = view(data, 0*N+1:1*N, 2*N+1)
+    sy = view(data, 1*N+1:2*N, 2*N+1)
+    sz = view(data, 2*N+1:3*N, 2*N+1)
+    Cxx = view(data, 0*N+1:1*N, 0*N+1:1*N)
+    Cyy = view(data, 1*N+1:2*N, 0*N+1:1*N)
+    Czz = view(data, 2*N+1:3*N, 0*N+1:1*N)
+    Cxy = view(data, 0*N+1:1*N, 1*N+1:2*N)
+    Cxz = view(data, 1*N+1:2*N, 1*N+1:2*N)
+    Cyz = view(data, 2*N+1:3*N, 1*N+1:2*N)
     return sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz
 end
 splitstate(state::MPCState) = splitstate(state.N, state.data)
 
 function covarianceoperator(productstate::Vector{DenseOperator}, operators::Vector{DenseOperator}, indices::Vector{Int})
-    x = DenseOperator[(i in indices ? operators[findfirst(indices, i)] : productstate[i]) for i=1:length(productstate)]
+    x = DenseOperator[(i in indices ? operators[something(findfirst(isequal(i), indices), 0)] : productstate[i]) for i=1:length(productstate)]
     return tensor(x...)
 end
 
@@ -281,66 +282,66 @@ end
 
 Sigma x expectation values of state.
 """
-sx(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 2*x.N+1)
+sx(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 2*x.N+1)
 
 """
     mpc.sy(state)
 
 Sigma y expectation values of state.
 """
-sy(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 2*x.N+1)
+sy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 2*x.N+1)
 
 """
     mpc.sz(state)
 
 Sigma z expectation values of state.
 """
-sz(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 2*x.N+1)
+sz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 2*x.N+1)
 
 """
     mpc.Cxx(state)
 
 Sigmax-Sigmax correlation values of MPCState.
 """
-Cxx(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 0*x.N+1:1*x.N)
+Cxx(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 0*x.N+1:1*x.N)
 """
     mpc.Cyy(state)
 
 Sigmay-Sigmay correlation values of MPCState.
 """
-Cyy(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 0*x.N+1:1*x.N)
+Cyy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 0*x.N+1:1*x.N)
 """
     mpc.Czz(state)
 
 Sigmaz-Sigmaz correlation values of MPCState.
 """
-Czz(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 0*x.N+1:1*x.N)
+Czz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 0*x.N+1:1*x.N)
 """
     mpc.Cxy(state)
 
 Sigmax-Sigmay correlation values of MPCState.
 """
-Cxy(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 1*x.N+1:2*x.N)
+Cxy(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 0*x.N+1:1*x.N, 1*x.N+1:2*x.N)
 """
     mpc.Cxz(state)
 
 Sigmax-Sigmaz correlation values of MPCState.
 """
-Cxz(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 1*x.N+1:2*x.N)
+Cxz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 1*x.N+1:2*x.N, 1*x.N+1:2*x.N)
 """
     mpc.Cyz(state)
 
 Sigmay-Sigmaz correlation values of MPCState.
 """
-Cyz(x::MPCState) = ArrayViews.view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 1*x.N+1:2*x.N)
+Cyz(x::MPCState) = view(reshape(x.data, 3*x.N, 2*x.N+1), 2*x.N+1:3*x.N, 1*x.N+1:2*x.N)
 
 """
     mpc.correlation(s1, s2, s3, C12, C13, C23)
 
 3-spin correlation value.
 """
-function correlation{T<:Real}(s1::T, s2::T, s3::T, C12::T, C13::T, C23::T)
-    return -2.*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
+function correlation(s1::T, s2::T, s3::T, C12::T, C13::T, C23::T) where T<:Real
+    return -2.0*s1*s2*s3 + s1*C23 + s2*C13 + s3*C12
 end
 
 """
@@ -362,13 +363,13 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     Γ = interaction.GammaMatrix(S)
     γ = S.gamma
 
-    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         @inbounds for k=1:N
             dsx[k] = -0.5*γ*sx[k]
             dsy[k] = -0.5*γ*sy[k]
-            dsz[k] = -γ*(1.+sz[k])
+            dsz[k] = -γ*(1.0+sz[k])
             for j=1:N
                 if j==k
                     continue
@@ -424,21 +425,16 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
         end
     end
 
-    if fout==nothing
-        t_out = Float64[]
-        state_out = MPCState[]
-        function fout_(t, state::Vector{Float64})
-            push!(t_out, t)
-            push!(state_out, MPCState(N, deepcopy(state)))
-        end
-        QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
-        return t_out, state_out
+    if isa(fout, Nothing)
+      fout_(t::Float64, state::MPCState) = deepcopy(state)
     else
-        return QuantumOptics.ode_dopri.ode(f, T, state0.data, fout=(t,y)->fout(t, MPCState(N,y)))
+    fout_ = fout
     end
+    
+    return integrate(T, f, state0, fout_)
 end
 
-function axisangle2rotmatrix{T<:Real}(axis::Vector{T}, angle::Real)
+function axisangle2rotmatrix(axis::Vector{T}, angle::Real) where T<:Real
     x, y, z = axis
     c = cos(angle)
     s = sin(angle)
@@ -466,7 +462,7 @@ Rotations on the Bloch sphere for the given [`MPCState`](@ref).
 * `angles`: Rotation angle(s).
 * `state`: [`MPCState`](@ref) that should be rotated.
 """
-function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state::MPCState)
+function rotate(axis::Vector{T1}, angles::Vector{T2}, state::MPCState) where {T1<:Real, T2<:Real}
     N = state.N
     @assert length(axis)==3
     @assert length(angles)==N
@@ -497,7 +493,7 @@ function rotate{T1<:Real, T2<:Real}(axis::Vector{T1}, angles::Vector{T2}, state:
     return rotstate
 end
 
-rotate{T<:Real}(axis::Vector{T}, angle::Real, state::MPCState) = rotate(axis, ones(Float64, state.N)*angle, state)
+rotate(axis::Vector{T}, angle::Real, state::MPCState) where {T<:Real} = rotate(axis, ones(Float64, state.N)*angle, state)
 
 """
     mpc.var_Sx(state0)
@@ -516,7 +512,7 @@ function var_Sx(state0::MPCState)
         end
         exp_Sx2 += Cxx[k,l]
     end
-    return 1./N + 1./N^2*exp_Sx2 - 1./N^2*exp_Sx_2
+    return 1.0/N + 1.0/N^2*exp_Sx2 - 1.0/N^2*exp_Sx_2
 end
 
 """
@@ -536,7 +532,7 @@ function var_Sy(state0::MPCState)
         end
         exp_Sy2 += Cyy[k,l]
     end
-    return 1./N + 1./N^2*exp_Sy2 - 1./N^2*exp_Sy_2
+    return 1.0/N + 1.0/N^2*exp_Sy2 - 1.0/N^2*exp_Sy_2
 end
 
 """
@@ -556,7 +552,7 @@ function var_Sz(state0::MPCState)
         end
         exp_Sz2 += Czz[k,l]
     end
-    return 1./N + 1./N^2*exp_Sz2 - 1./N^2*exp_Sz_2
+    return 1.0/N + 1.0/N^2*exp_Sz2 - 1.0/N^2*exp_Sz_2
 end
 
 """
@@ -571,8 +567,8 @@ Spin squeezing along sx.
 function squeeze_sx(χT::Real, state0::MPCState)
     T = [0,1.]
     N = state0.N
-    χeff = 4.*χT/N^2
-    function f(t, y::Vector{Float64}, dy::Vector{Float64})
+    χeff = 4.0*χT/N^2
+    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         for k=1:N
@@ -617,13 +613,10 @@ function squeeze_sx(χT::Real, state0::MPCState)
         end
     end
 
-    state_out = Vector{Float64}[]
-    function fout_(t, state::Vector{Float64})
-        push!(state_out, deepcopy(state))
-    end
+    fout_(t::Float64, state::MPCState) = deepcopy(state)
+    time_out, state_out = integrate(T, f, state0, fout_)
 
-    QuantumOptics.ode_dopri.ode(f, T, state0.data, fout_)
-    return MPCState(N, state_out[end])
+    return state_out[end]
 end
 
 """
@@ -636,7 +629,7 @@ Spin squeezing along an arbitrary axis.
 * `χT`: Squeezing strength.
 * `state0`: MPCState that should be squeezed.
 """
-function squeeze{T<:Real}(axis::Vector{T}, χT::Real, state0::MPCState)
+function squeeze(axis::Vector{T}, χT::Real, state0::MPCState) where T<:Real
     @assert length(axis)==3
     axis = axis/norm(axis)
     # Rotation into sigma_x
@@ -675,14 +668,14 @@ Calculate squeezing parameter for the given `state`.
 function squeezingparameter(state::MPCState)
     N = state.N
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = map(sum, splitstate(state))
-    n = 1./N*[sx, sy, sz]
+    n = 1.0/N*[sx, sy, sz]
     e1, e2 = orthogonal_vectors(n)
     function f(phi)
         nphi = cos(phi)*e1 + sin(phi)*e2
         nx = nphi[1]
         ny = nphi[2]
         nz = nphi[3]
-        Sphi2 = 1./N^2*(N+nx*nx*Cxx + ny*ny*Cyy + nz*nz*Czz +
+        Sphi2 = 1.0/N^2*(N+nx*nx*Cxx + ny*ny*Cyy + nz*nz*Czz +
                 2*nx*ny*Cxy + 2*nx*nz*Cxz + 2*ny*nz*Cyz)
         return Sphi2
     end

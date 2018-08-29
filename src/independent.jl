@@ -1,8 +1,9 @@
 module independent
 
-using ArrayViews
 using QuantumOptics
 using ..interaction, ..system
+
+import ..integrate
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
@@ -21,7 +22,7 @@ Product state of `N` single spin Bloch states.
 
 All spins have the same azimuthal angle `phi` and polar angle `theta`.
 """
-function blochstate{T1<:Real, T2<:Real}(phi::Vector{T1}, theta::Vector{T2})
+function blochstate(phi::Vector{T1}, theta::Vector{T2}) where {T1<:Real, T2<:Real}
     N = length(phi)
     @assert length(theta)==N
     state = zeros(Float64, 3*N)
@@ -57,7 +58,7 @@ Split state into sx, sy and sz parts.
 """
 function splitstate(state::Vector{Float64})
     N = dim(state)
-    return ArrayViews.view(state, 0*N+1:1*N), ArrayViews.view(state, 1*N+1:2*N), ArrayViews.view(state, 2*N+1:3*N)
+    return view(state, 0*N+1:1*N), view(state, 1*N+1:2*N), view(state, 2*N+1:3*N)
 end
 
 """
@@ -84,21 +85,21 @@ end
 
 Sigma x expectation values of state.
 """
-sx(state::Vector{Float64}) = ArrayViews.view(state, 1:dim(state))
+sx(state::Vector{Float64}) = view(state, 1:dim(state))
 
 """
     independent.sy(state)
 
 Sigma y expectation values of state.
 """
-sy(state::Vector{Float64}) = ArrayViews.view(state, dim(state)+1:2*dim(state))
+sy(state::Vector{Float64}) = view(state, dim(state)+1:2*dim(state))
 
 """
     independent.sz(state)
 
 Sigma z expectation values of state.
 """
-sz(state::Vector{Float64}) = ArrayViews.view(state, 2*dim(state)+1:3*dim(state))
+sz(state::Vector{Float64}) = view(state, 2*dim(state)+1:3*dim(state))
 
 
 """
@@ -114,7 +115,7 @@ Independent time evolution.
 function timeevolution(T, gamma::Number, state0::Vector{Float64})
     N = dim(state0)
     γ = gamma
-    function f(t, s::Vector{Float64}, ds::Vector{Float64})
+    function f(ds::Vector{Float64}, s::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(s)
         dsx, dsy, dsz = splitstate(ds)
         @inbounds for k=1:N
@@ -124,15 +125,9 @@ function timeevolution(T, gamma::Number, state0::Vector{Float64})
         end
     end
 
-    t_out = Float64[]
-    state_out = Vector{Float64}[]
-    function fout(t, y::Vector{Float64})
-        push!(t_out, t)
-        push!(state_out, deepcopy(y))
-    end
-
-    QuantumOptics.ode_dopri.ode(f, T, state0, fout)
-    return t_out, state_out
+    fout_(t::Float64, u::Vector{Float64}) = deepcopy(u)
+    
+    return integrate(T, f, state0, fout_)
 end
 
 """
