@@ -356,7 +356,7 @@ MPC time evolution.
 * `fout` (optional): Function with signature fout(t, state) that is called
     whenever output should be generated.
 """
-function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothing)
+function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothing, kwargs...)
     N = length(S.spins)
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
@@ -431,7 +431,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     fout_ = fout
     end
     
-    return integrate(T, f, state0, fout_)
+    return integrate(T, f, state0, fout_; kwargs...)
 end
 
 function axisangle2rotmatrix(axis::Vector{T}, angle::Real) where T<:Real
