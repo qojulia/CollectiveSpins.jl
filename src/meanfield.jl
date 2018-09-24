@@ -232,7 +232,7 @@ function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Re
         fout_ = fout
     end
     
-    return integrate(T, f, state0, fout_; kwargs)
+    return integrate(T, f, state0, fout_; kwargs...)
 
 end
 
