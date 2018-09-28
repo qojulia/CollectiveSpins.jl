@@ -167,7 +167,7 @@ Meanfield time evolution.
 * `fout` (optional): Function with signature `fout(t, state)` that is called whenever output
     should be generated.
 """
-function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=nothing)
+function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=nothing, kwargs...)
     N = length(S.spins)
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
@@ -197,7 +197,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
         fout_ = fout
     end
     
-    return integrate(T, f, state0, fout_)
+    return integrate(T, f, state0, fout_; kwargs...)
 end
 
 """
@@ -215,7 +215,7 @@ Symmetric meanfield time evolution.
 * `fout` (optional): Function with signature `fout(t, state)` that is called whenever output
     should be generated.
 """
-function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Real; γ::Real=1.0, δ0::Real=0., fout=nothing)
+function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Real; γ::Real=1.0, δ0::Real=0., fout=nothing, kwargs...)
     N = 1
     @assert state0.N==N
     function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
@@ -232,7 +232,7 @@ function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Re
         fout_ = fout
     end
     
-    return integrate(T, f, state0, fout_)
+    return integrate(T, f, state0, fout_; kwargs...)
 
 end
 

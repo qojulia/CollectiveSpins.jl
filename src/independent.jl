@@ -112,7 +112,7 @@ Independent time evolution.
 * `gamma`: Single spin decay rate.
 * `state0`: Initial state.
 """
-function timeevolution(T, gamma::Number, state0::Vector{Float64})
+function timeevolution(T, gamma::Number, state0::Vector{Float64}; kwargs...)
     N = dim(state0)
     γ = gamma
     function f(ds::Vector{Float64}, s::Vector{Float64}, p, t)
@@ -127,7 +127,7 @@ function timeevolution(T, gamma::Number, state0::Vector{Float64})
 
     fout_(t::Float64, u::Vector{Float64}) = deepcopy(u)
     
-    return integrate(T, f, state0, fout_)
+    return integrate(T, f, state0, fout_; kwargs...)
 end
 
 """
