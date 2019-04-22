@@ -74,7 +74,7 @@ end
 
 Number of spins described by this state.
 """
-function dim(ρ::Operator)
+function dim(ρ::AbstractOperator)
     return length(ρ.basis_l.bases)
 end
 
@@ -323,7 +323,7 @@ end
 
 Variance of the operator for the given state.
 """
-variance(op::Operator, state) = (expect(op^2, state) - expect(op, state)^2)
+variance(op::AbstractOperator, state) = (expect(op^2, state) - expect(op, state)^2)
 
 """
     quantum.squeezingparameter(ρ)

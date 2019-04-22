@@ -69,7 +69,7 @@ MPCState(data::Vector{Float64}) = MPCState(dim(data), data)
 
 Create MPC state from density operator.
 """
-function MPCState(rho::Operator)
+function MPCState(rho::AbstractOperator)
     basis = rho.basis_l
     N = length(basis.bases)
     state = MPCState(N)
