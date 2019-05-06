@@ -189,7 +189,7 @@ function splitstate(N::Int, data::Vector{Float64})
 end
 splitstate(state::MPCState) = splitstate(state.N, state.data)
 
-function covarianceoperator(productstate::Vector{DenseOperator}, operators::Vector{DenseOperator}, indices::Vector{Int})
+function covarianceoperator(productstate::Vector{<:DenseOperator}, operators::Vector{<:DenseOperator}, indices::Vector{Int})
     x = DenseOperator[(i in indices ? operators[something(findfirst(isequal(i), indices), 0)] : productstate[i]) for i=1:length(productstate)]
     return tensor(x...)
 end
