@@ -22,7 +22,7 @@ function test_2spin()
     tout, state_mpc_t = cs.mpc.timeevolution(T, system, state0)
 
     # Quantum: master equation
-    function fout(t, rho::Operator)
+    function fout(t, rho::AbstractOperator)
         i = something(findfirst(isequal(t), T), 0)
         rho_mpc = cs.mpc.densityoperator(state_mpc_t[i])
         @test tracedistance(rho, rho_mpc)<1e-5
@@ -32,7 +32,6 @@ function test_2spin()
     ρ₀ = Ψ₀⊗dagger(Ψ₀)
     cs.quantum.timeevolution(T, system, ρ₀, fout=fout)
 end
-
 
 function test_3spin()
     a = 0.54
@@ -54,7 +53,7 @@ function test_3spin()
     tout, state_mpc_t = cs.mpc.timeevolution(T, system, state0)
 
     # Quantum: master equation
-    function fout(t, rho::Operator)
+    function fout(t, rho::AbstractOperator)
         i = something(findfirst(isequal(t), T), 0)
         rho_mf = cs.meanfield.densityoperator(state_mf_t[i])
         rho_mpc = cs.mpc.densityoperator(state_mpc_t[i])

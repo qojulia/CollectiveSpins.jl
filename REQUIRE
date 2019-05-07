@@ -1,4 +1,4 @@
-julia 0.7
+julia 1.0
 QuantumOptics 0.6
 OrdinaryDiffEq 4.10
 DiffEqCallbacks 2.5.2
