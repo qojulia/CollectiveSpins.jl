@@ -2,12 +2,11 @@ module reducedspin
 
 using QuantumOptics, Base.Cartesian
 
-export ReducedSpinBasis, reducedspintransition, reducedspinstate
-export reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay, reducedsigmaz
+export ReducedSpinBasis, reducedspintransition, reducedspinstate, reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay, reducedsigmaz
 
 import Base: ==
 
-using ..bases, ..states, ..operators, ..operators_sparse
+using .bases, .states, .operators, .operators_sparse
 
 
 """
