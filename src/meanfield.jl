@@ -172,14 +172,14 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
-    γ = S.gamma
+    
     function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         @inbounds for k=1:N
-            dsx[k] = -S.spins[k].delta*sy[k] - 0.5*γ*sx[k]
-            dsy[k] = S.spins[k].delta*sx[k] - 0.5*γ*sy[k]
-            dsz[k] = -γ*(1+sz[k])
+            dsx[k] = -S.spins[k].delta*sy[k] - 0.5*S.gammas[k]*sx[k]
+            dsy[k] = S.spins[k].delta*sx[k] - 0.5*S.gammas[k]*sy[k]
+            dsz[k] = -S.gammas[k]*(1+sz[k])
             for j=1:N
                 if j==k
                     continue

@@ -361,15 +361,14 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
-    γ = S.gamma
 
     function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         @inbounds for k=1:N
-            dsx[k] = -0.5*γ*sx[k]
-            dsy[k] = -0.5*γ*sy[k]
-            dsz[k] = -γ*(1.0+sz[k])
+            dsx[k] = -0.5*S.gammas[k]*sx[k]
+            dsy[k] = -0.5*S.gammas[k]*sy[k]
+            dsz[k] = -S.gammas[k]*(1.0+sz[k])
             for j=1:N
                 if j==k
                     continue
@@ -383,12 +382,12 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
             if k==l
                 continue
             end
-            dCxx[k,l] = -γ*Cxx[k,l] + Γ[k,l]*(Czz[k,l]+0.5*sz[k]+0.5*sz[l])
-            dCyy[k,l] = -γ*Cyy[k,l] + Γ[k,l]*(Czz[k,l]+0.5*sz[k]+0.5*sz[l])
-            dCzz[k,l] = -2*γ*Czz[k,l] - γ*(sz[k]+sz[l]) + Γ[k,l]*(Cyy[k,l]+Cxx[k,l])
-            dCxy[k,l] = Ω[k,l]*(sz[k]-sz[l]) - γ*Cxy[k,l]
-            dCxz[k,l] = Ω[k,l]*sy[l] - 1.5*γ*Cxz[k,l] - γ*sx[k] - Γ[k,l]*(Cxz[l,k]+0.5*sx[l])
-            dCyz[k,l] = -Ω[k,l]*sx[l] - 1.5*γ*Cyz[k,l] - γ*sy[k] - Γ[k,l]*(Cyz[l,k]+0.5*sy[l])
+            dCxx[k,l] = -sqrt(S.gammas[k]*S.gammas[l])*Cxx[k,l] + Γ[k,l]*(Czz[k,l]+0.5*sz[k]+0.5*sz[l])
+            dCyy[k,l] = -sqrt(S.gammas[k]*S.gammas[l])*Cyy[k,l] + Γ[k,l]*(Czz[k,l]+0.5*sz[k]+0.5*sz[l])
+            dCzz[k,l] = -2*sqrt(S.gammas[k]*S.gammas[l])*Czz[k,l] - sqrt(S.gammas[k]*S.gammas[l])*(sz[k]+sz[l]) + Γ[k,l]*(Cyy[k,l]+Cxx[k,l])
+            dCxy[k,l] = Ω[k,l]*(sz[k]-sz[l]) - sqrt(S.gammas[k]*S.gammas[l])*Cxy[k,l]
+            dCxz[k,l] = Ω[k,l]*sy[l] - 1.5*sqrt(S.gammas[k]*S.gammas[l])*Cxz[k,l] - S.gammas[k]*sx[k] - Γ[k,l]*(Cxz[l,k]+0.5*sx[l])
+            dCyz[k,l] = -Ω[k,l]*sx[l] - 1.5*sqrt(S.gammas[k]*S.gammas[l])*Cyz[k,l] - S.gammas[k]*sy[k] - Γ[k,l]*(Cyz[l,k]+0.5*sy[l])
             for j=1:N
                 if j==l || j==k
                     continue
