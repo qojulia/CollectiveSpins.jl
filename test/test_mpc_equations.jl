@@ -16,7 +16,7 @@ sz = sigmaz(spinbasis)
 
 N = 2
 systemgeometry = CollectiveSpins.geometry.chain(0.3, N)
-system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gamma=γ)
+system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gammas=γ)
 basis = CollectiveSpins.quantum.basis(system)
 I = identityoperator(spinbasis)
 
@@ -69,7 +69,7 @@ end
 
 N = 3
 systemgeometry = CollectiveSpins.geometry.chain(0.3, N)
-system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gamma=γ)
+system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gammas=γ)
 basis = CollectiveSpins.quantum.basis(system)
 I = identityoperator(spinbasis)
 

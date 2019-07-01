@@ -17,7 +17,7 @@ sp = sigmap(spinbasis)
 sm = sigmam(spinbasis)
 
 systemgeometry = CollectiveSpins.geometry.chain(0.3, 2)
-system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gamma=γ)
+system = CollectiveSpins.SpinCollection(systemgeometry, edipole; gammas=γ)
 basis = CollectiveSpins.quantum.basis(system)
 I = identityoperator(spinbasis)
 
