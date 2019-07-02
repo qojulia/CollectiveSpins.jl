@@ -7,6 +7,7 @@ export ReducedSpinBasis, reducedspintransition, reducedspinstate, reducedsigmap,
 import Base: ==
 
 using .bases, .states, .operators, .operators_sparse
+using ..interaction, ..system
 
 
 """
@@ -145,7 +146,7 @@ end
 	Sigma-Z Operator for the j-th particle.
 """
 function reducedsigmaz(b::ReducedSpinBasis, j::Int)
-	return reducedsigmap(b, j)*reducedsigmam(b, j) - reducedsigmam(b, j)*reducedsigmap(j)
+	return 2*reducedsigmap(b, j)*reducedsigmam(b, j) - identityoperator(b)
 end
 
 """
@@ -172,12 +173,73 @@ end
 """
 	reducedspinstate(b::ReducedSpinBasis, n::Vector{Int})
 
-	State where the system is completely in [...] excitaitnos.
+	State where the system is completely in [...] excitations.
 """
 function reducedspinstate(b::ReducedSpinBasis, n::Vector{Int})
 	basisstate(b, index(b, n))
 end
 
 reducedspinstate(b::ReducedSpinBasis, n) = reducedspinstate(b, convert(Vector{Int}, n))
+
+"""
+	Hamiltonian(S::SpinCollection, M::Int=1)
+	
+	Builds the dipole-dipole Hamiltonian.
+	
+	* S: SpinCollection
+	* M: Number of excitations.
+"""
+function Hamiltonian(S::SpinCollection, M::Int=1)
+	N = length(S.spins)
+	b = ReducedSpinBasis(N, M)
+	sp(j) = reducedsigmap(b, j)
+	sm(j) = reducedsigmam(b, j)
+
+	OmegaM = interaction.OmegaMatrix(S)
+	
+	H = SparseOperator(b)
+	
+	for i=1:N, j=1:N
+		if i == j
+			continue
+		else
+			H += OmegaM[i, j]*sp(i)*sm(j)
+		end
+	end
+	
+	return H
+end
+
+"""
+	JumpOperators(S::SpinCollectino, M::Int=1)
+	
+		Gamma Matix and Jump Operators for dipole-dipole interactino.
+		
+		* S: Spin collection.
+		* M: Number of excitations.
+"""
+function JumpOperators(S::SpinCollection, M::Int=1)
+		N = length(S.spins)
+		b = ReducedSpinBasis(N, M)
+
+		sm(j) = reducedsigmam(b, j)
+		Jumps = [ sm(j) for j=1:N]
+		GammaM = interaction.GammaMatrix(S)
+		
+		return GammaM, Jumps
+	end
+
+"""
+	time evolution
+"""
+function timeevoltuion(T, system::SpinCollection, psi0::Union{Ket{B}, DenseOperator{B, B}}; fout=nothing, kwargs...) where B <: ReducedSpinBasis
+
+	M = isa(psi0, Ket) ? psi.bais.M : psi0.basis_l.M
+	
+	H = Hamiltonian(S, M)
+	GammaM, J = JumpOperators(S. M)
+	
+	return QuantumOptics.timeevolution.master_h(T, psi0, H, J; fout=fout, rates=GammaM, kwargs...)
+end
 
 end # module
