@@ -245,12 +245,12 @@ function G_matrix(r1::Vector{T},r2::Vector{T},μ₁::Vector{T},μ₂::Vector{T},
     exp(1.0im.*k.*n)./(4π.*n) .* (dot(μ₁,(r×μ₂)×r) .+ (1.0 ./ (k.*n).^2 .- 1.0im./(k.*n)).*(3*dot(r,μ₁) .* dot(r,μ₂) .- dot(μ₁,μ₂)))
 end
 
-function GammaMat(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k₀) where T<:Union{ComplexF64,Float64}
-    return -3π/k0*Γ0*real(G_matrix(r₁,r₂,μ₁,μ₂,k₀))
+function GammaMat(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+    return -3π/k0*real(G_matrix(r₁,r₂,μ₁,μ₂,k₀))
 end
 
-function OmegaMat(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k₀) where T<:Union{ComplexF64,Float64}
-    return 6π/k0*Γ0*imag(G_matrix(r₁,r₂,μ₁,μ₂,k₀))
+function OmegaMat(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+    return 6π/k0*imag(G_matrix(r₁,r₂,μ₁,μ₂,k₀))
 end
 
 end # module
