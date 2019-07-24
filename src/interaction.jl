@@ -4,7 +4,7 @@ using ..system
 using LinearAlgebra
 import Base: *
 
-export *,G_matrix,GammaMat,OmegaMat
+export GreenTensor,*,G_ij,Gamma_ij,Omega_ij
 
 """
     interaction.F(ξ, θ)
@@ -236,7 +236,7 @@ function *(G::GreenTensor, p::Vector{T}) where T<:Union{ComplexF64,Float64}
 end
 
 # k0: we asssume the same k-vectors for all transitions.
-function G_matrix(r1::Vector{T},r2::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+function G_ij(r1::Vector{T},r2::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
     G = GreenTensor(r1 - r2, k0)
     k = G.k
     R = G.r
@@ -245,12 +245,12 @@ function G_matrix(r1::Vector{T},r2::Vector{T},μ₁::Vector{T},μ₂::Vector{T},
     exp(1.0im.*k.*n)./(4π.*n) .* (dot(μ₁,(r×μ₂)×r) .+ (1.0 ./ (k.*n).^2 .- 1.0im./(k.*n)).*(3*dot(r,μ₁) .* dot(r,μ₂) .- dot(μ₁,μ₂)))
 end
 
-function GammaMat(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
-    return -3π/k0*real(G_matrix(r₁,r₂,μ₁,μ₂,k₀))
+function Gamma_ij(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+    return -3π/k0*real(G_matrix(r₁,r₂,μ₁,μ₂,k0))
 end
 
-function OmegaMat(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
-    return 6π/k0*imag(G_matrix(r₁,r₂,μ₁,μ₂,k₀))
+function Omega_ij(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+    return 6π/k0*imag(G_matrix(r₁,r₂,μ₁,μ₂,k0))
 end
 
 end # module
