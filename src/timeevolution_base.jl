@@ -8,7 +8,7 @@ function integrate(T::Vector{Float64}, f:: Function, state0::S, fout::Function;
                     callback = nothing, kwargs...) where S
 
     if isa(state0, Vector{Float64})
-        x0 = state
+        x0 = state0
     else
         x0 = state0.data
     end
