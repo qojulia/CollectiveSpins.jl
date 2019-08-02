@@ -10,6 +10,7 @@ names = [
     "test_mpc.jl",
     "test_rotate.jl",
     "test_squeezing.jl",
+    "test_interaction.jl",
 ]
 
 detected_tests = filter(
