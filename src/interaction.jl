@@ -198,21 +198,6 @@ function GammaMatrix(S::system.SpinCollection)
     return Γ
 end
 
-mutable struct GreenTensor{T<:Vector{Float64},K<:Number}
-    r::T
-    k::K
-    function GreenTensor(r::T, k::K) where {T<:Vector{Float64},K<:Number}
-        new{T,K}(r, k)
-    end
-end
-
-function *(G::GreenTensor, p::Vector{T}) where T<:Union{ComplexF64,Float64}
-    k = G.k
-    R = G.r
-    n = norm(R)
-    r = R ./ n
-    exp(1.0im.*k.*n)./(4π.*n) .* ((r×p)×r .+ (1.0 ./ (k.*n).^2 .- 1.0im./(k.*n)).*(3r .* dot(r,p) .- p))
-end
 
 """
 Calculate the Greens Tensor, its matrix elements, the Omega- and Gamma-Matrices
@@ -237,20 +222,30 @@ end
 
 # k0: we asssume the same k-vectors for all transitions.
 function G_ij(r1::Vector{T},r2::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
-    G = GreenTensor(r1 - r2, k0)
-    k = G.k
-    R = G.r
-    n = norm(R)
-    r = R ./ n
-    exp(1.0im.*k.*n)./(4π.*n) .* (dot(μ₁,(r×μ₂)×r) .+ (1.0 ./ (k.*n).^2 .- 1.0im./(k.*n)).*(3*dot(r,μ₁) .* dot(r,μ₂) .- dot(μ₁,μ₂)))
+	G = GreenTensor(r1 - r2, k0)
+    	k = G.k
+    	R = G.r
+    	n = norm(R)
+   	r = R ./ n
+    	exp(1.0im.*k.*n)./(4π.*n) .* (dot(μ₁,(r×μ₂)×r) .+ (1.0 ./ (k.*n).^2 .- 1.0im./(k.*n)).*(3*dot(r,μ₁) .* dot(r,μ₂) .- dot(μ₁,μ₂)))
+end	
+
+function Gamma_ij(r1::Vector{T},r2::Vector{T},μ1::Vector{T},μ2::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+    if (r1 == r2) && (μ1 == μ2)
+        return 1.0
+    elseif (r1 == r2) && (μ1 != μ2)
+        return 0.0
+    else
+        return 6π/k0*imag(G_ij(r1,r2,μ1,μ2,k0))
+    end
 end
 
-function Gamma_ij(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
-    return -3π/k0*real(G_matrix(r₁,r₂,μ₁,μ₂,k0))
-end
-
-function Omega_ij(r₁::Vector{T},r₂::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
-    return 6π/k0*imag(G_matrix(r₁,r₂,μ₁,μ₂,k0))
+function Omega_ij(r1::Vector{T},r2::Vector{T},μ1::Vector{T},μ2::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+    if r1 == r2
+        return 0.0
+    else
+        return -3pi/k0*real(G_ij(r1,r2,μ1,μ2,k0))
+    end
 end
 
 end # module
