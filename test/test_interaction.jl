@@ -27,4 +27,8 @@ for i = 1:N
     end
 end
 
+G = GreenTensor(r,k0)
+µ = normalize(rand(3))
+@test isapprox(G*µ, Matrix(G)*µ)
+
 end #testset
