@@ -95,15 +95,15 @@ positive x, y and z direction.
 cube(a::Real; Nx::Int=2, Ny::Int=2, Nz::Int=2) = box(a, a, a, Nx=Nx, Ny=Ny, Nz=Nz)
 
 """
-    geometry.ring(a, N; distance = FALSE)
+    geometry.ring(a, N; distance = false)
 
 Ring of N particles with radius a.
-If distance is set to TRUE, the distance between particles determines the radius.
+If distance is set to true, then `a` gives the distance between particles
+and the radius is determined accordingly.
 """
 function ring(a::Real, N::Int; distance = false)
-
-    x = (distance) ? a/sqrt(1-cos(2*pi/N)) : a
+    x = distance ? 0.5a/sin(pi/N) : a
     return [[x*cos(2*pi*j/N), x*sin(2*pi*j/N), 0] for j=0:(N-1)]
-
 end
+
 end # module
