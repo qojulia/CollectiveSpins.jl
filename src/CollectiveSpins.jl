@@ -1,7 +1,7 @@
 module CollectiveSpins
 
 export Spin, SpinCollection, CavityMode, CavitySpinCollection,
-        geometry
+        geometry, GreenTensor, G_ij, Gamma_ij, Omega_ij
 
 
 include("system.jl")
@@ -23,5 +23,6 @@ using .quantum
 using .meanfield
 using .mpc
 using .reducedspin
+using .interaction
 
 end # module
