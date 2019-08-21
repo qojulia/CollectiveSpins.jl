@@ -12,6 +12,7 @@ include("effective_interaction.jl")
 include("effective_interaction_simple.jl")
 include("effective_interaction_rotated.jl")
 include("quantum.jl")
+include("reducedspin.jl")
 include("independent.jl")
 include("meanfield.jl")
 include("mpc.jl")
@@ -21,5 +22,7 @@ using .system
 using .quantum
 using .meanfield
 using .mpc
+using .reducedspin
 using .interaction
+
 end # module

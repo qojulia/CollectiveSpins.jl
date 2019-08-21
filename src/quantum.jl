@@ -99,7 +99,7 @@ function Hamiltonian(S::system.SpinCollection)
         end
         sigmap_i = embed(b, i, sigmap)
         sigmam_j = embed(b, j, sigmam)
-        H += interaction.Omega(spins[i].position, spins[j].position, S.polarization, S.gamma)*sigmap_i*sigmam_j
+        H += interaction.Omega(spins[i].position, spins[j].position, S.polarizations[i], S.polarizations[j], S.gammas[i], S.gammas[j])*sigmap_i*sigmam_j
     end
     return H
 end
@@ -172,7 +172,7 @@ function JumpOperators_diagonal(S::system.SpinCollection)
     b = basis(S)
     Γ = zeros(Float64, N, N)
     for i=1:N, j=1:N
-        Γ[i,j] = interaction.Gamma(spins[i].position, spins[j].position, S.polarization, S.gamma)
+        Γ[i,j] = interaction.Gamma(spins[i].position, spins[j].position, S.polarizations[i], S.polarizations[j], S.gammas[i], S.gammas[j])
     end
     λ, M = eig(Γ)
     J = Any[]

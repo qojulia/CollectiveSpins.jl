@@ -41,30 +41,43 @@ A class representing a system consisting of many spins.
 
 # Arguments
 * `spins`: Vector of spins.
-* `polarization`: Unit vector defining the polarization axis.
-* `gamma`: Decay rate. (Has to be the same for all spins.)
+* `polarizations`: Unit vectors defining the directions of the spins.
+* `gammas`: Decay rates.
 """
 struct SpinCollection <: System
     spins::Vector{Spin}
-    polarization::Vector{Float64}
-    gamma::Float64
-    function SpinCollection(spins::Vector{Spin}, polarization::Vector{T}; gamma::Real=1.) where T<:Real
-        new(spins, polarization/norm(polarization), gamma)
+    polarizations::Vector{Vector{Float64}}
+    gammas::Vector{Float64}
+    function SpinCollection(spins::Vector{Spin}, polarizations::Union{Vector{T}, Vector{Vector{T1}}}; gammas::Union{T3, Vector{T4}} = ones(Float64, length(spins))) where {T <: Real, T1<:Real, T2<:Real, T3 <:Real, T4<:Real}
+        
+        if (typeof(polarizations) == Vector{Vector{eltype(eltype(polarizations))}})
+            @assert length(polarizations) == length(spins)
+        else
+            polarizations = [polarizations for i=1:length(spins)]
+        end
+        
+        if (typeof(gammas) == Vector{eltype(gammas)})
+            @assert length(gammas) == length(spins)
+        else
+            gammas = [gammas for i=1:length(spins)]
+        end
+        
+        new(spins, [normalize!(p) for p = polarizations], gammas)
     end
 end
-
 
 """
 Create a SpinCollection without explicitely creating single spins.
 
 # Arguments
 * `positions`: Vector containing the positions of all single spins.
-* `polarization`: Unit vector defining the polarization axis.
-* `delta=0`: Detuning.
-* `gamma=0`: Decay rate. (Has to be the same for all spins.
+* `polarizations`: Unit vectors defining the directions of the spins.
+* `deltas=0`: Detunings.
+* `gammas=1`: Decay rates.
 """
-function SpinCollection(positions::Vector{Vector{T1}}, polarization::Vector{T2}; delta::Real=0., gamma::Real=1.) where {T1<:Real, T2<:Real}
-    SpinCollection(Spin[Spin(p; delta=delta) for p=positions], polarization; gamma=gamma)
+function SpinCollection(positions::Vector{Vector{T1}}, polarizations::Union{Vector{T2}, Vector{Vector{T3}}}; deltas::Vector{T4} = zeros(Float64, length(positions)), gammas::Union{T5, Vector{T6}} = ones(Float64, length(positions))) where {T1<:Real, T2<:Real, T3<:Real, T4<:Real, T5<:Real,T6<:Real}
+    #@assert length(deltas) == length(positions)
+    SpinCollection([Spin(positions[i]; delta=deltas[i]) for i=1:length(positions)], polarizations; gammas=gammas)
 end
 
 

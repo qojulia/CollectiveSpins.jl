@@ -15,7 +15,7 @@ T = [0:0.05:5;]
 
 # =========== Test square configuration =========================
 
-system_square = SpinCollection(cs.geometry.square(a), e_dipole; gamma=γ)
+system_square = SpinCollection(cs.geometry.square(a), e_dipole; gammas=γ)
 N_square = length(system_square.spins)
 
 # Initial state (Bloch state)
@@ -77,7 +77,7 @@ end
 
 # =========== Test cube configuration ===========================
 
-system_cube = SpinCollection(cs.geometry.cube(a), e_dipole; gamma=γ)
+system_cube = SpinCollection(cs.geometry.cube(a), e_dipole; gammas=γ)
 N_cube = length(system_cube.spins)
 
 # Initial state (Bloch state)
