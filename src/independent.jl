@@ -1,17 +1,17 @@
 module independent
 
-using QuantumOptics
+using QuantumOpticsBase
 using ..interaction, ..system
 
 import ..integrate
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
-sigmax = spin.sigmax(spinbasis)
-sigmay = spin.sigmay(spinbasis)
-sigmaz = spin.sigmaz(spinbasis)
-sigmap = spin.sigmap(spinbasis)
-sigmam = spin.sigmam(spinbasis)
+sigmax_ = sigmax(spinbasis)
+sigmay_ = sigmay(spinbasis)
+sigmaz_ = sigmaz(spinbasis)
+sigmap_ = sigmap(spinbasis)
+sigmam_ = sigmam(spinbasis)
 I_spin = identityoperator(spinbasis)
 
 
@@ -68,7 +68,7 @@ end
 Create density operator from independent sigma expectation values.
 """
 function densityoperator(sx::Number, sy::Number, sz::Number)
-    return 0.5*(identityoperator(spinbasis) + sx*sigmax + sy*sigmay + sz*sigmaz)
+    return 0.5*(identityoperator(spinbasis) + sx*sigmax_ + sy*sigmay_ + sz*sigmaz_)
 end
 function densityoperator(state::Vector{Float64})
     N = dim(state)
@@ -126,7 +126,7 @@ function timeevolution(T, gamma::Number, state0::Vector{Float64}; kwargs...)
     end
 
     fout_(t::Float64, u::Vector{Float64}) = deepcopy(u)
-    
+
     return integrate(T, f, state0, fout_; kwargs...)
 end
 

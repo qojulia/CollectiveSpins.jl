@@ -6,7 +6,6 @@ export ReducedSpinBasis, reducedspintransition, reducedspinstate, reducedsigmap,
 
 import Base: ==
 
-using .bases, .states, .operators, .operators_sparse
 using ..interaction, ..system
 
 

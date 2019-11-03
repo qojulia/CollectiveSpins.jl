@@ -18,11 +18,11 @@ export Hamiltonian, JumpOperators
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
-sigmax = spin.sigmax(spinbasis)
-sigmay = spin.sigmay(spinbasis)
-sigmaz = spin.sigmaz(spinbasis)
-sigmap = spin.sigmap(spinbasis)
-sigmam = spin.sigmam(spinbasis)
+sigmax_ = sigmax(spinbasis)
+sigmay_ = sigmay(spinbasis)
+sigmaz_ = sigmaz(spinbasis)
+sigmap_ = sigmap(spinbasis)
+sigmam_ = sigmam(spinbasis)
 I_spin = identityoperator(spinbasis)
 
 """
@@ -90,15 +90,15 @@ function Hamiltonian(S::system.SpinCollection)
     H = SparseOperator(b)
     for i=1:N
         if S.spins[i].delta != 0.
-            H += 0.5*S.spins[i].delta * embed(b, i, sigmaz)
+            H += 0.5*S.spins[i].delta * embed(b, i, sigmaz_)
         end
     end
     for i=1:N, j=1:N
         if i==j
             continue
         end
-        sigmap_i = embed(b, i, sigmap)
-        sigmam_j = embed(b, j, sigmam)
+        sigmap_i = embed(b, i, sigmap_)
+        sigmam_j = embed(b, j, sigmam_)
         H += interaction.Omega(spins[i].position, spins[j].position, S.polarizations[i], S.polarizations[j], S.gammas[i], S.gammas[j])*sigmap_i*sigmam_j
     end
     return H
@@ -122,7 +122,7 @@ function Hamiltonian(S::system.CavitySpinCollection)
     at = SparseOperator(create(bc))
     for i=1:length(S.spincollection.spins)
         if S.g[i] != 0.
-            H += S.g[i]*(tensor(a, embed(bs, i, sigmap)) + tensor(at, embed(bs, i, sigmam)))
+            H += S.g[i]*(tensor(a, embed(bs, i, sigmap_)) + tensor(at, embed(bs, i, sigmam_)))
         end
     end
     return H
@@ -134,7 +134,7 @@ end
 Jump operators of the given system.
 """
 function JumpOperators(S::system.SpinCollection)
-    J = SparseOperator[embed(basis(S), i, sigmam) for i=1:length(S.spins)]
+    J = SparseOperator[embed(basis(S), i, sigmam_) for i=1:length(S.spins)]
     Γ = interaction.GammaMatrix(S)
     return Γ, J
 end
@@ -179,7 +179,7 @@ function JumpOperators_diagonal(S::system.SpinCollection)
     for i=1:N
         op = Operator(b)
         for j=1:N
-            op += M[j,i]*embed(b, j, sigmam)
+            op += M[j,i]*embed(b, j, sigmam_)
         end
         push!(J, sqrt(λ[i])*op)
     end
@@ -248,7 +248,7 @@ function rotate(axis::Vector{T1}, angles::Vector{T2}, ρ::DenseOperator) where {
     basis = ρ.basis_l
     n = axis/norm(axis)
     for i=1:N
-        nσ = n[1]*sigmax + n[2]*sigmay + n[3]*sigmaz
+        nσ = n[1]*sigmax_ + n[2]*sigmay_ + n[3]*sigmaz_
         α = angles[i]
         R = I_spin*cos(α/2) - 1im*nσ*sin(α/2)
         R_ = embed(basis, i, R)
@@ -272,7 +272,7 @@ function squeeze_sx(χT::Real, ρ₀::DenseOperator)
     N = dim(ρ₀)
     basis = ρ₀.basis_l
     totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
-    sigmax_total = totaloperator(sigmax)
+    sigmax_total = totaloperator(sigmax_)
     H = χT*sigmax_total^2
     T = [0.,1.]
     t, states = QuantumOptics.timeevolution.master(T, ρ₀, H, [])
@@ -295,7 +295,7 @@ function squeeze(axis::Vector{T}, χT::Real, ρ₀::DenseOperator) where T<:Real
     N = dim(ρ₀)
     basis = ρ₀.basis_l
     totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
-    σ = map(totaloperator, [sigmax, sigmay, sigmaz])
+    σ = map(totaloperator, [sigmax_, sigmay_, sigmaz_])
     σn = sum([axis[i]*σ[i] for i=1:3])
     H = χT*σn^2
     tout, states = QuantumOptics.timeevolution.master([0,1], ρ₀, H, [])
@@ -334,7 +334,7 @@ function squeezingparameter(ρ::DenseOperator)
     N = dim(ρ)
     basis = ρ.basis_l
     totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
-    S = map(totaloperator, [sigmax, sigmay, sigmaz])
+    S = map(totaloperator, [sigmax_, sigmay_, sigmaz_])
     n = real([expect(s, ρ) for s=S])
     e1, e2 = orthogonal_vectors(n)
     function f(phi)

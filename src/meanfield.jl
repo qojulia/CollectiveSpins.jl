@@ -4,17 +4,17 @@ export ProductState, densityoperator
 
 import ..integrate
 
-using QuantumOptics, LinearAlgebra
+using QuantumOpticsBase, LinearAlgebra
 using ..interaction, ..system
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
 I = dense(identityoperator(spinbasis))
-sigmax = dense(spin.sigmax(spinbasis))
-sigmay = dense(spin.sigmay(spinbasis))
-sigmaz = dense(spin.sigmaz(spinbasis))
-sigmap = dense(spin.sigmap(spinbasis))
-sigmam = dense(spin.sigmam(spinbasis))
+sigmax_ = dense(sigmax(spinbasis))
+sigmay_ = dense(sigmay(spinbasis))
+sigmaz_ = dense(sigmaz(spinbasis))
+sigmap_ = dense(sigmap(spinbasis))
+sigmam_ = dense(sigmam(spinbasis))
 
 """
 Class describing a Meanfield state (Product state).
@@ -56,9 +56,9 @@ function ProductState(rho::DenseOperator)
     sx, sy, sz = splitstate(s)
     f(ind, op) = real(expect(embed(basis, ind, op), rho))
     for k=1:N
-        sx[k] = f(k, sigmax)
-        sy[k] = f(k, sigmay)
-        sz[k] = f(k, sigmaz)
+        sx[k] = f(k, sigmax_)
+        sy[k] = f(k, sigmay_)
+        sz[k] = f(k, sigmaz_)
     end
     return state
 end
@@ -122,7 +122,7 @@ splitstate(state::ProductState) = splitstate(state.N, state.data)
 Create density operator from independent sigma expectation values.
 """
 function densityoperator(sx::Real, sy::Real, sz::Real)
-    return 0.5*(I + sx*sigmax + sy*sigmay + sz*sigmaz)
+    return 0.5*(I + sx*sigmax_ + sy*sigmay_ + sz*sigmaz_)
 end
 function densityoperator(state::ProductState)
     sx, sy, sz = splitstate(state)
@@ -172,7 +172,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
-    
+
     function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
@@ -196,7 +196,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     else
         fout_ = fout
     end
-    
+
     return integrate(T, f, state0, fout_; kwargs...)
 end
 
@@ -225,13 +225,13 @@ function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Re
         dsy[1] = δ0*sx[1] - Ωeff*sx[1]*sz[1] - 0.5*γ*sy[1] + 0.5*Γeff*sy[1]*sz[1]
         dsz[1] = -γ*(1+sz[1]) - 0.5*Γeff*(sx[1]^2+sy[1]^2)
     end
-    
+
     if isa(fout, Nothing)
         fout_(t::Float64, state::ProductState) = deepcopy(state)
     else
         fout_ = fout
     end
-    
+
     return integrate(T, f, state0, fout_; kwargs...)
 
 end

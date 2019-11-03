@@ -1,6 +1,6 @@
 module mpc
 
-using QuantumOptics, LinearAlgebra
+using QuantumOpticsBase, LinearAlgebra
 using ..interaction, ..system, ..quantum
 
 import ..integrate
@@ -22,11 +22,11 @@ export MPCState, densityoperator
 
 
 spinbasis = SpinBasis(1//2)
-sigmax = dense(spin.sigmax(spinbasis))
-sigmay = dense(spin.sigmay(spinbasis))
-sigmaz = dense(spin.sigmaz(spinbasis))
-sigmap = dense(spin.sigmap(spinbasis))
-sigmam = dense(spin.sigmam(spinbasis))
+sigmax_ = dense(sigmax(spinbasis))
+sigmay_ = dense(sigmay(spinbasis))
+sigmaz_ = dense(sigmaz(spinbasis))
+sigmap_ = dense(sigmap(spinbasis))
+sigmam_ = dense(sigmam(spinbasis))
 
 """
 Class describing a MPC state (Product state + Correlations).
@@ -76,19 +76,19 @@ function MPCState(rho::AbstractOperator)
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(state)
     f(ind, op) = real(expect(embed(basis, ind, op), rho))
     for k=1:N
-        sx[k] = f(k, sigmax)
-        sy[k] = f(k, sigmay)
-        sz[k] = f(k, sigmaz)
+        sx[k] = f(k, sigmax_)
+        sy[k] = f(k, sigmay_)
+        sz[k] = f(k, sigmaz_)
         for l=1:N
             if k==l
                 continue
             end
-            Cxx[k,l] = f([k,l], [sigmax, sigmax])
-            Cyy[k,l] = f([k,l], [sigmay, sigmay])
-            Czz[k,l] = f([k,l], [sigmaz, sigmaz])
-            Cxy[k,l] = f([k,l], [sigmax, sigmay])
-            Cxz[k,l] = f([k,l], [sigmax, sigmaz])
-            Cyz[k,l] = f([k,l], [sigmay, sigmaz])
+            Cxx[k,l] = f([k,l], [sigmax_, sigmax_])
+            Cyy[k,l] = f([k,l], [sigmay_, sigmay_])
+            Czz[k,l] = f([k,l], [sigmaz_, sigmaz_])
+            Cxy[k,l] = f([k,l], [sigmax_, sigmay_])
+            Cxz[k,l] = f([k,l], [sigmax_, sigmaz_])
+            Cyz[k,l] = f([k,l], [sigmay_, sigmaz_])
         end
     end
     return state
@@ -270,9 +270,9 @@ function densityoperator(state::MPCState)
     ρ = reduce(tensor, productstate)
     for k=1:N, l=k+1:N
         ρ += 0.25*(
-              Cxx[k,l]*C(sigmax,sigmax,k,l) + Cxy[l,k]*C(sigmay,sigmax,k,l) + Cxz[l,k]*C(sigmaz,sigmax,k,l)
-            + Cxy[k,l]*C(sigmax,sigmay,k,l) + Cyy[k,l]*C(sigmay,sigmay,k,l) + Cyz[l,k]*C(sigmaz,sigmay,k,l)
-            + Cxz[k,l]*C(sigmax,sigmaz,k,l) + Cyz[k,l]*C(sigmay,sigmaz,k,l) + Czz[k,l]*C(sigmaz,sigmaz,k,l))
+              Cxx[k,l]*C(sigmax_,sigmax_,k,l) + Cxy[l,k]*C(sigmay_,sigmax_,k,l) + Cxz[l,k]*C(sigmaz_,sigmax_,k,l)
+            + Cxy[k,l]*C(sigmax_,sigmay_,k,l) + Cyy[k,l]*C(sigmay_,sigmay_,k,l) + Cyz[l,k]*C(sigmaz_,sigmay_,k,l)
+            + Cxz[k,l]*C(sigmax_,sigmaz_,k,l) + Cyz[k,l]*C(sigmay_,sigmaz_,k,l) + Czz[k,l]*C(sigmaz_,sigmaz_,k,l))
     end
     return ρ
 end
@@ -429,7 +429,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     else
     fout_ = fout
     end
-    
+
     return integrate(T, f, state0, fout_; kwargs...)
 end
 
