@@ -15,7 +15,7 @@ using ..interaction, ..system
 
 Basis for a system of N spin 1/2 systems, up to the M'th excitation.
 """
-mutable struct ReducedSpinBasis <: Basis # TODO: {N, M} parametric type values
+mutable struct ReducedSpinBasis{N, M} <: Basis
 	shape::Vector{Int}
 	N::Int
 	M::Int
@@ -41,7 +41,7 @@ mutable struct ReducedSpinBasis <: Basis # TODO: {N, M} parametric type values
 			sf, iM = indexMatrix(m, N, sf)			
 			indexMapper[m+1] = iM
 		end
-		new([numberOfStates], N, M, MS, indexMapper)
+		new{N, M}([numberOfStates], N, M, MS, indexMapper)
 	end
 end
 
