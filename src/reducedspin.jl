@@ -119,6 +119,17 @@ function transition_idx(b, j, m)
     return to, from
 end
 
+"""
+    projector_idx(b, j, m)
+
+Find the indices of all basis states in the `m` excitation manifold involving
+the atom `j` in order to build a projector onto the upper state of this atom.
+"""
+function projector_idx(b,j,m)
+    i_ = filter(x->length(x[1])==m, b.indexMapper)
+    filter!(x->j∈x[1],i_)
+    return getindex.(i_,2)
+end
 
 """
     reducedsigmam(b::ReducedSpinBasis, j::Int)
@@ -153,7 +164,14 @@ end
 Sigma-Z Operator for the j-th particle.
 """
 function reducedsigmaz(b::ReducedSpinBasis, j::Int)
-    return 2*reducedsigmap(b,j)*reducedsigmam(b,j) - one(b)
+    proj = SparseOperator(b)
+    for m=b.MS:b.M
+        i = projector_idx(b,j,m)
+        for i_=i
+            proj.data[i_,i_] += 1.0
+        end
+    end
+    return 2*proj - one(b)
 end
 
 """
