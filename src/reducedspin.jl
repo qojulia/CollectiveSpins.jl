@@ -58,7 +58,9 @@ end
 function index(b::ReducedSpinBasis, x::Vector{Int})
     @assert length(x) <= b.M
     @assert length(x) >= b.MS
-    i = findfirst(y->y[1]==x, b.indexMapper)
+    x_ = sort(x)
+    i = findfirst(y->y[1]==x_, b.indexMapper)
+    isa(i, Nothing) && throw(BoundsError(b, x_))
     return b.indexMapper[i][2]
 end
 index(b::ReducedSpinBasis, x::Int) = index(b, [x])

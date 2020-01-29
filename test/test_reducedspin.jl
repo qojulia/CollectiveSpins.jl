@@ -61,6 +61,10 @@ tmp = CollectiveSpins.reducedsigmap(b_red2,i)*CollectiveSpins.reducedsigmap(b_re
 ind = findfirst(!iszero, tmp.data)
 @test b_red2.indexMapper[findfirst(y->y[2]==ind, b_red2.indexMapper)][1] == [i,j]
 
+# Test transitions
+@test CollectiveSpins.reducedspintransition(b_red2, [i,j], [i-1,j-1]) == CollectiveSpins.reducedspintransition(b_red2, [i,j], [j-1,i-1])
+@test_throws BoundsError CollectiveSpins.reducedspintransition(b_red2, [i+1,j+1], [1,1])
+
 # Test a full example
 N = 8     # Number of spins
 M = 3     # Maximum number of excitations
