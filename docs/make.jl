@@ -14,15 +14,10 @@ pages = [
 makedocs(
     modules = [CollectiveSpins],
     checkdocs = :exports,
-    format = :html,
+    Documenter = Documenter.HTML(
+        edit_link = nothing,
+        canonical = "https://github.io/qojulia/CollectiveSpins.jl/",
+        assets = [ asset("assets/favicon.png", class=:ico, islocal = true) ]),
     sitename = "CollectiveSpins.jl",
     pages = pages
     )
-
-deploydocs(
-    repo = "github.com/bastikr/CollectiveSpins.jl.git",
-    target = "build",
-    julia = "0.6",
-    deps = nothing,
-    make = nothing
-)

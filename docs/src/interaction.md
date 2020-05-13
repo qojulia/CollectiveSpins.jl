@@ -3,17 +3,16 @@
 Of course the core of this library are the equations describing the dipole-dipole interaction and the collective decay
 
 ```math
-\begin{align*}
-\Gamma_{ij} &= \frac{3}{2} \Gamma F_{ij}(k_a r_{ij})
-\\
-\delta \omega_{ij} &= \frac{3}{4} \Gamma G_{ij}(k_a r_{ij})
-\end{align*}
+\begin{aligned}
+\Gamma_{ij} &= \frac{3}{2} \sqrt{\Gamma_i \Gamma_j} F_{ij}(k_a r_{ij}) \\
+\Omega_{ij} &= \frac{3}{4} \sqrt{\Gamma_i \Gamma_j} G_{ij}(k_a r_{ij})
+\end{aligned}
 ```
 
 with
 
 ```math
-\begin{align*}
+\begin{aligned}
 F_{ij}(\xi) &=
             \big( 1 - (\vec{e}^{(r)} . \vec{e}^{(d_{eg})})^2 \big) \frac{\sin \xi}{\xi}
             + \big( 1 - 3 (\vec{e}^{(r)} . \vec{e}^{(d_{eg})})^2 \big)
@@ -23,7 +22,7 @@ G_{ij}(\xi) &=
              - \big(1 - (\vec{e}^{(r)} . \vec{e}^{(d_{eg})})^2 \big) \frac{\cos \xi}{\xi}
             + \big( 1 - 3 (\vec{e}^{(r)} . \vec{e}^{(d_{eg})})^2 \big)
                 \big( \frac{\sin \xi}{\xi^2} - \frac{\cos \xi}{\xi^3}\big).
-\end{align*}
+\end{aligned}
 ```
 
 They are implemented in the functions:

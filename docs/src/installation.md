@@ -1,13 +1,19 @@
 # Installation
 
-The source code can be found on github at https://github.com/bastikr/CollectiveSpins.jl. The git repository can be obtained using the command
+To install the latest official release, you can use Julia's internal package manager. Simply start the Julia interpreter, press the `]` key and type
 
 ```julia
-git clone https://github.com/bastikr/CollectiveSpins.jl.git
+	pkg> add CollectiveSpins
 ```
 
-To use the Julia package manager just start up the Julia interpreter and add the package via
+The source code is available on GitHub at https://github.com/qojulia/CollectiveSpins.jl (Note: this version may be unstable). You can also use Julia's package manager to checkout this version.
 
 ```julia
-julia> Pkg.clone("https://github.com/bastikr/CollectiveSpins.jl.git")
+	pkg> develop CollectiveSpins
+```
+
+Alternatively, you can use git to clone the repository.
+
+```bash
+	>> git clone https://github.com/qojulia/CollectiveSpins.jl.git
 ```
