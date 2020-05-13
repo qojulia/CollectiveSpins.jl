@@ -17,7 +17,7 @@
 **CollectiveSpins.jl** is not an officially registered package but it nevertheless can be installed using julia's package manager:
 
 ```julia
-julia> Pkg.clone("https://github.com/qojulia/CollectiveSpins.jl.git")
+Pkg> add https://github.com/qojulia/CollectiveSpins.jl.git
 ```
 
 
@@ -49,7 +49,7 @@ tout, ρt = CollectiveSpins.quantum.timeevolution(T, system, Ψ0)
 
 The documentation is generated with [Documenter.jl][documenter] and can be found at
 
-https://qojulia.github.io/CollectiveSpins.jl/latest
+https://qojulia.github.io/CollectiveSpins.jl/
 
 
 [Julia]: http://julialang.org
