@@ -1,2 +1,187 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Introduction · CollectiveSpins.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href><img src="assets/logo.png" alt="CollectiveSpins.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">CollectiveSpins.jl</span></div><form class="docs-search" action="search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li class="is-active"><a class="tocitem" href>Introduction</a></li><li><a class="tocitem" href="installation/">Installation</a></li><li><a class="tocitem" href="geometry/">Geometry</a></li><li><a class="tocitem" href="interaction/">Dipole-Dipole interaction</a></li><li><a class="tocitem" href="effective_interaction/">Effective Interactions</a></li><li><a class="tocitem" href="system/">System</a></li><li><a class="tocitem" href="descriptions/">Theoretical Descriptions</a></li><li><a class="tocitem" href="api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Introduction</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Introduction</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/qojulia/CollectiveSpins.jl/blob/master/docs/src/index.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Introduction-1"><a class="docs-heading-anchor" href="#Introduction-1">Introduction</a><a class="docs-heading-anchor-permalink" href="#Introduction-1" title="Permalink"></a></h1><p><strong>CollectiveSpins.jl</strong> is a numerical framework that can be used to simulate quantum systems consisting of spatially distributed spins interacting via <a href="interaction/#Dipole-Dipole-interaction-1">Dipole-Dipole interaction</a>, optionally coupled to a cavity.</p><p>The <a href="geometry/#Geometry-1">Geometry</a> module allows the rapid creation of arbitrarily placed spins in order to build up very general systems as explained in the <a href="system/#System-1">System</a> documentation. These can then be investigated using either a complete quantum description or cumulant expansions up to second order. The details are presented in <a href="descriptions/#Theoretical-Descriptions-1">Theoretical Descriptions</a>.</p></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="installation/">Installation »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 14 May 2020 00:11">Thursday 14 May 2020</span>. Using Julia version 1.4.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A Julia Framework for Open Quantum Dynamics">
+<meta name="author" content="qojulia.org">
+<title>CollectiveSpins.jl</title>
+<link rel="icon" href="favicon.png">
+
+<!-- Bootstrap Core CSS -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<!-- Custom CSS -->
+<link href="assets/csjl.css" rel="stylesheet">
+
+<!-- Custom Fonts -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+
+<!-- Syntax Highlighting CSS -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css" rel="stylesheet" type="text/css" />
+	<link href="https://fonts.googleapis.com/css?family=Lato|Ubuntu+Mono" rel="stylesheet" type="text/css" />	
+</head>
+
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">CollectiveSpins.jl</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="navbar-right">
+             <a class="btn btn-default navbar-btn" href="https://github.com/qojulia/CollectiveSpins.jl" target="_blank"><i class="fa fa-github"> Github</i></a>
+             <a class="btn btn-primary navbar-btn" href="https://guide.github.io/CollectiveSpins.jl/latest" target="_blank"><i class="fa fa-paper-plane"> Documentation</i></a>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+<!-- Header -->
+    <header class="jumbotron">
+        <div class="container text-center">
+         <div class="row">
+             <div class="col-md-6 col-md-offset-3">
+         <img src="assets/logo.png" class="img-responsive">
+             </div>
+         </div>
+         <h2>Simulate Dipole-Dipole Coupled Spin Systems</h2>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <!-- Lead -->
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+
+                <p class="lead text-center text-muted">CollectiveSpins.jl is a numerical framework written in <a href="https://www.julialang.org">Julia</a> used to simulate quantum systems consisting of spatially distributed spins coupled via dipole-dipole interaction.
+
+</p>
+
+            </div>
+        </div>
+        
+        <!-- Getting Started -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="page-header"><i class="fa fa-arrow-circle-right"></i> Getting Started</h2>
+            </div>
+        </div>
+        <div class="row">
+	        <div class="col-lg-12">
+                <p>To get started with Julia, check out <a href="https://docs.julialang.org/en/stable/manual/getting-started/">Julia's setup instructions</a>. For plotting we recommend <a href="https://matplotlib.org">matplotlib</a> in Python, which plays nicely with Julia. Before you can execute any of the framework's functions, you will need to add the <code>CollectiveSpins</code> package to Julia, as shown below. We suggest to install the <code>QuantumOptics</code> package as well, as it provides many additional functionalities. Plotting with matplotlib is then enabled by adding the <code>PyPlot</code> package. To install packages, you simply need to start Julia and press the <code>]</code> key to enter the package manager (see also the <a href="https://docs.julialang.org/en/v1/stdlib/Pkg/index.html#Getting-Started-1">Julia docs</a>). Then you can add packages as follows.</p>
+
+                <pre><code class="language-julia">|pkg> add CollectiveSpins   # Install CollectiveSpins.jl package
+|pkg> add QuantumOptics		# additional QuantumOptics functions
+|pkg> add PyPlot	  # Support for matplotlib from within Julia</code></pre>
+            </div>
+        </div>
+        
+        <!-- Code Example -->
+        <div class="row">
+	        <div class="col-lg-12">
+		        <h2 class="page-header"><i class="fa fa-file-code-o"></i> Code Example</h2>
+
+    <div class="page-header">
+        <h3>Chain of Atoms in 2nd Order Mean Field</h3>
+    </div>
+	        </div>
+        </div>
+        <div class="row">
+        <div class="col-md-6">
+<pre>using CollectiveSpins
+
+# Define geometry of system
+N = 20     # Number of spins
+a = 0.3   # spin-spin distance
+geometry = CollectiveSpins.geometry.chain(a, N)
+
+# Create system consisting of N spins in the defined geometry
+e = [0,0,1]   # Quantization axis
+system = CollectiveSpins.SpinCollection(geometry, e)
+
+# Initial quantum state
+phi = 0.
+theta = pi/2
+Ψ0 = CollectiveSpins.mpc.blochstate(phi, theta, N)
+
+# Perform time evolution according to master equation
+T = [0:0.05:5.;]
+tout, ρt = CollectiveSpins.mpc.timeevolution(T, system, Ψ0, dt=0.01)
+
+# Plot <sz> and <sx> expectations values ofr all N spins
+using PyPlot
+SZ = [CollectiveSpins.mpc.sz(ρ) for ρ in ρt]
+SX = [CollectiveSpins.mpc.sx(ρ) for ρ in ρt]
+
+subplot(211)
+plot(tout, SZ)
+xlabel("Time")
+ylabel("SZ")
+
+subplot(212)
+plot(tout, SX)
+xlabel("Time")
+ylabel("SX")
+
+tight_layout()
+savefig("example.svg")</pre>
+        </div>
+        <div class="col-md-6">
+           <img class="img-responsive" src="assets/example.svg" alt="">
+        </div>
+    </div>
+        
+        <!-- Open Source Section -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="page-header"><i class="fa fa-github-alt"></i> Open Source and Community Driven</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>CollectiveSpins.jl is developed in <a href="http://uibk.ac.at/th-physik/cqed">Helmut Ritsch's CQED group</a> at the Institute for Theoretical Physics of the University of Innsbruck. The framework was conceived by <a href="http://github.com/bastikr">Sebastian Krämer</a> in 2017/2018. Currently, it is largely maintained and extended by <a href="https://github.com/lostermann">Laurin Ostermann</a>. CollectiveSpins.jl is open source and <a href="http://github.com/qojulia/CollectiveSpins.jl">hosted on GitHub</a>. All community contributions are very welcome. If you want to join our effort, fork the repository and send us your pull requests!</p>
+            </div>
+
+        </div>
+    </div>
+    
+    <footer class="footer">
+    <p>Copyright &copy; 2020</p>
+</footer>
+
+<!-- jQuery -->
+	<script   src="https://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
+<!-- Bootstrap Core JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<!-- Syntax Highlighting JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/languages/julia.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+</body>
+
+</html>

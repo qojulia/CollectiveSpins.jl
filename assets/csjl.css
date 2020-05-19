@@ -1,0 +1,37 @@
+body, input {
+  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+	padding-top: 80px;
+}
+
+pre, code {
+  font-family: 'Ubuntu Mono', Monaco, courier, monospace;
+}
+
+
+a, a:hover, a:focus {
+	color: #6b85dd;
+}
+
+.navbar {
+	margin-bottom: 100px;
+}
+
+.navbar-inverse {
+	border-bottom: #ffffff 1px solid;
+}
+
+footer.footer {
+	width: 100%;
+	background: #cccccc;
+	text-align: center;
+	margin: 75px 0 0;
+	padding: 10px 0 10px 0;
+}
+
+canvas {
+	margin: 25px 0;
+}
