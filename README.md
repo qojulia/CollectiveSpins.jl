@@ -1,4 +1,4 @@
-# CollectiveSpins.jl
+<img src="https://qojulia.github.io/CollectiveSpins.jl/assets/logo.png" alt="CollectiveSpins.jl" width="400">
 
 **CollectiveSpins.jl** is a numerical framework written in [Julia](http://julialang.org/) used to simulate quantum systems consisting of spatially distributed spins coupled via dipole-dipole interaction.
 
@@ -17,35 +17,10 @@
 **CollectiveSpins.jl** is not an officially registered package but it nevertheless can be installed using julia's package manager:
 
 ```julia
-Pkg> add https://github.com/qojulia/CollectiveSpins.jl.git
+|pkg> add https://github.com/qojulia/CollectiveSpins.jl.git
 ```
 
-
-## Example
-
-```julia
-using CollectiveSpins
-
-# Define geometry of system
-N = 5     # Number of spins
-a = 0.3   # spin-spin distance
-geometry = CollectiveSpins.geometry.chain(a, N)
-
-# Create system consisting of N spins in the defined geometry
-e = [0,0,1]   # Quantization axis
-system = CollectiveSpins.SpinCollection(geometry, e)
-
-# Initial quantum state
-phi = 0.
-theta = pi/2
-Ψ0 = CollectiveSpins.quantum.blochstate(phi, theta, N)
-
-# Perform time evolution according to master equation
-T = [0:0.05:5.;]
-tout, ρt = CollectiveSpins.quantum.timeevolution(T, system, Ψ0)
-```
-
-## Documentation
+## Documentation and Examples
 
 The documentation is generated with [Documenter.jl][documenter] and can be found at
 
