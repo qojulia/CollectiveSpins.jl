@@ -81,7 +81,7 @@ Jdagger = [dagger(j) for j=J]
 Ψ₀ = CollectiveSpins.quantum.blochstate(0., pi/2., N)
 ρ₀ = Ψ₀ ⊗ dagger(Ψ₀)
 
-function test_mpc_3particles(t, ρ::DenseOperator)
+function test_mpc_3particles(t, ρ::DenseOpType)
     dρ_h = -1im*(H*ρ - ρ*H)
     dρ_l = DenseOperator(basis)
     for m=1:length(J), n=1:length(J)

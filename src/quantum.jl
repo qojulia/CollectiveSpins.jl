@@ -134,12 +134,12 @@ end
 Jump operators of the given system.
 """
 function JumpOperators(S::system.SpinCollection)
-    J = SparseOperator[embed(basis(S), i, sigmam_) for i=1:length(S.spins)]
+    J = SparseOpType[embed(basis(S), i, sigmam_) for i=1:length(S.spins)]
     Γ = interaction.GammaMatrix(S)
     return Γ, J
 end
 
-JumpOperators(S::system.CavityMode) = (Float64[2*S.kappa], SparseOperator[SparseOperator(destroy(basis(S)))])
+JumpOperators(S::system.CavityMode) = (Float64[2*S.kappa], SparseOpType[SparseOperator(destroy(basis(S)))])
 
 function JumpOperators(S::system.CavitySpinCollection)
     Γs, Js = JumpOperators(S.spincollection)
@@ -151,7 +151,7 @@ function JumpOperators(S::system.CavitySpinCollection)
     Γ[1:Nc, 1:Nc] = Γc
     Γ[Nc+1:end, Nc+1:end] = Γs
     Ic = identityoperator(basis(S.cavity))
-    J = SparseOperator[embed(basis(S), 1, Jc[1])]
+    J = SparseOpType[embed(basis(S), 1, Jc[1])]
     for j in Js
         push!(J, tensor(Ic, j))
     end
@@ -201,7 +201,7 @@ the jump operators are changed accordingly.
 * `fout` (optional): Function with signature fout(t, state) that is called
     whenever output should be generated.
 """
-function timeevolution_diagonal(T, S::system.System, ρ₀::Union{StateVector, DenseOperator}; fout=nothing, kwargs...)
+function timeevolution_diagonal(T, S::system.System, ρ₀::Union{StateVector, DenseOpType}; fout=nothing, kwargs...)
     H = Hamiltonian(S)
     J = JumpOperators_diagonal(S)
     Hnh = H - 0.5im*sum([dagger(J[i])*J[i] for i=1:length(J)])
@@ -223,7 +223,7 @@ the jump operators are changed accordingly.
 * `fout` (optional): Function with signature fout(t, state) that is called
     whenever output should be generated.
 """
-function timeevolution(T, S::system.System, ρ₀::Union{StateVector, DenseOperator}; fout=nothing, kwargs...)
+function timeevolution(T, S::system.System, ρ₀::Union{StateVector, DenseOpType}; fout=nothing, kwargs...)
     b = basis(S)
     H = Hamiltonian(S)
     Γ, J = JumpOperators(S)
@@ -241,7 +241,7 @@ Rotations on the Bloch sphere for the given density operator.
 * `angles`: Rotation angle(s).
 * `ρ`: Density operator that should be rotated.
 """
-function rotate(axis::Vector{T1}, angles::Vector{T2}, ρ::DenseOperator) where {T1<:Real, T2<:Real}
+function rotate(axis::Vector{T1}, angles::Vector{T2}, ρ::DenseOpType) where {T1<:Real, T2<:Real}
     N = dim(ρ)
     @assert length(axis)==3
     @assert length(angles)==N
@@ -257,7 +257,7 @@ function rotate(axis::Vector{T1}, angles::Vector{T2}, ρ::DenseOperator) where {
     return ρ
 end
 
-rotate(axis::Vector{T}, angle::Real, ρ::DenseOperator) where {T<:Real} = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
+rotate(axis::Vector{T}, angle::Real, ρ::DenseOpType) where {T<:Real} = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
 
 """
     quantum.squeeze_sx(χT, ρ₀)
@@ -268,10 +268,10 @@ Spin squeezing along sx.
 * `χT`: Squeezing strength.
 * `ρ₀`: Operator that should be squeezed.
 """
-function squeeze_sx(χT::Real, ρ₀::DenseOperator)
+function squeeze_sx(χT::Real, ρ₀::DenseOpType)
     N = dim(ρ₀)
     basis = ρ₀.basis_l
-    totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
+    totaloperator(op::SparseOpType) = sum([embed(basis, i, op) for i=1:N])/N
     sigmax_total = totaloperator(sigmax_)
     H = χT*sigmax_total^2
     T = [0.,1.]
@@ -289,12 +289,12 @@ Spin squeezing along an arbitrary axis.
 * `χT`: Squeezing strength.
 * `ρ₀`: Operator that should be squeezed.
 """
-function squeeze(axis::Vector{T}, χT::Real, ρ₀::DenseOperator) where T<:Real
+function squeeze(axis::Vector{T}, χT::Real, ρ₀::DenseOpType) where T<:Real
     @assert length(axis)==3
     axis = axis/norm(axis)
     N = dim(ρ₀)
     basis = ρ₀.basis_l
-    totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
+    totaloperator(op::SparseOpType) = sum([embed(basis, i, op) for i=1:N])/N
     σ = map(totaloperator, [sigmax_, sigmay_, sigmaz_])
     σn = sum([axis[i]*σ[i] for i=1:3])
     H = χT*σn^2
@@ -330,10 +330,10 @@ variance(op::AbstractOperator, state) = (expect(op^2, state) - expect(op, state)
 
 Calculate squeezing parameter for the given state.
 """
-function squeezingparameter(ρ::DenseOperator)
+function squeezingparameter(ρ::DenseOpType)
     N = dim(ρ)
     basis = ρ.basis_l
-    totaloperator(op::SparseOperator) = sum([embed(basis, i, op) for i=1:N])/N
+    totaloperator(op::SparseOpType) = sum([embed(basis, i, op) for i=1:N])/N
     S = map(totaloperator, [sigmax_, sigmay_, sigmaz_])
     n = real([expect(s, ρ) for s=S])
     e1, e2 = orthogonal_vectors(n)

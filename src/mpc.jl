@@ -189,8 +189,8 @@ function splitstate(N::Int, data::Vector{Float64})
 end
 splitstate(state::MPCState) = splitstate(state.N, state.data)
 
-function covarianceoperator(productstate::Vector{<:DenseOperator}, operators::Vector{<:DenseOperator}, indices::Vector{Int})
-    x = DenseOperator[(i in indices ? operators[something(findfirst(isequal(i), indices), 0)] : productstate[i]) for i=1:length(productstate)]
+function covarianceoperator(productstate::Vector{<:DenseOpType}, operators::Vector{<:DenseOpType}, indices::Vector{Int})
+    x = DenseOpType[(i in indices ? operators[something(findfirst(isequal(i), indices), 0)] : productstate[i]) for i=1:length(productstate)]
     return tensor(x...)
 end
 
@@ -265,7 +265,7 @@ function densityoperator(state::MPCState)
     N = state.N
     covstate = correlation2covariance(state)
     sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(covstate)
-    productstate = DenseOperator[densityoperator(sx[k], sy[k], sz[k]) for k=1:N]
+    productstate = DenseOpType[densityoperator(sx[k], sy[k], sz[k]) for k=1:N]
     C(op1,op2,index1,index2) = covarianceoperator(productstate, [op1,op2], [index1,index2])
     ρ = reduce(tensor, productstate)
     for k=1:N, l=k+1:N

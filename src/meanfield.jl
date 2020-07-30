@@ -49,7 +49,7 @@ ProductState(data::Vector{Float64}) = ProductState(dim(data), data)
 
 Meanfield state from density operator.
 """
-function ProductState(rho::DenseOperator)
+function ProductState(rho::DenseOpType)
     N = quantum.dim(rho)
     basis = quantum.basis(N)
     state = ProductState(N)

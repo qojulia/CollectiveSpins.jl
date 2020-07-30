@@ -277,7 +277,7 @@ function JumpOperators(S::SpinCollection, M::Int=1)
 """
     time evolution
 """
-function timeevolution(T, system::SpinCollection, psi0::Union{Ket{B}, DenseOperator{B, B}}; fout=nothing, kwargs...) where B <: ReducedSpinBasis
+function timeevolution(T, system::SpinCollection, psi0::Union{Ket{B}, DenseOpType{B, B}}; fout=nothing, kwargs...) where B <: ReducedSpinBasis
 
     M = isa(psi0, Ket) ? psi.bais.M : psi0.basis_l.M
 
