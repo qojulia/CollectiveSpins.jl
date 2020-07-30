@@ -77,7 +77,7 @@ If we allow for the individual atomic states to bare a spatially dependent phase
     +\sum_{j;j \neq k} \Omega_{kj}^\mathrm{cos} (
             \langle\tilde{\sigma}_j^x \tilde{\sigma}_k^y\rangle
             - \langle\tilde{\sigma}_j^y \tilde{\sigma}_k^x\rangle)
-  \nonumber\\&\qquad
+  \\&\qquad
     -\gamma (1+ \langle\sigma_k^z\rangle)
     -\frac{1}{2} \sum_{j;j \neq k} \Gamma_{kj}^\mathrm{cos} (
             \langle\tilde{\sigma}_j^x \tilde{\sigma}_k^x\rangle

@@ -14,10 +14,14 @@ pages = [
 makedocs(
     modules = [CollectiveSpins],
     checkdocs = :exports,
-    Documenter = Documenter.HTML(
+    format = Documenter.HTML(
         edit_link = nothing,
         canonical = "https://github.io/qojulia/CollectiveSpins.jl/",
         assets = [ asset("assets/favicon.png", class=:ico, islocal = true) ]),
     sitename = "CollectiveSpins.jl",
     pages = pages
+    )
+
+deploydocs(
+    repo = "github.com/qojulia/CollectiveSpins.jl.git",
     )

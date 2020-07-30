@@ -70,6 +70,22 @@ CollectiveSpins.interaction.GammaMatrix
 CollectiveSpins.interaction.OmegaMatrix
 ```
 
+```@docs
+CollectiveSpins.interaction.GreenTensor
+```
+
+```@docs
+CollectiveSpins.interaction.Omega_ij
+```
+
+```@docs
+CollectiveSpins.interaction.Gamma_ij
+```
+
+```@docs
+CollectiveSpins.interaction.G_ij
+```
+
 
 ## [Effective Interactions](@id API: Effective Interactions)
 
@@ -360,4 +376,39 @@ CollectiveSpins.mpc.squeeze
 
 ```@docs
 CollectiveSpins.mpc.squeezingparameter
+```
+
+
+### [Reduced Spin](@id API: Methods-reduced)
+
+```@docs
+CollectiveSpins.reducedspin.reducedsigmap
+```
+
+```@docs
+CollectiveSpins.reducedspin.reducedspintransition
+```
+
+```@docs
+CollectiveSpins.reducedspin.ReducedSpinBasis
+```
+
+```@docs
+CollectiveSpins.reducedspin.reducedsigmam
+```
+
+```@docs
+CollectiveSpins.reducedspin.reducedsigmaz
+```
+
+```@docs
+CollectiveSpins.reducedspin.reducedspinstate
+```
+
+```@docs
+CollectiveSpins.reducedspin.reducedsigmay
+```
+
+```@docs
+CollectiveSpins.reducedspin.reducedsigmax
 ```

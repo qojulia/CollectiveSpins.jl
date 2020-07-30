@@ -154,7 +154,7 @@ end
 """
     reducedsigmay(b::ReducedSpinBasis, j::Int)
 
-    Sigma-Y Operator for the j-th particle.
+Sigma-Y Operator for the j-th particle.
 """
 function reducedsigmay(b::ReducedSpinBasis, j::Int)
     return im*(-reducedsigmap(b, j) + reducedsigmam(b, j))

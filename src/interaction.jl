@@ -8,14 +8,14 @@ export GreenTensor,G_ij,Gamma_ij,Omega_ij
 
 """
     interaction.F(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
-   
-    General F function for arbitrary positions and dipole orientations.
- 
-    Arguments:
-    * ri: Position of first spin
-    * rj: Position of second spin
-    * µi: Dipole orientation of first spin.
-    * µj: Dipole orientation of second spin.
+
+General F function for arbitrary positions and dipole orientations.
+
+Arguments:
+* ri: Position of first spin
+* rj: Position of second spin
+* µi: Dipole orientation of first spin.
+* µj: Dipole orientation of second spin.
 """
 function F(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
     rij = ri - rj
@@ -33,9 +33,9 @@ end
 
 """
     interaction.G(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
-    
+
     General G function for arbitrary positions and dipole orientations.
- 
+
     Arguments:
     * ri: Position of first spin
     * rj: Position of second spin
@@ -58,30 +58,30 @@ end
 
 
 """
-    interactino.Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
-    
-    Arguments:
-    * ri: Position of first spin
-    * rj: Position of second spin
-    * µi: Dipole orientation of first spin.
-    * µj: Dipole orientation of second spin.
-    * γi: Decay rate of first spin.
-    * γj: Decay rate of second spin.
+    interaction.Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
+
+Arguments:
+* ri: Position of first spin
+* rj: Position of second spin
+* µi: Dipole orientation of first spin.
+* µj: Dipole orientation of second spin.
+* γi: Decay rate of first spin.
+* γj: Decay rate of second spin.
 """
 function Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
     return 3. /4 * sqrt(γi*γj)*G(ri, rj, µi, µj)
 end
 
 """
-    interactino.Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
-        
-        Arguments:
-        * ri: Position of first spin
-        * rj: Position of second spin
-        * µi: Dipole orientation of first spin.
-        * µj: Dipole orientation of second spin.
-        * γi: Decay rate of first spin.
-        * γj: Decay rate of second spin.
+    interaction.Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
+
+Arguments:
+* ri: Position of first spin
+* rj: Position of second spin
+* µi: Dipole orientation of first spin.
+* µj: Dipole orientation of second spin.
+* γi: Decay rate of first spin.
+* γj: Decay rate of second spin.
 """
 function Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
     return 3. /2 * sqrt(γi*γj)*F(ri, rj, µi, µj)
