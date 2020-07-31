@@ -8,13 +8,13 @@ using QuantumOpticsBase, LinearAlgebra
 using ..interaction, ..system
 
 # Define Spin 1/2 operators
-spinbasis = SpinBasis(1//2)
-I = dense(identityoperator(spinbasis))
-sigmax_ = dense(sigmax(spinbasis))
-sigmay_ = dense(sigmay(spinbasis))
-sigmaz_ = dense(sigmaz(spinbasis))
-sigmap_ = dense(sigmap(spinbasis))
-sigmam_ = dense(sigmam(spinbasis))
+const spinbasis = SpinBasis(1//2)
+const id = dense(identityoperator(spinbasis))
+const sigmax_ = dense(sigmax(spinbasis))
+const sigmay_ = dense(sigmay(spinbasis))
+const sigmaz_ = dense(sigmaz(spinbasis))
+const sigmap_ = dense(sigmap(spinbasis))
+const sigmam_ = dense(sigmam(spinbasis))
 
 """
 Class describing a Meanfield state (Product state).
@@ -25,9 +25,9 @@ The data layout is [sx1 sx2 ... sy1 sy2 ... sz1 sz2 ...]
 * `N`: Number of spins.
 * `data`: Vector of length 3*N.
 """
-mutable struct ProductState
-    N::Int
-    data::Vector{Float64}
+mutable struct ProductState{T1<:Int,T2<:Real}
+    N::T1
+    data::Vector{T2}
 end
 
 """
@@ -42,7 +42,7 @@ ProductState(N::Int) = ProductState(N, zeros(Float64, 3*N))
 
 Meanfield state created from real valued vector of length 3*spinnumber.
 """
-ProductState(data::Vector{Float64}) = ProductState(dim(data), data)
+ProductState(data::Vector{<:Real}) = ProductState(dim(data), data)
 
 """
     meafield.ProductState(rho)
@@ -111,7 +111,7 @@ end
 
 Split state into sx, sy and sz parts.
 """
-splitstate(N::Int, data::Vector{Float64}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
+splitstate(N::Int, data::Vector{<:Real}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
 splitstate(state::ProductState) = splitstate(state.N, state.data)
 
 
@@ -122,7 +122,7 @@ splitstate(state::ProductState) = splitstate(state.N, state.data)
 Create density operator from independent sigma expectation values.
 """
 function densityoperator(sx::Real, sy::Real, sz::Real)
-    return 0.5*(I + sx*sigmax_ + sy*sigmay_ + sz*sigmaz_)
+    return 0.5*(id + sx*sigmax_ + sy*sigmay_ + sz*sigmaz_)
 end
 function densityoperator(state::ProductState)
     sx, sy, sz = splitstate(state)
@@ -173,7 +173,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
 
-    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
+    function f(dy, y, p, t)
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         @inbounds for k=1:N
@@ -192,7 +192,7 @@ function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=n
     end
 
     if isa(fout, Nothing)
-        fout_(t::Float64, state::ProductState) = deepcopy(state)
+        fout_(t, state::ProductState) = deepcopy(state)
     else
         fout_ = fout
     end
@@ -218,7 +218,7 @@ Symmetric meanfield time evolution.
 function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Real; γ::Real=1.0, δ0::Real=0., fout=nothing, kwargs...)
     N = 1
     @assert state0.N==N
-    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
+    function f(dy, y, p, t)
         sx, sy, sz = splitstate(N, y)
         dsx, dsy, dsz = splitstate(N, dy)
         dsx[1] = -δ0*sy[1] + Ωeff*sy[1]*sz[1] - 0.5*γ*sx[1] + 0.5*Γeff*sx[1]*sz[1]
@@ -227,7 +227,7 @@ function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Re
     end
 
     if isa(fout, Nothing)
-        fout_(t::Float64, state::ProductState) = deepcopy(state)
+        fout_(t, state::ProductState) = deepcopy(state)
     else
         fout_ = fout
     end

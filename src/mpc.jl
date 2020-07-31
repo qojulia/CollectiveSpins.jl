@@ -21,12 +21,12 @@ import ..meanfield: densityoperator
 export MPCState, densityoperator
 
 
-spinbasis = SpinBasis(1//2)
-sigmax_ = dense(sigmax(spinbasis))
-sigmay_ = dense(sigmay(spinbasis))
-sigmaz_ = dense(sigmaz(spinbasis))
-sigmap_ = dense(sigmap(spinbasis))
-sigmam_ = dense(sigmam(spinbasis))
+const spinbasis = SpinBasis(1//2)
+const sigmax_ = dense(sigmax(spinbasis))
+const sigmay_ = dense(sigmay(spinbasis))
+const sigmaz_ = dense(sigmaz(spinbasis))
+const sigmap_ = dense(sigmap(spinbasis))
+const sigmam_ = dense(sigmam(spinbasis))
 
 """
 Class describing a MPC state (Product state + Correlations).
@@ -45,9 +45,9 @@ the matrices Cxx, Cyy and Czz, respectively.
 * `N`: Number of spins.
 * `data`: Vector of length (3*N)*(2*N+1).
 """
-mutable struct MPCState
-    N::Int
-    data::Vector{Float64}
+mutable struct MPCState{T1<:Int,T2<:Real}
+    N::T1
+    data::Vector{T2}
 end
 
 """
@@ -62,7 +62,7 @@ MPCState(N::Int) = MPCState(N, zeros(Float64, (3*N)*(2*N+1)))
 
 MPC state created from real valued vector of length (3*N)*(2*N+1).
 """
-MPCState(data::Vector{Float64}) = MPCState(dim(data), data)
+MPCState(data::Vector{<:Real}) = MPCState(dim(data), data)
 
 """
     mpc.MPCState(rho)
@@ -174,7 +174,7 @@ end
 
 Returns sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz.
 """
-function splitstate(N::Int, data::Vector{Float64})
+function splitstate(N::Int, data::Vector{<:Real})
     data = reshape(data, 3*N, 2*N+1)
     sx = view(data, 0*N+1:1*N, 2*N+1)
     sy = view(data, 1*N+1:2*N, 2*N+1)
@@ -362,7 +362,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     Ω = interaction.OmegaMatrix(S)
     Γ = interaction.GammaMatrix(S)
 
-    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
+    function f(dy, y, p, t)
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         @inbounds for k=1:N
@@ -425,7 +425,7 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     end
 
     if isa(fout, Nothing)
-      fout_(t::Float64, state::MPCState) = deepcopy(state)
+      fout_(t, state::MPCState) = deepcopy(state)
     else
     fout_ = fout
     end
@@ -492,7 +492,7 @@ function rotate(axis::Vector{T1}, angles::Vector{T2}, state::MPCState) where {T1
     return rotstate
 end
 
-rotate(axis::Vector{T}, angle::Real, state::MPCState) where {T<:Real} = rotate(axis, ones(Float64, state.N)*angle, state)
+rotate(axis::Vector{T}, angle::Real, state::MPCState) where {T<:Real} = rotate(axis, ones(float(T), state.N)*angle, state)
 
 """
     mpc.var_Sx(state0)
@@ -567,7 +567,7 @@ function squeeze_sx(χT::Real, state0::MPCState)
     T = [0,1.]
     N = state0.N
     χeff = 4.0*χT/N^2
-    function f(dy::Vector{Float64}, y::Vector{Float64}, p, t)
+    function f(dy, y, p, t)
         sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz = splitstate(N, y)
         dsx, dsy, dsz, dCxx, dCyy, dCzz, dCxy, dCxz, dCyz = splitstate(N, dy)
         for k=1:N
@@ -612,7 +612,7 @@ function squeeze_sx(χT::Real, state0::MPCState)
         end
     end
 
-    fout_(t::Float64, state::MPCState) = deepcopy(state)
+    fout_(t, state::MPCState) = deepcopy(state)
     time_out, state_out = integrate(T, f, state0, fout_)
 
     return state_out[end]
@@ -649,7 +649,7 @@ end
 
 Create 3 orthonormal vectors where one is in the given direction `n`.
 """
-function orthogonal_vectors(n::Vector{Float64})
+function orthogonal_vectors(n::Vector{<:Real})
     n = n/norm(n)
     v = (n[1]<n[2] ? [1.,0.,0.] : [0.,1.,0.])
     e1 = v - dot(n,v)*n

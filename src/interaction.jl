@@ -2,7 +2,6 @@ module interaction
 
 using ..system
 using LinearAlgebra
-import Base: *
 
 export GreenTensor,G_ij,Gamma_ij,Omega_ij
 
@@ -19,46 +18,48 @@ Arguments:
 """
 function F(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
     rij = ri - rj
-    normalize!(µi)
-    normalize!(µj)
     rij_norm = norm(rij)
     rijn = rij./rij_norm
+    μi_ = normalize(μi)
+    μj_ = normalize(μj)
+    T = float(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
     if rij_norm == 0
-        2/3.
+        T(2/3.)
     else
         ξ = 2π*rij_norm
-        dot(µi, µj)*(sin(ξ)/ξ + cos(ξ)/ξ^2 - sin(ξ)/ξ^3) + dot(rijn, µi)*dot(rijn, µj)*(-sin(ξ)/ξ - 3*cos(ξ)/ξ^2 + 3*sin(ξ)/ξ^3)
+        T(dot(µi_, µj_)*(sin(ξ)/ξ + cos(ξ)/ξ^2 - sin(ξ)/ξ^3) + dot(µi_, rijn)*dot(rijn, µj_)*(-sin(ξ)/ξ - 3*cos(ξ)/ξ^2 + 3*sin(ξ)/ξ^3))
     end
 end
 
 """
     interaction.G(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
 
-    General G function for arbitrary positions and dipole orientations.
+General G function for arbitrary positions and dipole orientations.
 
-    Arguments:
-    * ri: Position of first spin
-    * rj: Position of second spin
-    * µi: Dipole orientation of first spin.
-    * µj: Dipole orientation of second spin.
+Arguments:
+* ri: Position of first spin
+* rj: Position of second spin
+* µi: Dipole orientation of first spin.
+* µj: Dipole orientation of second spin.
 """
 function G(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
     rij = ri - rj
-    normalize!(µi)
-    normalize!(µj)
     rij_norm = norm(rij)
     rijn = rij./rij_norm
+    μi_ = normalize(μi)
+    μj_ = normalize(μj)
+    T = float(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
     if rij_norm == 0
-        0.0
+        zero(T)
     else
         ξ = 2π*rij_norm
-        dot(µi, µj)*(-cos(ξ)/ξ + sin(ξ)/ξ^2 + cos(ξ)/ξ^3) + dot(rijn, µi)*dot(rijn, µj)*(cos(ξ)/ξ - 3*sin(ξ)/ξ^2 - 3*cos(ξ)/ξ^3)
+        T(dot(µi_, µj_)*(-cos(ξ)/ξ + sin(ξ)/ξ^2 + cos(ξ)/ξ^3) + dot(µi_, rijn)*dot(rijn, µj_)*(cos(ξ)/ξ - 3*sin(ξ)/ξ^2 - 3*cos(ξ)/ξ^3))
     end
 end
 
 
 """
-    interaction.Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
+    interaction.Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real=1, γj::Real=1)
 
 Arguments:
 * ri: Position of first spin
@@ -67,13 +68,17 @@ Arguments:
 * µj: Dipole orientation of second spin.
 * γi: Decay rate of first spin.
 * γj: Decay rate of second spin.
+
+Note that the dipole moments `μi` and `μj` are normalized internally. To account
+for dipole moments with different lengths you need to scale the decay rates
+`γi` and `γj`, respectively.
 """
-function Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
-    return 3. /4 * sqrt(γi*γj)*G(ri, rj, µi, µj)
+function Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real=1, γj::Real=1)
+    return 0.75*sqrt(γi*γj)*G(ri, rj, µi, µj)
 end
 
 """
-    interaction.Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
+    interaction.Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real=1, γj::Real=1)
 
 Arguments:
 * ri: Position of first spin
@@ -82,9 +87,13 @@ Arguments:
 * µj: Dipole orientation of second spin.
 * γi: Decay rate of first spin.
 * γj: Decay rate of second spin.
+
+Note that the dipole moments `μi` and `μj` are normalized internally. To account
+for dipole moments with different lengths you need to scale the decay rates
+`γi` and `γj`, respectively.
 """
-function Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Float64, γj::Float64)
-    return 3. /2 * sqrt(γi*γj)*F(ri, rj, µi, µj)
+function Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real=1, γj::Real=1)
+    return 1.5*sqrt(γi*γj)*F(ri, rj, µi, µj)
 end
 
 """
@@ -118,107 +127,76 @@ function GammaMatrix(S::system.SpinCollection)
     mu = S.polarizations
     gamma = S.gammas
     N = length(spins)
-    Γ = zeros(Float64, N, N)
-    for i=1:N, j=1:N
-        Γ[i,j] = interaction.Gamma(spins[i].position, spins[j].position, mu[i], mu[j], gamma[i], gamma[j])
-    end
-    return Γ
+    return [
+        interaction.Gamma(spins[i].position, spins[j].position, mu[i], mu[j], gamma[i], gamma[j])
+        for i=1:N, j=1:N
+    ]
 end
 
 
 """
-    GreenTensor(r::Vector{Float64}, k::Number)
+    GreenTensor(r::Vector, k::Number=2π)
 
-Calculate the Green's Tensor at position r for wave number k.
-The GreenTensor is a lazy type, i.e. it is not represented by a Matrix but still
-has a method implemented for Matrix-vector multiplication:
-
-    *(::GreenTensor, ::Vector{<:ComplexF64})
-
-It can be converted to a matrix as usual, Matrix(::GreenTensor).
-"""
-mutable struct GreenTensor{T<:Vector{Float64},K<:Number}
-    r::T
-    k::K
-    function GreenTensor(r::T, k::K) where {T<:Vector{Float64},K<:Number}
-        new{T,K}(r, k)
-    end
-end
-
-# Base methods for GreenTensor type
-function *(G::GreenTensor, p::Vector{T}) where T<:Number
-    k = G.k
-    R = G.r
-    n = norm(R)
-    r = R ./ n
-    exp(1.0im.*k.*n)./(4π.*n) .* ((r×p)×r .+ (1.0 ./ (k.*n).^2 .- 1.0im./(k.*n)).*(3r .* dot(r,p) .- p))
-end
-function Base.Matrix(G::GreenTensor)
-    Gmat = zeros(ComplexF64,3,3)
-    for i=1:3
-        vec = zeros(3)
-        vec[i] = 1
-Gmat[:,i] = G*vec
-    end
-    return Gmat
-end
-
-"""
-    G_ij(r1::Vector,r2::Vector,μ₁::Vector,μ₂::Vector,k0)
-
-Compute the field overlap between two atoms at positions rᵢ with dipole moments
-µᵢ, i.e.
+Calculate the Green's Tensor at position r for wave number k defined by
 
 ```math
-G_{ij} = µ_i ⋅ G(r_i - r_j) ⋅ µ_j.
+G = e^{ikr}\\Big[\\left(\\frac{1}{kr} + \\frac{i}{(kr)^2} - \\frac{1}{(kr)^3}\\right)*I -
+    \\textbf{r}\\textbrf{r}^T\\left(\\frac{1}{kr} + \\frac{3i}{(kr)^2} - \\frac{3}{(kr)^3}\\right)\\Big]
 ```
 
-It is assumed that all atoms have the same wave number k0.
+Choosing `k=2π` corresponds to the position `r` being given in units of the
+wavelength associated with the dipole transition.
+
+Returns a 3×3 complex Matrix.
 """
-function G_ij(r1::Vector{T},r2::Vector{T},μ₁::Vector{T},μ₂::Vector{T},k0) where T<:Union{ComplexF64,Float64}
-G = GreenTensor(r1 - r2, k0)
-    k = G.k
-    R = G.r
-    n = norm(R)
-    r = R ./ n
-    return exp(1.0im.*k.*n)./(4π.*n) .* (dot(μ₁,(r×μ₂)×r) .+ (1.0 ./ (k.*n).^2 .- 1.0im./(k.*n)).*(3*dot(r,μ₁) .* dot(r,μ₂) .- dot(μ₁,μ₂)))
+function GreenTensor(r::Vector{<:Number},k::Real=2π)
+    n = norm(r)
+    rn = r./n
+    return exp(im*k*n)*(
+        (1/(k*n) + im/(k*n)^2 - 1/(k*n)^3).*Matrix(I,3,3) +
+        -(1/(k*n) + 3im/(k*n)^2 - 3/(k*n)^3).*(rn*rn')
+    )
 end
 
 """
-    Gamma_ij(r1::Vector,r2::Vector,μ1::Vector,μ2::Vector,k0)
+    Gamma_ij(r1::Vector,r2::Vector,μ1::Vector,μ2::Vector;gamma1=1,gamma2=1,k0=2π)
 
-From the field overlap G_ij, compute the mutual decay rate as
+From the field overlap with the Green's tensor, compute the mutual decay rate as
 
 ```math
-Γ_{ij} = \\frac{6π}{k0} ℑ(G_{ij}).
+Γ_{ij} = \\frac{3}{2} μᵢ* ⋅ ℑ(G) ⋅ μⱼ.
 ```
 
 """
-function Gamma_ij(r1::Vector{T},r2::Vector{T},μ1::Vector{T},μ2::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+function Gamma_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ1::Vector{<:Number},μ2::Vector{<:Number};k0=2π,kwargs...)
+    T = float(promote_type(eltype(r1),eltype(r2),eltype(μ1),eltype(μ2),typeof(k0)))
     if (r1 == r2) && (μ1 == μ2)
-        return 1.0
+        return one(T)
     elseif (r1 == r2) && (μ1 != μ2)
-        return 0.0
+        return zero(T)
     else
-        return 6π/k0*imag(G_ij(r1,r2,μ1,μ2,k0))
+        G_im = imag(GreenTensor(r1 - r2, k0))
+        return 1.5*dot(μ1, G_im, μ2)::T
     end
 end
 
 """
-    Omega_ij(r1::Vector,r2::Vector,μ1::Vector,μ2::Vector,k0)
+    Omega_ij(r1::Vector,r2::Vector,μ1::Vector,μ2::Vector;gamma1=1,gamma2=1,k0=2π)
 
-From the field overlap G_ij, compute the mutual decay rate as
+From the field overlap with the Green's tensor, compute the energy shifts as
 
 ```math
-Ω_{ij} = -\\frac{3π}{k0} ℑ(G_{ij}).
+Ω_{ij} = -\\frac{3}{4} μᵢ* ⋅ ℜ(G) ⋅ μⱼ.
 ```
 
 """
-function Omega_ij(r1::Vector{T},r2::Vector{T},μ1::Vector{T},μ2::Vector{T},k0) where T<:Union{ComplexF64,Float64}
+function Omega_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ1::Vector{<:Number},μ2::Vector{<:Number};k0=2π,kwargs...)
+    T = float(promote_type(eltype(r1),eltype(r2),eltype(μ1),eltype(μ2),typeof(k0)))
     if r1 == r2
-        return 0.0
+        return zero(T)
     else
-        return -3pi/k0*real(G_ij(r1,r2,μ1,μ2,k0))
+        G_re = real(GreenTensor(r1 - r2, k0))
+        return -0.75*dot(μ1,G_re,μ2)::T
     end
 end
 
