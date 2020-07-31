@@ -22,11 +22,12 @@ function F(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
     rijn = rij./rij_norm
     μi_ = normalize(μi)
     μj_ = normalize(μj)
+    T = float(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
     if rij_norm == 0
-        2/3.
+        T(2/3.)
     else
         ξ = 2π*rij_norm
-        dot(µi_, µj_)*(sin(ξ)/ξ + cos(ξ)/ξ^2 - sin(ξ)/ξ^3) + dot(µi_, rijn)*dot(rijn, µj_)*(-sin(ξ)/ξ - 3*cos(ξ)/ξ^2 + 3*sin(ξ)/ξ^3)
+        T(dot(µi_, µj_)*(sin(ξ)/ξ + cos(ξ)/ξ^2 - sin(ξ)/ξ^3) + dot(µi_, rijn)*dot(rijn, µj_)*(-sin(ξ)/ξ - 3*cos(ξ)/ξ^2 + 3*sin(ξ)/ξ^3))
     end
 end
 
@@ -47,17 +48,18 @@ function G(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
     rijn = rij./rij_norm
     μi_ = normalize(μi)
     μj_ = normalize(μj)
+    T = float(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
     if rij_norm == 0
-        0.0
+        T(0)
     else
         ξ = 2π*rij_norm
-        dot(µi_, µj_)*(-cos(ξ)/ξ + sin(ξ)/ξ^2 + cos(ξ)/ξ^3) + dot(µi_, rijn)*dot(rijn, µj_)*(cos(ξ)/ξ - 3*sin(ξ)/ξ^2 - 3*cos(ξ)/ξ^3)
+        T(dot(µi_, µj_)*(-cos(ξ)/ξ + sin(ξ)/ξ^2 + cos(ξ)/ξ^3) + dot(µi_, rijn)*dot(rijn, µj_)*(cos(ξ)/ξ - 3*sin(ξ)/ξ^2 - 3*cos(ξ)/ξ^3))
     end
 end
 
 
 """
-    interaction.Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real, γj::Real)
+    interaction.Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real=1, γj::Real=1)
 
 Arguments:
 * ri: Position of first spin
@@ -71,12 +73,12 @@ Note that the dipole moments `μi` and `μj` are normalized internally. To accou
 for dipole moments with different lengths you need to scale the decay rates
 `γi` and `γj`, respectively.
 """
-function Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real, γj::Real)
+function Omega(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real=1, γj::Real=1)
     return 0.75*sqrt(γi*γj)*G(ri, rj, µi, µj)
 end
 
 """
-    interaction.Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real, γj::Real)
+    interaction.Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real=1, γj::Real=1)
 
 Arguments:
 * ri: Position of first spin
@@ -90,7 +92,7 @@ Note that the dipole moments `μi` and `μj` are normalized internally. To accou
 for dipole moments with different lengths you need to scale the decay rates
 `γi` and `γj`, respectively.
 """
-function Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real, γj::Real)
+function Gamma(ri::Vector, rj::Vector, µi::Vector, µj::Vector, γi::Real=1, γj::Real=1)
     return 1.5*sqrt(γi*γj)*F(ri, rj, µi, µj)
 end
 
