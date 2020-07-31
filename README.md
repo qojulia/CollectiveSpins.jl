@@ -43,5 +43,5 @@ https://qojulia.github.io/CollectiveSpins.jl/
 [codecov-url]: https://codecov.io/gh/qojulia/CollectiveSpins.jl
 [codecov-img]: https://codecov.io/gh/qojulia/CollectiveSpins.jl/branch/master/graph/badge.svg
 
-[docs-url]: https://qojulia.github.io/QuantumOpticsBase.jl/dev
+[docs-url]: https://qojulia.github.io/CollectiveSpins.jl/dev
 [docs-img]: https://img.shields.io/badge/docs-dev-blue.svg
