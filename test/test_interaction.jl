@@ -1,5 +1,6 @@
 using Test
 using QuantumOptics, CollectiveSpins
+using LinearAlgebra
 
 @testset "interaction" begin
 
@@ -10,9 +11,6 @@ dips = [1.0,0.0,0.0]
 
 pos = cs.geometry.chain(0.4, 3)
 dips = [[0.0,0.0,1.0],[0.0,0.0,1.0],[0.0,1.0,0.0]]
-
-@test 1.5*imag(G_ij(pos[1],pos[2],dips[1],dips[2])) == Gamma_ij(pos[1],pos[2],dips[1],dips[2])
-@test -0.75*real(G_ij(pos[1],pos[2],dips[1],dips[2])) == Omega_ij(pos[1],pos[2],dips[1],dips[2])
 
 S = cs.SpinCollection(pos, dips)
 Ω = cs.interaction.OmegaMatrix(S)
@@ -31,9 +29,6 @@ for i = 1:N
 
     end
 end
-
-using CollectiveSpins
-using LinearAlgebra
 
 # Collective effects
 function F(ri, rj, µi_, µj_)
@@ -67,7 +62,7 @@ end
 N = 10
 pos = geometry.ring(0.1,N;distance=true)
 
-dips = normalize.([[1, im, 0] for i=1:N])
+dips = normalize.([[1, im^i, 0] for i=1:N])
 
 Γmat1 = [CollectiveSpins.interaction.Gamma(pos[i], pos[j], dips[i], dips[j]) for i=1:N, j=1:N]
 Ωmat1 = [CollectiveSpins.interaction.Omega(pos[i], pos[j], dips[i], dips[j]) for i=1:N, j=1:N]

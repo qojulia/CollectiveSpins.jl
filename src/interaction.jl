@@ -50,7 +50,7 @@ function G(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
     μj_ = normalize(μj)
     T = float(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
     if rij_norm == 0
-        T(0)
+        zero(T)
     else
         ξ = 2π*rij_norm
         T(dot(µi_, µj_)*(-cos(ξ)/ξ + sin(ξ)/ξ^2 + cos(ξ)/ξ^3) + dot(µi_, rijn)*dot(rijn, µj_)*(cos(ξ)/ξ - 3*sin(ξ)/ξ^2 - 3*cos(ξ)/ξ^3))
@@ -159,57 +159,44 @@ function GreenTensor(r::Vector{<:Number},k::Real=2π)
 end
 
 """
-    G_ij(r1::Vector,r2::Vector,μ₁::Vector,μ₂::Vector;gamma1=1,gamma2=1,k0=2π)
-
-Compute the field overlap between two atoms at positions rᵢ with dipole moments
-µᵢ, i.e.
-
-```math
-G_{ij} = (√γ₁ √γ₂) µ_i* ⋅ G(r_i - r_j) ⋅ µ_j.
-```
-
-It is assumed that all atoms have the same wave number k0.
-"""
-function G_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ₁::Vector{<:Number},μ₂::Vector{<:Number};gamma1::Real=1,gamma2::Real=1,k0=2π)
-    G = GreenTensor(r1 - r2, k0)
-    return sqrt(gamma1*gamma2)*dot(μ₁, G, μ₂)
-end
-
-"""
     Gamma_ij(r1::Vector,r2::Vector,μ1::Vector,μ2::Vector;gamma1=1,gamma2=1,k0=2π)
 
-From the field overlap G_ij, compute the mutual decay rate as
+From the field overlap with the Green's tensor, compute the mutual decay rate as
 
 ```math
-Γ_{ij} = \\frac{3}{2} ℑ(G_{ij}).
+Γ_{ij} = \\frac{3}{2} μᵢ* ⋅ ℑ(G) ⋅ μⱼ.
 ```
 
 """
-function Gamma_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ1::Vector{<:Number},μ2::Vector{<:Number};kwargs...)
+function Gamma_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ1::Vector{<:Number},μ2::Vector{<:Number};k0=2π,kwargs...)
+    T = float(promote_type(eltype(r1),eltype(r2),eltype(μ1),eltype(μ2),typeof(k0)))
     if (r1 == r2) && (μ1 == μ2)
-        return 1.0
+        return one(T)
     elseif (r1 == r2) && (μ1 != μ2)
-        return 0.0
+        return zero(T)
     else
-        return 1.5*imag(G_ij(r1,r2,μ1,μ2;kwargs...))
+        G_im = imag(GreenTensor(r1 - r2, k0))
+        return 1.5*dot(μ1, G_im, μ2)::T
     end
 end
 
 """
     Omega_ij(r1::Vector,r2::Vector,μ1::Vector,μ2::Vector;gamma1=1,gamma2=1,k0=2π)
 
-From the field overlap G_ij, compute the mutual decay rate as
+From the field overlap with the Green's tensor, compute the energy shifts as
 
 ```math
-Ω_{ij} = -\\frac{3}{4} ℑ(G_{ij}).
+Ω_{ij} = -\\frac{3}{4} μᵢ* ⋅ ℜ(G) ⋅ μⱼ.
 ```
 
 """
-function Omega_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ1::Vector{<:Number},μ2::Vector{<:Number};kwargs...)
+function Omega_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ1::Vector{<:Number},μ2::Vector{<:Number};k0=2π,kwargs...)
+    T = float(promote_type(eltype(r1),eltype(r2),eltype(μ1),eltype(μ2),typeof(k0)))
     if r1 == r2
-        return 0.0
+        return zero(T)
     else
-        return -0.75*real(G_ij(r1,r2,μ1,μ2;kwargs...))
+        G_re = real(GreenTensor(r1 - r2, k0))
+        return -0.75*dot(μ1,G_re,μ2)::T
     end
 end
 
