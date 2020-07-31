@@ -26,8 +26,8 @@ end
 N = length(pos)
 for i = 1:N
     for j = 1:N
-        @test Gamma_ij(pos[1],pos[2],dips[1],dips[2],k0) <= 1.0
-        @test Omega_ij(pos[1],pos[2],dips[1],dips[2],k0) != NaN
+        @test Gamma_ij(pos[1],pos[2],dips[1],dips[2]) <= 1.0
+        @test Omega_ij(pos[1],pos[2],dips[1],dips[2]) != NaN
 
     end
 end

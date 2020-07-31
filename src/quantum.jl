@@ -17,13 +17,13 @@ end
 export Hamiltonian, JumpOperators
 
 # Define Spin 1/2 operators
-spinbasis = SpinBasis(1//2)
-sigmax_ = sigmax(spinbasis)
-sigmay_ = sigmay(spinbasis)
-sigmaz_ = sigmaz(spinbasis)
-sigmap_ = sigmap(spinbasis)
-sigmam_ = sigmam(spinbasis)
-I_spin = identityoperator(spinbasis)
+const spinbasis = SpinBasis(1//2)
+const sigmax_ = sigmax(spinbasis)
+const sigmay_ = sigmay(spinbasis)
+const sigmaz_ = sigmaz(spinbasis)
+const sigmap_ = sigmap(spinbasis)
+const sigmam_ = sigmam(spinbasis)
+const I_spin = identityoperator(spinbasis)
 
 """
     quantum.basis(x)
@@ -51,11 +51,6 @@ function blochstate(phi::Vector{T1}, theta::Vector{T2}) where {T1<:Real, T2<:Rea
 
     states = [cos(theta[k]/2)*state_g + exp(1im*phi[k])*sin(theta[k]/2)*state_e for k=1:N]
     return reduce(tensor, states)
-    # if spinnumber>1
-    #     return reduce(tensor, [state for i=1:spinnumber])
-    # else
-    #     return state
-    # end
 end
 
 function blochstate(phi::Real, theta::Real, N::Int=1)
@@ -147,7 +142,8 @@ function JumpOperators(S::system.CavitySpinCollection)
     Ns = length(Js)
     Nc = length(Jc)
     N = Ns + Nc
-    Γ = zeros(Float64, N, N)
+    T = promote_type(eltype(Γs),eltype(Γc))
+    Γ = zeros(T, N, N)
     Γ[1:Nc, 1:Nc] = Γc
     Γ[Nc+1:end, Nc+1:end] = Γs
     Ic = identityoperator(basis(S.cavity))
@@ -170,10 +166,7 @@ function JumpOperators_diagonal(S::system.SpinCollection)
     spins = S.spins
     N = length(spins)
     b = basis(S)
-    Γ = zeros(Float64, N, N)
-    for i=1:N, j=1:N
-        Γ[i,j] = interaction.Gamma(spins[i].position, spins[j].position, S.polarizations[i], S.polarizations[j], S.gammas[i], S.gammas[j])
-    end
+    Γ = [interaction.Gamma(spins[i].position, spins[j].position, S.polarizations[i], S.polarizations[j], S.gammas[i], S.gammas[j]) for i=1:N, j=1:N]
     λ, M = eig(Γ)
     J = Any[]
     for i=1:N
@@ -257,7 +250,7 @@ function rotate(axis::Vector{T1}, angles::Vector{T2}, ρ::DenseOpType) where {T1
     return ρ
 end
 
-rotate(axis::Vector{T}, angle::Real, ρ::DenseOpType) where {T<:Real} = rotate(axis, ones(Float64, dim(ρ))*angle, ρ)
+rotate(axis::Vector{T}, angle::Real, ρ::DenseOpType) where {T<:Real} = rotate(axis, ones(float(T), dim(ρ))*angle, ρ)
 
 """
     quantum.squeeze_sx(χT, ρ₀)
@@ -307,7 +300,7 @@ end
 
 Create 3 orthonormal vectors where one is in the given direction `n`.
 """
-function orthogonal_vectors(n::Vector{Float64})
+function orthogonal_vectors(n::Vector{<:Real})
     @assert length(n)==3
     n = n/norm(n)
     v = (n[1]<n[2] ? [1.,0.,0.] : [0.,1.,0.])
