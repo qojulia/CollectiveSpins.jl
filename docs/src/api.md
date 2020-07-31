@@ -82,10 +82,6 @@ CollectiveSpins.interaction.Omega_ij
 CollectiveSpins.interaction.Gamma_ij
 ```
 
-```@docs
-CollectiveSpins.interaction.G_ij
-```
-
 
 ## [Effective Interactions](@id API: Effective Interactions)
 

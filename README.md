@@ -5,8 +5,8 @@
 
 ## Development status
 
-  * Linux/Mac build: [![Travis build status][travis-img]][travis-url]
-  * Windows build: [![Windows build status][appveyor-img]][appveyor-url]
+  * Current build: [![Travis build status][travis-img]][travis-url]
+  * Documentation: [![Latest documentation][docs-img]][docs-url]
   * Test coverage:
         [![Test coverage status on coveralls][coveralls-img]][coveralls-url]
         [![Test coverage status on codecov][codecov-img]][codecov-url]
@@ -42,3 +42,6 @@ https://qojulia.github.io/CollectiveSpins.jl/
 
 [codecov-url]: https://codecov.io/gh/qojulia/CollectiveSpins.jl
 [codecov-img]: https://codecov.io/gh/qojulia/CollectiveSpins.jl/branch/master/graph/badge.svg
+
+[docs-url]: https://qojulia.github.io/QuantumOpticsBase.jl/dev
+[docs-img]: https://img.shields.io/badge/docs-dev-blue.svg
