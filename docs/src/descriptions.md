@@ -138,7 +138,7 @@ and Lindblad-term
 The dipole-dipole interaction ``\Omega_{ij} = \frac{3}{4} \gamma G(k_0 r_{ij})`` and the collective decay ``\Gamma_{ij} = \frac{3}{2} \gamma F(k_0 r_{ij})`` can be obtained analytically with
 
 ```math
-\begin{align*}
+\begin{aligned}
 F(\xi) &= \alpha \frac{\sin \xi}{\xi}
         + \beta \left(
               \frac{\cos \xi}{\xi^2} - \frac{\sin \xi}{\xi^3}
@@ -147,7 +147,7 @@ F(\xi) &= \alpha \frac{\sin \xi}{\xi}
 G(\xi) &= -\alpha \frac{\cos \xi}{\xi} + \beta \left(
             \frac{\sin \xi}{\xi^2} + \frac{\cos \xi}{\xi^3}
         \right)
-\end{align*}
+\end{aligned}
 ```
 
 with ``\alpha = 1 -\cos^2 \theta`` and ``\beta = 1-3 \cos^2 \theta``, where ``\theta`` represents the angle between the line connecting atoms ``i`` and ``j`` and the common atomic dipole orientation.
@@ -158,7 +158,7 @@ with ``\alpha = 1 -\cos^2 \theta`` and ``\beta = 1-3 \cos^2 \theta``, where ``\t
 Each spin evolves independently according to
 
 ```math
-\begin{align*}
+\begin{aligned}
 \langle\dot{\sigma_k^x}\rangle  &=
   -\frac{1}{2} \gamma \langle\sigma_k^x\rangle
 \\
@@ -167,14 +167,14 @@ Each spin evolves independently according to
 \\
 \langle\dot{\sigma_k^z}\rangle &=
     \gamma \big(1 - \langle\sigma_k^z\rangle\big)
-\end{align*}
+\end{aligned}
 ```
 
 
 ## [1st order: Meanfield](@id descriptions-cumulant1)
 
 ```math
-\begin{align*}
+\begin{aligned}
 \langle\dot{\sigma_k^x}\rangle  &=
   \sum_{i;i \neq k} \Omega_{ki} \langle\sigma_i^y\sigma_k^z\rangle
   -\frac{1}{2} \gamma \langle\sigma_k^x\rangle
@@ -188,16 +188,15 @@ Each spin evolves independently according to
 \langle\dot{\sigma_k^z}\rangle &=
     -i \sum_{i;i \neq k} \Omega_{ki} \Big(\langle\sigma_k^x\sigma_i^y\rangle - \langle\sigma_i^x\sigma_k^y\rangle\Big)
     +\gamma \big(1 - \langle\sigma_k^z\rangle\big)
-    \\&\qquad
     +\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \Big(\langle\sigma_k^x\sigma_i^x\rangle + \langle\sigma_i^y\sigma_k^y\rangle\Big)
-  \end{align*}
+  \end{aligned}
 ```
 
 
 ## [2nd order: Meanfield plus Correlations (MPC)](@id descriptions-cumulant2)
 
 ```math
-\begin{align*}
+\begin{aligned}
 \langle\dot{\sigma_k^x\sigma_l^x}\rangle &=
   \sum_{j;j \neq k,l} \Omega_{kj} \langle\sigma_k^z\sigma_l^x\sigma_j^y\rangle
    + \sum_{j;j \neq k,l} \Omega_{lj} \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
@@ -260,11 +259,11 @@ Each spin evolves independently according to
           \langle\sigma_k^z\sigma_l^x\sigma_j^x\rangle
           +\langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
     \Big)
-\end{align*}
+\end{aligned}
 ```
 
 ```math
-\begin{align*}
+\begin{aligned}
 \langle\dot{\sigma_k^x\sigma_l^y}\rangle
 &= \Omega_{kl}\Big(
       \langle\sigma_k^z\rangle
@@ -307,11 +306,11 @@ Each spin evolves independently according to
           \langle\sigma_k^x\sigma_l^x\sigma_j^x\rangle
           +\langle\sigma_k^x\sigma_l^y\sigma_j^y\rangle
     \Big)
-\end{align*}
+\end{aligned}
 ```
 
 ```math
-\begin{align*}
+\begin{aligned}
 \langle\dot{\sigma_k^y\sigma_l^z}\rangle
 &= -\Omega_{kl} \langle\sigma_l^x\rangle
     -\sum_{j;j \neq k,l} \Omega_{kj}
@@ -336,5 +335,5 @@ Each spin evolves independently according to
           \langle\sigma_k^y\sigma_l^x\sigma_j^x\rangle
           +\langle\sigma_k^y\sigma_l^y\sigma_j^y\rangle
     \Big)
-\end{align*}
+\end{aligned}
 ```
