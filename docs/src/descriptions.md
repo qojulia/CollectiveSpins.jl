@@ -186,7 +186,7 @@ Each spin evolves independently according to
   -\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \langle\sigma_i^y\sigma_k^z\rangle
 \\
 \langle\dot{\sigma_k^z}\rangle &=
-    -i \sum_{i;i \neq k} \Omega_{ki} \Big(\langle\sigma_k^x\sigma_i^y\rangle - \langle\sigma_i^x\sigma_k^y\rangle\Big)
+    - \sum_{i;i \neq k} \Omega_{ki} \Big(\langle\sigma_k^x\sigma_i^y\rangle - \langle\sigma_i^x\sigma_k^y\rangle\Big)
     +\gamma \big(1 - \langle\sigma_k^z\rangle\big)
     +\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \Big(\langle\sigma_k^x\sigma_i^x\rangle + \langle\sigma_i^y\sigma_k^y\rangle\Big)
   \end{aligned}
