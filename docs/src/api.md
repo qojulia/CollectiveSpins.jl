@@ -408,3 +408,13 @@ CollectiveSpins.reducedspin.reducedsigmay
 ```@docs
 CollectiveSpins.reducedspin.reducedsigmax
 ```
+
+### [Collective modes](@id API: Collective modes)
+
+```@docs
+CollectiveSpins.collective_modes.Omega_k_chain(k, a, polarization)
+```
+
+```@docs
+CollectiveSpins.collective_modes.Gamma_k_chain(k, a, polarization)
+```
