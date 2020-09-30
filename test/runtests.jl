@@ -11,7 +11,9 @@ names = [
     "test_rotate.jl",
     "test_squeezing.jl",
     "test_interaction.jl",
-    "test_reducedspin.jl"
+    "test_reducedspin.jl",
+
+    "test_collective_modes.jl"
 ]
 
 detected_tests = filter(
@@ -33,3 +35,4 @@ for name=names
         include(name)
     end
 end
+
