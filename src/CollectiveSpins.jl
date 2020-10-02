@@ -1,7 +1,7 @@
 module CollectiveSpins
 
 export Spin, SpinCollection, CavityMode, CavitySpinCollection,
-        geometry, GreenTensor, G_ij, Gamma_ij, Omega_ij
+        geometry, GreenTensor, G_ij, Gamma_ij, Omega_ij, Omega_k_chain, Delta_k_chain
 
 
 include("system.jl")

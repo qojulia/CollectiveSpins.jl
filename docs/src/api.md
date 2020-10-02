@@ -409,12 +409,12 @@ CollectiveSpins.reducedspin.reducedsigmay
 CollectiveSpins.reducedspin.reducedsigmax
 ```
 
-### [Collective modes](@id API: Collective modes)
+## [Collective Modes](@id API: Collective Modes)
 
 ```@docs
-CollectiveSpins.collective_modes.Omega_k_chain(k, a, polarization)
+CollectiveSpins.Omega_k_chain
 ```
 
 ```@docs
-CollectiveSpins.collective_modes.Gamma_k_chain(k, a, polarization)
+CollectiveSpins.Gamma_k_chain
 ```
