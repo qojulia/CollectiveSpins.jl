@@ -22,7 +22,6 @@ WLOG, this calculation scales natural atomic frequency wavelength lambda0=1 and 
 * `a`: Atomic lattice spacing.
 * `polarization`: 3D, complex vector of atomic polarization.
 """
-
 function Omega_k_chain(k::Real, a::Real, polarization::Array{<:Number, 1})  
     polarization = LinearAlgebra.normalize(polarization)
     x_par = polarization[1]^2
@@ -47,7 +46,6 @@ WLOG, this calculation scales natural atomic frequency wavelength lambda0=1 and 
 * `a`: Atomic lattice spacing.
 * `polarization`: 3D, complex vector of atomic polarization.
 """
-
 function Gamma_k_chain(k::Real, a::Real, polarization::Array{<:Number, 1})
     if abs(k) > 2pi
         return 0
