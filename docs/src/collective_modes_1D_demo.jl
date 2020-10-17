@@ -1,5 +1,10 @@
 import CollectiveSpins
 
+
+# Band structure (Omega) and collective decay rate (Gamma) for 1D chain for x-axis (along chain)
+# and in the yz-plane (plane perpendicular to the atom chain) polarized atoms.
+# See Asenjo-Garcia et al 10.1103/PhysRevX.7.031024 Figs. 1b and 1c.
+
 # Define chain parameters
 a = 0.2   # spin-spin distance
 polarization_par = [1, 0, 0]
@@ -7,7 +12,6 @@ polarization_perp = [0, 1, 1]
 
 k_max = 10000
 k_list = [iii*pi/(a*k_max) for iii=-k_max:k_max]
-println()
 
 band_structure_par = []
 band_structure_perp = []
