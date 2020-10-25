@@ -7,6 +7,7 @@ pages = [
     "interaction.md",
     "effective_interaction.md",
     "system.md",
+    "collective_modes.md",
     "descriptions.md",
     "api.md"
 ]
