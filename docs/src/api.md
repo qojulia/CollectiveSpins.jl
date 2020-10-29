@@ -418,3 +418,11 @@ CollectiveSpins.Omega_k_chain
 ```@docs
 CollectiveSpins.Gamma_k_chain
 ```
+
+```@docs
+CollectiveSpins.Omega_k_2D
+```
+
+```@docs
+CollectiveSpins.Gamma_k_2D
+```
