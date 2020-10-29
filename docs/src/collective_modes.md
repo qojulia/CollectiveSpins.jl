@@ -7,6 +7,7 @@ A module that calculates the band structure and decay rates of different collect
 * [`CollectiveSpins.Omega_k_2D`](@ref)
 * [`CollectiveSpins.Gamma_k_2D`](@ref)
 
+
 ```julia
 CollectiveSpins.Omega_k_chain(0.2*pi, 0.2, [1,0,0])
 ```
