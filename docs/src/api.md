@@ -409,6 +409,10 @@ CollectiveSpins.reducedspin.reducedsigmay
 CollectiveSpins.reducedspin.reducedsigmax
 ```
 
+```@docs
+CollectiveSpins.reducedspin.sigmap_sigmam
+```
+
 ## [Collective Modes](@id API: Collective Modes)
 
 ```@docs

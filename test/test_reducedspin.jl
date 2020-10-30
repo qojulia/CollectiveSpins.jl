@@ -145,4 +145,7 @@ SZ1 = sum(CollectiveSpins.reducedsigmaz(b_red1, i) for i=1:N)
 SZ2 = sum(CollectiveSpins.reducedsigmaz(b_red2, i) for i=1:N)
 @test all([SZ2.data[i,i] for i=1:length(b_red2)] .== [[-2.0 for i=1:N]; zeros(binomial(N,2))])
 
+# Predefined time evolution
+tout, rho_t = CollectiveSpins.reducedspin.timeevolution(T, S, psi0)
+
 end #testset

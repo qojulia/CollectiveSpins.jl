@@ -225,6 +225,25 @@ reducedspinstate(b::ReducedSpinBasis, n) = reducedspinstate(b, convert(Vector{In
 reducedspinstate(b::ReducedSpinBasis, n::Int) = reducedspinstate(b, [n])
 
 """
+    sigmap_sigmam(b::ReducedSpinBasis, i, j)
+
+Create the product operator product σᵢ⁺σⱼ⁻ directly on a [`ReducedSpinBasis`](@ref).
+Useful especially for a basis where only one excitation is included, since then the
+single operators are zero (do not conserve excitation number), but the product is not.
+"""
+function sigmap_sigmam(b::ReducedSpinBasis, i, j)
+    op = SparseOperator(b)
+    for idx1 in b.indexMapper
+        if j in idx1[1]
+            for idx2 in b.indexMapper
+                i in idx2[1] && (op.data[idx2[2], idx1[2]] = 1)
+            end
+        end
+    end
+    return op
+end
+
+"""
     Hamiltonian(S::SpinCollection, M::Int=1)
 
 Builds the dipole-dipole Hamiltonian.
@@ -236,18 +255,12 @@ Builds the dipole-dipole Hamiltonian.
 function Hamiltonian(S::SpinCollection, M::Int=1)
     N = length(S.spins)
     b = ReducedSpinBasis(N, M)
-    sp(j) = reducedsigmap(b, j)
-    sm(j) = reducedsigmam(b, j)
-
     OmegaM = interaction.OmegaMatrix(S)
 
     H = SparseOperator(b)
-
     for i=1:N, j=1:N
-        if i == j
-            continue
-        else
-            H += OmegaM[i, j]*sp(i)*sm(j)
+        if i != j
+            H += OmegaM[i, j]*sigmap_sigmam(b,i,j)
         end
     end
 
@@ -275,16 +288,13 @@ function JumpOperators(S::SpinCollection, M::Int=1)
     end
 
 """
-    time evolution
+    timeevolution(T, S::SpinCollection, psi0; kwargs...)
 """
-function timeevolution(T, system::SpinCollection, psi0::Union{Ket{B}, DenseOpType{B, B}}; fout=nothing, kwargs...) where B <: ReducedSpinBasis
-
-    M = isa(psi0, Ket) ? psi.bais.M : psi0.basis_l.M
-
+function timeevolution(T, S::SpinCollection, psi0::Union{Ket{B}, DenseOpType{B, B}}; kwargs...) where B <: ReducedSpinBasis
+    M = isa(psi0, Ket) ? psi0.basis.M : psi0.basis_l.M
     H = Hamiltonian(S, M)
-    GammaM, J = JumpOperators(S. M)
-
-    return QuantumOptics.timeevolution.master_h(T, psi0, H, J; fout=fout, rates=GammaM, kwargs...)
+    GammaM, J = JumpOperators(S, M)
+    return QuantumOptics.timeevolution.master(T, psi0, H, J; rates=GammaM, kwargs...)
 end
 
 end # module
