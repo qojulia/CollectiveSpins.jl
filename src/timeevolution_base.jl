@@ -9,12 +9,13 @@ function integrate(T::Vector, f:: Function, state0::S, fout::Function;
 
     if isa(state0, Vector{<:Real})
         x0 = state0
+        N = length(state0)
+        fout_diff = (u, t, integrator) -> fout(t, deepcopy(u))
     else
         x0 = state0.data
+        N = state0.N
+        fout_diff = (u, t, integrator) -> fout(t, S(N, deepcopy(u)))
     end
-
-    N = state0.N
-    fout_diff(u, t, integrator) = fout(t, S(N, deepcopy(u)))
 
     out_type = pure_inference(fout, Tuple{eltype(T),typeof(state0)})
     out = DiffEqCallbacks.SavedValues(eltype(T),out_type)

@@ -109,19 +109,19 @@ Independent time evolution.
 
 # Arguments
 * `T`: Points of time for which output will be generated.
-* `gamma`: Single spin decay rate.
+* `gamma`: Decay rate(s).
 * `state0`: Initial state.
 """
-function timeevolution(T, gamma::Number, state0::Vector{Float64}; kwargs...)
+function timeevolution(T, gamma, state0::Vector{Float64}; kwargs...)
     N = dim(state0)
     γ = gamma
     function f(ds::Vector{Float64}, s::Vector{Float64}, p, t)
         sx, sy, sz = splitstate(s)
         dsx, dsy, dsz = splitstate(ds)
         @inbounds for k=1:N
-            dsx[k] = -0.5*γ*sx[k]
-            dsy[k] = -0.5*γ*sy[k]
-            dsz[k] = -γ*(1+sz[k])
+            dsx[k] = -0.5*γ[k]*sx[k]
+            dsy[k] = -0.5*γ[k]*sy[k]
+            dsz[k] = -γ[k]*(1+sz[k])
         end
     end
 
@@ -140,6 +140,6 @@ Independent time evolution.
 * `S`: SpinCollection describing the system.
 * `state0`: Initial state.
 """
-timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}) = timeevolution(T, S.gamma, state0)
+timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}) = timeevolution(T, S.gammas, state0)
 
 end # module
