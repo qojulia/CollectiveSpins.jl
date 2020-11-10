@@ -1,7 +1,3 @@
-module system
-
-export Spin, SpinCollection, CavityMode, CavitySpinCollection
-
 using LinearAlgebra
 
 """
@@ -110,5 +106,3 @@ struct CavitySpinCollection{C<:CavityMode,S<:SpinCollection,G<:Number} <: System
 end
 CavitySpinCollection(cavity::C, spincollection::S, g::Vector{G}) where {C,S,G} = CavitySpinCollection{C,S,G}(cavity, spincollection, g)
 CavitySpinCollection(cavity::CavityMode, spincollection::SpinCollection, g::Real) = CavitySpinCollection(cavity, spincollection, [g for i=1:length(spincollection.spins)])
-
-end # module

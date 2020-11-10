@@ -19,7 +19,6 @@ include("mpc.jl")
 include("io.jl")
 include("collective_modes.jl")
 
-using .system
 using .quantum
 using .meanfield
 using .mpc
