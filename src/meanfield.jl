@@ -5,7 +5,7 @@ export ProductState, densityoperator
 import ..integrate
 
 using QuantumOpticsBase, LinearAlgebra
-using ..interaction, ..system
+using ..interaction, ..CollectiveSpins
 
 # Define Spin 1/2 operators
 const spinbasis = SpinBasis(1//2)
@@ -167,7 +167,7 @@ Meanfield time evolution.
 * `fout` (optional): Function with signature `fout(t, state)` that is called whenever output
     should be generated.
 """
-function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=nothing, kwargs...)
+function timeevolution(T, S::SpinCollection, state0::ProductState; fout=nothing, kwargs...)
     N = length(S.spins)
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)

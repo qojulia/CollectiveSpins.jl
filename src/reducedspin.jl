@@ -7,7 +7,7 @@ export ReducedSpinBasis, reducedspintransition, reducedspinstate, reducedsigmap,
 
 import Base: ==
 
-using ..interaction, ..system
+using ..interaction, ..CollectiveSpins
 
 
 """

@@ -1,6 +1,6 @@
 module quantum
 
-using ..interaction, ..system
+using ..CollectiveSpins, ..interaction
 using QuantumOptics, LinearAlgebra
 
 try
@@ -78,7 +78,7 @@ end
 
 Hamiltonian of the given System.
 """
-function Hamiltonian(S::system.SpinCollection)
+function Hamiltonian(S::SpinCollection)
     spins = S.spins
     N = length(spins)
     b = basis(S)
@@ -99,13 +99,13 @@ function Hamiltonian(S::system.SpinCollection)
     return H
 end
 
-function Hamiltonian(S::system.CavityMode)
+function Hamiltonian(S::CavityMode)
     b = basis(S)
     H = SparseOperator(S.delta*number(b) + S.eta*(create(b) + destroy(b)))
     return H
 end
 
-function Hamiltonian(S::system.CavitySpinCollection)
+function Hamiltonian(S::CavitySpinCollection)
     b = basis(S)
     bs = basis(S.spincollection)
     bc = basis(S.cavity)
@@ -128,15 +128,15 @@ end
 
 Jump operators of the given system.
 """
-function JumpOperators(S::system.SpinCollection)
+function JumpOperators(S::SpinCollection)
     J = SparseOpType[embed(basis(S), i, sigmam_) for i=1:length(S.spins)]
     Γ = interaction.GammaMatrix(S)
     return Γ, J
 end
 
-JumpOperators(S::system.CavityMode) = (Float64[2*S.kappa], SparseOpType[SparseOperator(destroy(basis(S)))])
+JumpOperators(S::CavityMode) = (Float64[2*S.kappa], SparseOpType[SparseOperator(destroy(basis(S)))])
 
-function JumpOperators(S::system.CavitySpinCollection)
+function JumpOperators(S::CavitySpinCollection)
     Γs, Js = JumpOperators(S.spincollection)
     Γc, Jc = JumpOperators(S.cavity)
     Ns = length(Js)
@@ -162,7 +162,7 @@ Jump operators of the given system. (diagonalized)
 Diagonalized means that the Gamma matrix is diagonalized and
 the jump operators are changed accordingly.
 """
-function JumpOperators_diagonal(S::system.SpinCollection)
+function JumpOperators_diagonal(S::SpinCollection)
     spins = S.spins
     N = length(spins)
     b = basis(S)
@@ -194,7 +194,7 @@ the jump operators are changed accordingly.
 * `fout` (optional): Function with signature fout(t, state) that is called
     whenever output should be generated.
 """
-function timeevolution_diagonal(T, S::system.System, ρ₀::Union{StateVector, DenseOpType}; fout=nothing, kwargs...)
+function timeevolution_diagonal(T, S::System, ρ₀::Union{StateVector, DenseOpType}; fout=nothing, kwargs...)
     H = Hamiltonian(S)
     J = JumpOperators_diagonal(S)
     Hnh = H - 0.5im*sum([dagger(J[i])*J[i] for i=1:length(J)])
@@ -216,7 +216,7 @@ the jump operators are changed accordingly.
 * `fout` (optional): Function with signature fout(t, state) that is called
     whenever output should be generated.
 """
-function timeevolution(T, S::system.System, ρ₀::Union{StateVector, DenseOpType}; fout=nothing, kwargs...)
+function timeevolution(T, S::System, ρ₀::Union{StateVector, DenseOpType}; fout=nothing, kwargs...)
     b = basis(S)
     H = Hamiltonian(S)
     Γ, J = JumpOperators(S)

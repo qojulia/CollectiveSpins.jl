@@ -1,7 +1,7 @@
 module independent
 
 using QuantumOpticsBase
-using ..interaction, ..system
+using ..interaction, ..CollectiveSpins
 
 import ..integrate
 
@@ -140,6 +140,6 @@ Independent time evolution.
 * `S`: SpinCollection describing the system.
 * `state0`: Initial state.
 """
-timeevolution(T, S::system.SpinCollection, state0::Vector{Float64}) = timeevolution(T, S.gammas, state0)
+timeevolution(T, S::SpinCollection, state0::Vector{Float64}) = timeevolution(T, S.gammas, state0)
 
 end # module

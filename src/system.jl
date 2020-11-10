@@ -3,7 +3,7 @@ using LinearAlgebra
 """
 Abstract base class for all systems defined in this library.
 
-Currently there are following concrete systems:
+Currently there are the following concrete systems:
 
 * Spin
 * SpinCollection

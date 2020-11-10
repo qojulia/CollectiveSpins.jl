@@ -1,7 +1,7 @@
 module mpc
 
 using QuantumOpticsBase, LinearAlgebra
-using ..interaction, ..system, ..quantum
+using ..interaction, ..CollectiveSpins, ..quantum
 
 import ..integrate
 
@@ -356,7 +356,7 @@ MPC time evolution.
 * `fout` (optional): Function with signature fout(t, state) that is called
     whenever output should be generated.
 """
-function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothing, kwargs...)
+function timeevolution(T, S::SpinCollection, state0::MPCState; fout=nothing, kwargs...)
     N = length(S.spins)
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)

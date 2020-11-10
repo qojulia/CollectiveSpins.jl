@@ -21,7 +21,6 @@ function Gamma(a, θ)
 end
 
 function OmegaGamma(a, cosθpow2)
-    #cosθpow2 = cos(θ)^2
     cosξ = cospi(2*a)
     sinξ = sinpi(2*a)
     omega = 0.75*((1.0-3.0*cosθpow2) * (sinξ+cosξ/(2*pi*a))/(2*pi*a)^2 - (1.0-cosθpow2)*cosξ/(2*pi*a))
@@ -50,18 +49,6 @@ function Gamma_orthogonal(a)
 end
 
 
-function map_effectiveinteraction(a::Vector{Float64}, f::Function)
-    omega_list = Float64[]
-    gamma_list = Float64[]
-    for ai=a
-        omega, gamma = f(ai, e_dipole)
-        push!(omega_list, omega)
-        push!(gamma_list, gamma)
-    end
-    return omega_list, gamma_list
-end
-
-
 # Finite symmetric systems
 
 """
@@ -71,7 +58,7 @@ Effective Omega and Gamma for a equilateral triangle with edge length `a`.
 
 The polarization axis is orthogonal to the triangle plane.
 """
-function triangle_orthogonal(a::Float64)
+function triangle_orthogonal(a::Real)
     omega_eff = 2*Omega_orthogonal(a)
     gamma_eff = 2*Gamma_orthogonal(a)
     return omega_eff, gamma_eff
@@ -84,7 +71,7 @@ Effective Omega and Gamma for a square with edge length `a`.
 
 The polarization axis is orthogonal to the square plane.
 """
-function square_orthogonal(a::Float64)
+function square_orthogonal(a::Real)
     omega_eff = 2*Omega_orthogonal(a) + Omega_orthogonal(sqrt(2.)*a)
     gamma_eff = 2*Gamma_orthogonal(a) + Gamma_orthogonal(sqrt(2.)*a)
     return omega_eff, gamma_eff
@@ -97,7 +84,7 @@ Effective Omega and Gamma for a rectangle with edge lengths `a` and `b`.
 
 The polarization axis is orthogonal to the rectangle plane.
 """
-function rectangle_orthogonal(a::Float64, b::Float64)
+function rectangle_orthogonal(a::Real, b::Real)
     d = sqrt(a^2 + b^2)
     omega_eff, gamma_eff = OmegaGamma_orthogonal(a)
     om, ga = OmegaGamma_orthogonal(b)
@@ -114,7 +101,7 @@ Effective Omega and Gamma for a cube with edge length `a`
 
 The polarization axis is orthogonal to the xy faces.
 """
-function cube_orthogonal(a::Float64)
+function cube_orthogonal(a::Real)
     omega_eff, gamma_eff = square_orthogonal(a)
     sqrt2 = sqrt(2.)
     sqrt3 = sqrt(3.)
@@ -131,7 +118,7 @@ Effective Omega and Gamma for a box with edge lengths `a`, `b` and `c`.
 
 The polarization axis is orthogonal to the top face.
 """
-function box_orthogonal(a::Float64, b::Float64, c::Float64)
+function box_orthogonal(a::Real, b::Real, c::Real)
     omega_eff, gamma_eff = rectangle_orthogonal(a, b)
 
     a2 = a^2
@@ -170,10 +157,10 @@ central spin.
 * `θ`: Angle between polarization axis and spin chain.
 * `N`: Number of included spins.
 """
-function chain(a::Float64, Θ, N::Int)
-    omega_eff::Float64 = 0.
-    gamma_eff::Float64 = 0.
-    d = 0.
+function chain(a::T, Θ, N::Int) where T<:Real
+    omega_eff::float(T) = 0.
+    gamma_eff::float(T) = 0.
+    d::float(T) = 0.
     for j=1:N
         d += a
         omega_eff += Omega(d, Θ)
@@ -194,10 +181,10 @@ central spin.
 * `a`: Spin-spin distance.
 * `N`: Number of included spins.
 """
-function chain_orthogonal(a::Float64, N::Int)
-    omega_eff::Float64 = 0.
-    gamma_eff::Float64 = 0.
-    d::Float64 = 0.
+function chain_orthogonal(a::T, N::Int) where T<:Real
+    omega_eff::float(T) = 0.
+    gamma_eff::float(T) = 0.
+    d::float(T) = 0.
     for j=1:N
         d += a
         omega_eff += Omega_orthogonal(d)
@@ -221,9 +208,9 @@ and calculate the combined interaction for the central spin.
 * `a`: Spin-spin distance.
 * `N`: Number of included spins.
 """
-function squarelattice_orthogonal(a::Float64, N::Int)
-    omega_eff::Float64 = 0.
-    gamma_eff::Float64 = 0.
+function squarelattice_orthogonal(a::T, N::Int) where T<:Real
+    omega_eff::float(T) = 0.
+    gamma_eff::float(T) = 0.
     for j=1:N
         d = a*j
         omega_eff += 4*Omega_orthogonal(d)
@@ -255,9 +242,9 @@ N rings and calculate the combined interaction for the central spin.
 * `a`: Spin-spin distance.
 * `N`: Number of included spins.
 """
-function hexagonallattice_orthogonal(a::Float64, N::Int)
-    omega_eff::Float64 = 0.
-    gamma_eff::Float64 = 0.
+function hexagonallattice_orthogonal(a::T, N::Int) where T<:Real
+    omega_eff::float(T) = 0.
+    gamma_eff::float(T) = 0.
     for n=1:2:N
         nv1x = -0.5*n
         nv1y_square = 3.0/4*n^2
@@ -304,7 +291,7 @@ and calculate the combined interaction for the central spin.
 * `a`: Spin-spin distance.
 * `N`: Number of included spins.
 """
-function cubiclattice_orthogonal(a::Float64, N::Int)
+function cubiclattice_orthogonal(a::T, N::Int) where T<:Real
     omega_eff, gamma_eff = squarelattice_orthogonal(a, N)
     for nx=1:N
         for ny=0:nx
@@ -321,7 +308,7 @@ function cubiclattice_orthogonal(a::Float64, N::Int)
             end
         end
     end
-    d::Float64 = 0.
+    d::float(T) = 0.
     for nz=1:N
         d += a
         om, ga = OmegaGamma(d, 1.)
@@ -345,7 +332,7 @@ and calculate the combined interaction for the central spin.
 * `b`: Height of the unit cell.
 * `N`: Number of included spins.
 """
-function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
+function tetragonallattice_orthogonal(a::S, b::T, N::Int) where {S<:Real,T<:Real}
     omega_eff, gamma_eff = squarelattice_orthogonal(a, N)
     for nx=1:N
         for ny=0:nx
@@ -361,7 +348,7 @@ function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
             end
         end
     end
-    d::Float64 = 0.
+    d::float(T) = 0.
     for nz=1:N
         d += b
         omega_eff += 2*Omega(d, 0.)
@@ -386,8 +373,8 @@ interaction for the central spin.
 * `b`: Distance between planes of hexagonal lattices
 * `N`: Number of included spins.
 """
-function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
-    omega_eff, gamma_eff::Float64 = hexagonallattice_orthogonal(a, N)
+function hexagonallattice3d_orthogonal(a::S, b::T, N::Int) where {S<:Real,T<:Real}
+    omega_eff, gamma_eff::float(T) = hexagonallattice_orthogonal(a, N)
     a2 = a^2
     b2 = b^2
     for n=1:2:N

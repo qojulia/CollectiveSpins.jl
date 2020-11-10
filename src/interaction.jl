@@ -1,9 +1,10 @@
 module interaction
 
-using ..system
+using ..CollectiveSpins
+
 using LinearAlgebra
 
-export GreenTensor,G_ij,Gamma_ij,Omega_ij
+export GreenTensor, OmegaMatrix, GammaMatrix
 
 """
     interaction.F(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
@@ -101,7 +102,7 @@ end
 
 Matrix of the dipole-dipole interaction for a given SpinCollection.
 """
-function OmegaMatrix(S::system.SpinCollection)
+function OmegaMatrix(S::SpinCollection)
     spins = S.spins
     mu = S.polarizations
     gamma = S.gammas
@@ -122,7 +123,7 @@ end
 
 Matrix of the collective decay rate for a given SpinCollection.
 """
-function GammaMatrix(S::system.SpinCollection)
+function GammaMatrix(S::SpinCollection)
     spins = S.spins
     mu = S.polarizations
     gamma = S.gammas
@@ -156,48 +157,6 @@ function GreenTensor(r::Vector{<:Number},k::Real=2π)
         (1/(k*n) + im/(k*n)^2 - 1/(k*n)^3).*Matrix(I,3,3) +
         -(1/(k*n) + 3im/(k*n)^2 - 3/(k*n)^3).*(rn*rn')
     )
-end
-
-"""
-    Gamma_ij(r1::Vector,r2::Vector,μ1::Vector,μ2::Vector;gamma1=1,gamma2=1,k0=2π)
-
-From the field overlap with the Green's tensor, compute the mutual decay rate as
-
-```math
-Γ_{ij} = \\frac{3}{2} μᵢ* ⋅ ℑ(G) ⋅ μⱼ.
-```
-
-"""
-function Gamma_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ1::Vector{<:Number},μ2::Vector{<:Number};k0=2π,kwargs...)
-    T = float(promote_type(eltype(r1),eltype(r2),eltype(μ1),eltype(μ2),typeof(k0)))
-    if (r1 == r2) && (μ1 == μ2)
-        return one(T)
-    elseif (r1 == r2) && (μ1 != μ2)
-        return zero(T)
-    else
-        G_im = imag(GreenTensor(r1 - r2, k0))
-        return 1.5*dot(μ1, G_im, μ2)::T
-    end
-end
-
-"""
-    Omega_ij(r1::Vector,r2::Vector,μ1::Vector,μ2::Vector;gamma1=1,gamma2=1,k0=2π)
-
-From the field overlap with the Green's tensor, compute the energy shifts as
-
-```math
-Ω_{ij} = -\\frac{3}{4} μᵢ* ⋅ ℜ(G) ⋅ μⱼ.
-```
-
-"""
-function Omega_ij(r1::Vector{<:Real},r2::Vector{<:Real},μ1::Vector{<:Number},μ2::Vector{<:Number};k0=2π,kwargs...)
-    T = float(promote_type(eltype(r1),eltype(r2),eltype(μ1),eltype(μ2),typeof(k0)))
-    if r1 == r2
-        return zero(T)
-    else
-        G_re = real(GreenTensor(r1 - r2, k0))
-        return -0.75*dot(μ1,G_re,μ2)::T
-    end
 end
 
 end # module
