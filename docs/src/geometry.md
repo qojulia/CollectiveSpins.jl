@@ -12,6 +12,8 @@ In order to simplify creation of various particle distributions, a few helper fu
 
 They can be used directly to create a [`SpinCollection`](@ref):
 
-```julia
+```@example geometry
+using CollectiveSpins # hide
 SpinCollection(geometry.chain(0.5, 6), [0,0,1])
+nothing # hide
 ```

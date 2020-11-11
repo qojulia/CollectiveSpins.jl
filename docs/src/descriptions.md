@@ -25,7 +25,7 @@ All variants provide a unified interface wherever possible:
 
 The following example should give a first idea how these implementations are used:
 
-```julia
+```@example descriptions
 using QuantumOptics, CollectiveSpins
 const cs = CollectiveSpins
 
@@ -110,6 +110,7 @@ sz_mf = mapexpect(cs.meanfield.sz, state_mf_t)
 sx_mpc = mapexpect(cs.mpc.sx, state_mpc_t)
 sy_mpc = mapexpect(cs.mpc.sy, state_mpc_t)
 sz_mpc = mapexpect(cs.mpc.sz, state_mpc_t)
+nothing # hide
 ```
 
 

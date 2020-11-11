@@ -3,6 +3,9 @@
 
 ## [System](@id API: System)
 
+```@docs
+System
+```
 
 ```@docs
 Spin
@@ -73,15 +76,6 @@ CollectiveSpins.interaction.OmegaMatrix
 ```@docs
 CollectiveSpins.interaction.GreenTensor
 ```
-
-```@docs
-CollectiveSpins.interaction.Omega_ij
-```
-
-```@docs
-CollectiveSpins.interaction.Gamma_ij
-```
-
 
 ## [Effective Interactions](@id API: Effective Interactions)
 
@@ -416,17 +410,17 @@ CollectiveSpins.reducedspin.sigmap_sigmam
 ## [Collective Modes](@id API: Collective Modes)
 
 ```@docs
-CollectiveSpins.Omega_k_chain
+Omega_k_chain
 ```
 
 ```@docs
-CollectiveSpins.Gamma_k_chain
+Gamma_k_chain
 ```
 
 ```@docs
-CollectiveSpins.Omega_k_2D
+Omega_k_2D
 ```
 
 ```@docs
-CollectiveSpins.Gamma_k_2D
+Gamma_k_2D
 ```

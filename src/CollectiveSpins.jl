@@ -6,7 +6,7 @@ export System, Spin, SpinCollection, CavityMode, CavitySpinCollection,
         reducedspin, ReducedSpinBasis, reducedspintransition, reducedspinstate,
                 reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay,
                 reducedsigmaz,
-        collective_modes, Omega_k_chain, Delta_k_chain, Omega_k_2D, Gamma_k_2D
+        collective_modes, Omega_k_chain, Gamma_k_chain, Omega_k_2D, Gamma_k_2D
 
 
 include("system.jl")

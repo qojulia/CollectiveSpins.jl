@@ -62,8 +62,12 @@ Create a SpinCollection without explicitly creating single spins.
 * `deltas=0`: Detunings.
 * `gammas=1`: Decay rates.
 """
-function SpinCollection(positions::Vector{<:Vector{<:Real}}, args...; deltas::Vector=zeros(length(positions)), kwargs...)
-    SpinCollection([Spin(positions[i]; delta=deltas[i]) for i=1:length(positions)], args...; kwargs...)
+function SpinCollection(positions::Vector{<:Vector{<:Real}}, args...; deltas::Union{T,Vector{T}}=zeros(length(positions)), kwargs...) where T<:Real
+    if length(deltas)==1
+        SpinCollection([Spin(positions[i]; delta=deltas[1]) for i=1:length(positions)], args...; kwargs...)
+    else
+        SpinCollection([Spin(positions[i]; delta=deltas[i]) for i=1:length(positions)], args...; kwargs...)
+    end
 end
 
 
