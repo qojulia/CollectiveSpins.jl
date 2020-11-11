@@ -3,7 +3,10 @@ module CollectiveSpins
 export System, Spin, SpinCollection, CavityMode, CavitySpinCollection,
         geometry,
         interaction, GreenTensor, OmegaMatrix, GammaMatrix,
-        Omega_k_chain, Delta_k_chain, Omega_k_2D, Gamma_k_2D
+        reducedspin, ReducedSpinBasis, reducedspintransition, reducedspinstate,
+                reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay,
+                reducedsigmaz,
+        collective_modes, Omega_k_chain, Delta_k_chain, Omega_k_2D, Gamma_k_2D
 
 
 include("system.jl")
@@ -18,7 +21,6 @@ include("reducedspin.jl")
 include("independent.jl")
 include("meanfield.jl")
 include("mpc.jl")
-include("io.jl")
 include("collective_modes.jl")
 
 using .quantum

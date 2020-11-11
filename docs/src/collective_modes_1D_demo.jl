@@ -1,5 +1,4 @@
-import CollectiveSpins
-
+using CollectiveSpins
 
 # Band structure (Omega) and collective decay rate (Gamma) for 1D chain for x-axis (along chain)
 # and in the yz-plane (plane perpendicular to the atom chain) polarized atoms.
@@ -18,10 +17,10 @@ band_structure_perp = []
 decay_par = []
 decay_perp = []
 for k in k_list
-    append!(band_structure_par, CollectiveSpins.Omega_k_chain(k, a, polarization_par))
-    append!(band_structure_perp, CollectiveSpins.Omega_k_chain(k, a, polarization_perp))
-    append!(decay_par, CollectiveSpins.Gamma_k_chain(k, a, polarization_par))
-    append!(decay_perp, CollectiveSpins.Gamma_k_chain(k, a, polarization_perp))
+    append!(band_structure_par, Omega_k_chain(k, a, polarization_par))
+    append!(band_structure_perp, Omega_k_chain(k, a, polarization_perp))
+    append!(decay_par, Gamma_k_chain(k, a, polarization_par))
+    append!(decay_perp, Gamma_k_chain(k, a, polarization_perp))
 end
 
 using PyPlot

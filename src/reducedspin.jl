@@ -15,14 +15,14 @@ using ..interaction, ..CollectiveSpins
 
 Basis for a system of N spin 1/2 systems, up to the M'th excitation.
 """
-mutable struct ReducedSpinBasis{N, M} <: Basis
-    shape::Vector{Int}
-    N::Int
-    M::Int
-    MS::Int
-    indexMapper::Vector{Pair{Vector{Int},Int}}
+struct ReducedSpinBasis{N, M, T<:Int} <: Basis
+    shape::Vector{T}
+    N::T
+    M::T
+    MS::T
+    indexMapper::Vector{Pair{Vector{T},T}}
 
-    function ReducedSpinBasis(N::Int, M::Int, MS::Int)
+    function ReducedSpinBasis(N::T, M::T, MS::T) where T<:Int
         if N < 1
             throw(DimensionMismatch())
         end
@@ -34,13 +34,13 @@ mutable struct ReducedSpinBasis{N, M} <: Basis
         end
 
         dim = sum(binomial(N, k) for k=MS:M)
-        inds = Vector{Int}[]
+        inds = Vector{T}[]
         for k=MS:M
             append!(inds, collect(combinations(1:N,k)))
         end
         @assert length(inds)==dim
         indexMapper = (inds .=> [1:dim;])
-        new{N, M}([dim], N, M, MS, indexMapper)
+        new{N, M, T}([dim], N, M, MS, indexMapper)
     end
 end
 ReducedSpinBasis(N::Int, M::Int) = ReducedSpinBasis(N, M, 0)

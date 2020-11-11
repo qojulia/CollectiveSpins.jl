@@ -134,7 +134,7 @@ function JumpOperators(S::SpinCollection)
     return Γ, J
 end
 
-JumpOperators(S::CavityMode) = (Float64[2*S.kappa], SparseOpType[SparseOperator(destroy(basis(S)))])
+JumpOperators(S::CavityMode) = (float.([2*S.kappa]), SparseOpType[SparseOperator(destroy(basis(S)))])
 
 function JumpOperators(S::CavitySpinCollection)
     Γs, Js = JumpOperators(S.spincollection)
@@ -310,13 +310,6 @@ function orthogonal_vectors(n::Vector{<:Real})
     e2 = e2/norm(e2)
     return e1, e2
 end
-
-"""
-    quantum.variance(op, state)
-
-Variance of the operator for the given state.
-"""
-variance(op::AbstractOperator, state) = (expect(op^2, state) - expect(op, state)^2)
 
 """
     quantum.squeezingparameter(ρ)

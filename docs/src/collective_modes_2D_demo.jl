@@ -1,4 +1,4 @@
-import CollectiveSpins
+using CollectiveSpins
 using PyPlot
 
 # Band structure (Omega) for 2D square lattice for in-plane circularly polarized
@@ -23,8 +23,8 @@ bandstructure_par = zeros(k_dim)
 bandstructure_perp = zeros(k_dim)
 for iii=1:k_dim
     k = [k_listy[iii], k_listz[iii]]
-    bandstructure_par[iii] = CollectiveSpins.collective_modes.Omega_k_2D(k, a_vec1, a_vec2, polarization_par)
-    bandstructure_perp[iii] = CollectiveSpins.collective_modes.Omega_k_2D(k, a_vec1, a_vec2, polarization_perp)
+    bandstructure_par[iii] = Omega_k_2D(k, a_vec1, a_vec2, polarization_par)
+    bandstructure_perp[iii] = Omega_k_2D(k, a_vec1, a_vec2, polarization_perp)
 end
 
 positions = [0, k_max, 2*k_max, 3*k_max]
@@ -58,8 +58,8 @@ for ky in k_list
     z = 1
     for kz in k_list
         k = [ky, kz]
-        decay_par[z, y] = CollectiveSpins.collective_modes.Gamma_k_2D(k, a_vec1, a_vec2, polarization_par)
-        decay_perp[z, y] = CollectiveSpins.collective_modes.Gamma_k_2D(k, a_vec1, a_vec2, polarization_perp)
+        decay_par[z, y] = Gamma_k_2D(k, a_vec1, a_vec2, polarization_par)
+        decay_perp[z, y] = Gamma_k_2D(k, a_vec1, a_vec2, polarization_perp)
         z += 1
     end
     global y += 1
