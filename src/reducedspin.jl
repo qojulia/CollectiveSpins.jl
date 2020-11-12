@@ -3,7 +3,8 @@ module reducedspin
 using QuantumOptics, Base.Cartesian
 using Combinatorics: combinations
 
-export ReducedSpinBasis, reducedspintransition, reducedspinstate, reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay, reducedsigmaz
+export ReducedSpinBasis, reducedspintransition, reducedspinstate, reducedsigmap,
+    reducedsigmam, reducedsigmax, reducedsigmay, reducedsigmaz, reducedsigmapsigmam
 
 import Base: ==
 
@@ -225,13 +226,13 @@ reducedspinstate(b::ReducedSpinBasis, n) = reducedspinstate(b, convert(Vector{In
 reducedspinstate(b::ReducedSpinBasis, n::Int) = reducedspinstate(b, [n])
 
 """
-    sigmap_sigmam(b::ReducedSpinBasis, i, j)
+    reducedsigmapsigmam(b::ReducedSpinBasis, i, j)
 
-Create the product operator product σᵢ⁺σⱼ⁻ directly on a [`ReducedSpinBasis`](@ref).
+Create the operator product σᵢ⁺σⱼ⁻ directly on a [`ReducedSpinBasis`](@ref).
 Useful especially for a basis where only one excitation is included, since then the
 single operators are zero (do not conserve excitation number), but the product is not.
 """
-function sigmap_sigmam(b::ReducedSpinBasis, i, j)
+function reducedsigmapsigmam(b::ReducedSpinBasis, i, j)
     op = SparseOperator(b)
     for idx1 in b.indexMapper
         if j in idx1[1]
@@ -260,7 +261,7 @@ function Hamiltonian(S::SpinCollection, M::Int=1)
     H = SparseOperator(b)
     for i=1:N, j=1:N
         if i != j
-            H += OmegaM[i, j]*sigmap_sigmam(b,i,j)
+            H += OmegaM[i, j]*reducedsigmapsigmam(b,i,j)
         end
     end
 

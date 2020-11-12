@@ -5,7 +5,7 @@ export System, Spin, SpinCollection, CavityMode, CavitySpinCollection,
         interaction, GreenTensor, OmegaMatrix, GammaMatrix,
         reducedspin, ReducedSpinBasis, reducedspintransition, reducedspinstate,
                 reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay,
-                reducedsigmaz,
+                reducedsigmaz, reducedsigmapsigmam,
         collective_modes, Omega_k_chain, Gamma_k_chain, Omega_k_2D, Gamma_k_2D
 
 

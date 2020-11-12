@@ -372,39 +372,39 @@ CollectiveSpins.mpc.squeezingparameter
 ### [Reduced Spin](@id API: Methods-reduced)
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmap
+ReducedSpinBasis
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedspintransition
+reducedspintransition
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.ReducedSpinBasis
+reducedsigmap
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmam
+reducedsigmam
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmaz
+reducedsigmax
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedspinstate
+reducedsigmay
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmay
+reducedsigmaz
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmax
+reducedsigmapsigmam
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.sigmap_sigmam
+reducedspinstate
 ```
 
 ## [Collective Modes](@id API: Collective Modes)

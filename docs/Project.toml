@@ -1,7 +1,9 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+QuantumOptics = "6e0679c1-51ea-5a7c-ac74-d61b76210b0c"
 
 [compat]
 Documenter = "~0.25"
 PyPlot = "2"
+QuantumOptics = "0.8"
