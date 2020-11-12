@@ -64,6 +64,8 @@ savefig("band_structure_decay_1D.svg") # hide
 For the two-dimensional case, consider the following two examples.
 The first example reproduces the band structure for a 2D square lattice with in-plane circularly polarized and perpendicular (x-axis) polarized atoms, which can be found in E. Shahmoon *et al* [10.1103/PhysRevLett.118.113601](https://doi.org/10.1103/PhysRevLett.118.113601) (Fig. 4a).
 
+For a particularly elegant derivation of collective frequency shifts and decay rates in 2D atomic arrays, see the thesis of Dominik Wild, ["Algorithms and Platforms for Quantum Science and Technology"](https://dash.harvard.edu/handle/1/37365537).
+
 ```@example collective_modes_2D
 using CollectiveSpins
 using PyPlot
