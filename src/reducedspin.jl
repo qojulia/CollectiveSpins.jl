@@ -16,11 +16,8 @@ using ..interaction, ..CollectiveSpins
 
 Basis for a system of N spin 1/2 systems, up to the M'th excitation.
 """
-struct ReducedSpinBasis{N, M, T<:Int} <: Basis
+struct ReducedSpinBasis{N, M, MS, T<:Int} <: Basis
     shape::Vector{T}
-    N::T
-    M::T
-    MS::T
     indexMapper::Vector{Pair{Vector{T},T}}
 
     function ReducedSpinBasis(N::T, M::T, MS::T) where T<:Int
@@ -41,15 +38,26 @@ struct ReducedSpinBasis{N, M, T<:Int} <: Basis
         end
         @assert length(inds)==dim
         indexMapper = (inds .=> [1:dim;])
-        new{N, M, T}([dim], N, M, MS, indexMapper)
+        new{N, M, MS, T}([dim], indexMapper)
     end
 end
 ReducedSpinBasis(N::Int, M::Int) = ReducedSpinBasis(N, M, 0)
 function Base.show(stream::IO, b::ReducedSpinBasis)
     write(stream, "ReducedSpin(N=$(b.N), M=$(b.M), MS=$(b.MS))")
 end
+function Base.getproperty(b::ReducedSpinBasis{N,M,MS}, s::Symbol) where {N,M,MS}
+    if s === :N
+        N
+    elseif s === :M
+        M
+    elseif s === :MS
+        MS
+    else
+        getfield(b, s)
+    end
+end
 
-==(b1::ReducedSpinBasis, b2::ReducedSpinBasis) = (b1.N == b2.N) && (b1.M == b2.M) && (b1.MS == b2.MS)
+==(b1::T, b2::T) where T<:ReducedSpinBasis = true
 
 """
     index(b::ReducedSpinBasis, x:Vector{Int})
