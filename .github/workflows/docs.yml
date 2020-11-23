@@ -17,8 +17,9 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: '1'
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: sudo apt-get install python3-matplotlib
+      - name: Install Julia dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
       - name: Build and deploy
         env:
