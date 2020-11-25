@@ -9,6 +9,7 @@ import Base: ==
 
 using ..interaction, ..system
 
+const spinbasis = SpinBasis(1//2)
 const sigmaz_ = sigmaz(spinbasis)
 
 """
