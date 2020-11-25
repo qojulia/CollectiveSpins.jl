@@ -259,7 +259,7 @@ function Hamiltonian(S::SpinCollection, M::Int=1)
     H = SparseOperator(b)
     for i=1:N
         if S.spins[i].delta != 0.
-            H += S.spins[i].delta * sigmap_sigmam(b,i,i)
+            H += 0.5*S.spins[i].delta*reducedsigmaz(b,i)
         end
     end
     for i=1:N, j=1:N
@@ -299,6 +299,49 @@ function timeevolution(T, S::SpinCollection, psi0::Union{Ket{B}, DenseOpType{B, 
     H = Hamiltonian(S, M)
     GammaM, J = JumpOperators(S, M)
     return QuantumOptics.timeevolution.master(T, psi0, H, J; rates=GammaM, kwargs...)
+end
+
+"""
+    Hamiltonian_nh(S::SpinCollection)
+
+Non-Hermitian Hamiltonian (only usefull for a single excitation N=1)
+
+# Argument
+* S: SpinCollection
+"""
+function Hamiltonian_nh(S::SpinCollection)
+    N = length(S.spins)
+    b = ReducedSpinBasis(N, 1)
+    OmegaM = interaction.OmegaMatrix(S)
+    Gammam = interaction.GammaMatrix(S)
+
+    H = SparseOperator(b)
+    for i=1:N
+        if S.spins[i].delta != 0.
+            H += 0.5*S.spins[i].delta * reducedsigmaz(b,i)
+        end
+    end
+    for i=1:N, j=1:N
+        if i != j
+            H += (OmegaM[i, j] - 0.5im GammaM[i, j])*sigmap_sigmam(b,i,j)
+        else
+            H += -0.5im*GammaM[i, i]*sigmap_sigmam(b,i,i)
+        end
+    end
+
+    return H
+end
+
+"""
+    timeevolution_nh(T, S::SpinCollection, psi0; kwargs...)
+
+    Time evolution calculated via evolving the Schrödinger equation with the non-Hermitian Hamiltonian
+"""
+function timeevolution_nh(T, S::SpinCollection, psi0::Ket{B}; kwargs...) where B <: ReducedSpinBasis
+    M = isa(psi0, Ket) ? psi0.basis.M : psi0.basis_l.M
+    H = Hamiltonian_nh(S)
+
+    return QuantumOptics.timeevolution.schroedinger(T, psi0, H; kwargs...)
 end
 
 end # module
