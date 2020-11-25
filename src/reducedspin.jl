@@ -9,9 +9,6 @@ import Base: ==
 
 using ..interaction, ..system
 
-const spinbasis = SpinBasis(1//2)
-const sigmaz_ = sigmaz(spinbasis)
-
 """
     ReducedSpinBasis(N, M)
 
@@ -262,7 +259,7 @@ function Hamiltonian(S::SpinCollection, M::Int=1)
     H = SparseOperator(b)
     for i=1:N
         if S.spins[i].delta != 0.
-            H += 0.5*S.spins[i].delta * embed(b, i, sigmaz_)
+            H += S.spins[i].delta * sigmap_sigmam(b,i,i)
         end
     end
     for i=1:N, j=1:N
