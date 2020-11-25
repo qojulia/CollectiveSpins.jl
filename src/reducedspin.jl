@@ -323,7 +323,7 @@ function Hamiltonian_nh(S::SpinCollection)
     end
     for i=1:N, j=1:N
         if i != j
-            H += (OmegaM[i, j] - 0.5im GammaM[i, j])*sigmap_sigmam(b,i,j)
+            H += (OmegaM[i, j] - 0.5im*GammaM[i, j])*sigmap_sigmam(b,i,j)
         else
             H += -0.5im*GammaM[i, i]*sigmap_sigmam(b,i,i)
         end
