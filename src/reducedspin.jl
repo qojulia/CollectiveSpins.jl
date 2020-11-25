@@ -313,7 +313,7 @@ function Hamiltonian_nh(S::SpinCollection)
     N = length(S.spins)
     b = ReducedSpinBasis(N, 1)
     OmegaM = interaction.OmegaMatrix(S)
-    Gammam = interaction.GammaMatrix(S)
+    GammaM = interaction.GammaMatrix(S)
 
     H = SparseOperator(b)
     for i=1:N
