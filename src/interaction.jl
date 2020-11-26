@@ -22,7 +22,7 @@ function F(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
     rijn = rij./rij_norm
     μi_ = normalize(μi)
     μj_ = normalize(μj)
-    T = float(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
+    T = complex(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
     if rij_norm == 0
         T(2/3.)
     else
@@ -48,7 +48,7 @@ function G(ri::Vector, rj::Vector, µi::Vector, µj::Vector)
     rijn = rij./rij_norm
     μi_ = normalize(μi)
     μj_ = normalize(μj)
-    T = float(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
+    T = complex(promote_type(eltype(rij),eltype(μi_),eltype(μj_)))
     if rij_norm == 0
         zero(T)
     else
