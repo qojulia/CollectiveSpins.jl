@@ -3,6 +3,9 @@
 
 ## [System](@id API: System)
 
+```@docs
+System
+```
 
 ```@docs
 Spin
@@ -73,15 +76,6 @@ CollectiveSpins.interaction.OmegaMatrix
 ```@docs
 CollectiveSpins.interaction.GreenTensor
 ```
-
-```@docs
-CollectiveSpins.interaction.Omega_ij
-```
-
-```@docs
-CollectiveSpins.interaction.Gamma_ij
-```
-
 
 ## [Effective Interactions](@id API: Effective Interactions)
 
@@ -378,55 +372,55 @@ CollectiveSpins.mpc.squeezingparameter
 ### [Reduced Spin](@id API: Methods-reduced)
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmap
+ReducedSpinBasis
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedspintransition
+reducedspintransition
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.ReducedSpinBasis
+reducedsigmap
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmam
+reducedsigmam
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmaz
+reducedsigmax
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedspinstate
+reducedsigmay
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmay
+reducedsigmaz
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.reducedsigmax
+reducedsigmapsigmam
 ```
 
 ```@docs
-CollectiveSpins.reducedspin.sigmap_sigmam
+reducedspinstate
 ```
 
 ## [Collective Modes](@id API: Collective Modes)
 
 ```@docs
-CollectiveSpins.Omega_k_chain
+Omega_k_chain
 ```
 
 ```@docs
-CollectiveSpins.Gamma_k_chain
+Gamma_k_chain
 ```
 
 ```@docs
-CollectiveSpins.Omega_k_2D
+Omega_k_2D
 ```
 
 ```@docs
-CollectiveSpins.Gamma_k_2D
+Gamma_k_2D
 ```

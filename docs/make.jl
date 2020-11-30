@@ -8,6 +8,7 @@ pages = [
     "effective_interaction.md",
     "system.md",
     "collective_modes.md",
+    "reducedspin.md",
     "descriptions.md",
     "api.md"
 ]

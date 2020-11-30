@@ -1,13 +1,9 @@
-module system
-
-export Spin, SpinCollection, CavityMode, CavitySpinCollection
-
 using LinearAlgebra
 
 """
 Abstract base class for all systems defined in this library.
 
-Currently there are following concrete systems:
+Currently there are the following concrete systems:
 
 * Spin
 * SpinCollection
@@ -66,8 +62,12 @@ Create a SpinCollection without explicitly creating single spins.
 * `deltas=0`: Detunings.
 * `gammas=1`: Decay rates.
 """
-function SpinCollection(positions::Vector{<:Vector{<:Real}}, args...; deltas::Vector=zeros(length(positions)), kwargs...)
-    SpinCollection([Spin(positions[i]; delta=deltas[i]) for i=1:length(positions)], args...; kwargs...)
+function SpinCollection(positions::Vector{<:Vector{<:Real}}, args...; deltas::Union{T,Vector{T}}=zeros(length(positions)), kwargs...) where T<:Real
+    if length(deltas)==1
+        SpinCollection([Spin(positions[i]; delta=deltas[1]) for i=1:length(positions)], args...; kwargs...)
+    else
+        SpinCollection([Spin(positions[i]; delta=deltas[i]) for i=1:length(positions)], args...; kwargs...)
+    end
 end
 
 
@@ -110,5 +110,3 @@ struct CavitySpinCollection{C<:CavityMode,S<:SpinCollection,G<:Number} <: System
 end
 CavitySpinCollection(cavity::C, spincollection::S, g::Vector{G}) where {C,S,G} = CavitySpinCollection{C,S,G}(cavity, spincollection, g)
 CavitySpinCollection(cavity::CavityMode, spincollection::SpinCollection, g::Real) = CavitySpinCollection(cavity, spincollection, [g for i=1:length(spincollection.spins)])
-
-end # module

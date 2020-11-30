@@ -3,11 +3,12 @@ module reducedspin
 using QuantumOptics, Base.Cartesian
 using Combinatorics: combinations
 
-export ReducedSpinBasis, reducedspintransition, reducedspinstate, reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay, reducedsigmaz
+export ReducedSpinBasis, reducedspintransition, reducedspinstate, reducedsigmap,
+    reducedsigmam, reducedsigmax, reducedsigmay, reducedsigmaz, reducedsigmapsigmam
 
 import Base: ==
 
-using ..interaction, ..system
+using ..interaction, ..CollectiveSpins
 
 
 """
@@ -15,14 +16,11 @@ using ..interaction, ..system
 
 Basis for a system of N spin 1/2 systems, up to the M'th excitation.
 """
-mutable struct ReducedSpinBasis{N, M} <: Basis
-    shape::Vector{Int}
-    N::Int
-    M::Int
-    MS::Int
-    indexMapper::Vector{Pair{Vector{Int},Int}}
+struct ReducedSpinBasis{N, M, MS, T<:Int} <: Basis
+    shape::Vector{T}
+    indexMapper::Vector{Pair{Vector{T},T}}
 
-    function ReducedSpinBasis(N::Int, M::Int, MS::Int)
+    function ReducedSpinBasis(N::T, M::T, MS::T) where T<:Int
         if N < 1
             throw(DimensionMismatch())
         end
@@ -34,21 +32,32 @@ mutable struct ReducedSpinBasis{N, M} <: Basis
         end
 
         dim = sum(binomial(N, k) for k=MS:M)
-        inds = Vector{Int}[]
+        inds = Vector{T}[]
         for k=MS:M
             append!(inds, collect(combinations(1:N,k)))
         end
         @assert length(inds)==dim
         indexMapper = (inds .=> [1:dim;])
-        new{N, M}([dim], N, M, MS, indexMapper)
+        new{N, M, MS, T}([dim], indexMapper)
     end
 end
 ReducedSpinBasis(N::Int, M::Int) = ReducedSpinBasis(N, M, 0)
 function Base.show(stream::IO, b::ReducedSpinBasis)
     write(stream, "ReducedSpin(N=$(b.N), M=$(b.M), MS=$(b.MS))")
 end
+function Base.getproperty(b::ReducedSpinBasis{N,M,MS}, s::Symbol) where {N,M,MS}
+    if s === :N
+        N
+    elseif s === :M
+        M
+    elseif s === :MS
+        MS
+    else
+        getfield(b, s)
+    end
+end
 
-==(b1::ReducedSpinBasis, b2::ReducedSpinBasis) = (b1.N == b2.N) && (b1.M == b2.M) && (b1.MS == b2.MS)
+==(b1::T, b2::T) where T<:ReducedSpinBasis = true
 
 """
     index(b::ReducedSpinBasis, x:Vector{Int})
@@ -225,13 +234,13 @@ reducedspinstate(b::ReducedSpinBasis, n) = reducedspinstate(b, convert(Vector{In
 reducedspinstate(b::ReducedSpinBasis, n::Int) = reducedspinstate(b, [n])
 
 """
-    sigmap_sigmam(b::ReducedSpinBasis, i, j)
+    reducedsigmapsigmam(b::ReducedSpinBasis, i, j)
 
-Create the product operator product σᵢ⁺σⱼ⁻ directly on a [`ReducedSpinBasis`](@ref).
+Create the operator product σᵢ⁺σⱼ⁻ directly on a [`ReducedSpinBasis`](@ref).
 Useful especially for a basis where only one excitation is included, since then the
 single operators are zero (do not conserve excitation number), but the product is not.
 """
-function sigmap_sigmam(b::ReducedSpinBasis, i, j)
+function reducedsigmapsigmam(b::ReducedSpinBasis, i, j)
     op = SparseOperator(b)
     for idx1 in b.indexMapper
         if j in idx1[1]
@@ -260,7 +269,7 @@ function Hamiltonian(S::SpinCollection, M::Int=1)
     H = SparseOperator(b)
     for i=1:N, j=1:N
         if i != j
-            H += OmegaM[i, j]*sigmap_sigmam(b,i,j)
+            H += OmegaM[i, j]*reducedsigmapsigmam(b,i,j)
         end
     end
 

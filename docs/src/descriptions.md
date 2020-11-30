@@ -25,7 +25,7 @@ All variants provide a unified interface wherever possible:
 
 The following example should give a first idea how these implementations are used:
 
-```julia
+```@example descriptions
 using QuantumOptics, CollectiveSpins
 const cs = CollectiveSpins
 
@@ -37,16 +37,16 @@ const T = [0:0.05:5;]
 const N = 5
 const Ncenter = 3
 
-const system = SpinCollection(cs.geometry.chain(a, N), e_dipole; gamma=γ)
+const system = SpinCollection(cs.geometry.chain(a, N), e_dipole, γ)
 
 
 # Define Spin 1/2 operators
 spinbasis = SpinBasis(1//2)
-sigmax = spin.sigmax(spinbasis)
-sigmay = spin.sigmay(spinbasis)
-sigmaz = spin.sigmaz(spinbasis)
-sigmap = spin.sigmap(spinbasis)
-sigmam = spin.sigmam(spinbasis)
+sx = sigmax(spinbasis)
+sy = sigmay(spinbasis)
+sz = sigmaz(spinbasis)
+sp = sigmap(spinbasis)
+sm = sigmam(spinbasis)
 I_spin = identityoperator(spinbasis)
 
 # Initial state (Bloch state)
@@ -78,17 +78,18 @@ td_mpc = Float64[]
 
 embed(op::Operator) = QuantumOptics.embed(cs.quantum.basis(system), Ncenter, op)
 
-function fout(t, rho::Operator)
-    i = findfirst(T, t)
+function fout(t, rho)
+    i = findfirst(isequal(t), T)
     rho_ind = cs.independent.densityoperator(state_ind_t[i])
     rho_mf  = cs.meanfield.densityoperator(state_mf_t[i])
     rho_mpc = cs.mpc.densityoperator(state_mpc_t[i])
     push!(td_ind, tracedistance(rho, rho_ind))
     push!(td_mf,  tracedistance(rho, rho_mf))
     push!(td_mpc, tracedistance(rho, rho_mpc))
-    push!(sx_master, real(expect(embed(sigmax), rho)))
-    push!(sy_master, real(expect(embed(sigmay), rho)))
-    push!(sz_master, real(expect(embed(sigmaz), rho)))
+    push!(sx_master, real(expect(embed(sx), rho)))
+    push!(sy_master, real(expect(embed(sy), rho)))
+    push!(sz_master, real(expect(embed(sz), rho)))
+    return nothing
 end
 
 Ψ₀ = cs.quantum.blochstate(phi,theta,N)
@@ -109,6 +110,7 @@ sz_mf = mapexpect(cs.meanfield.sz, state_mf_t)
 sx_mpc = mapexpect(cs.mpc.sx, state_mpc_t)
 sy_mpc = mapexpect(cs.mpc.sy, state_mpc_t)
 sz_mpc = mapexpect(cs.mpc.sz, state_mpc_t)
+nothing # hide
 ```
 
 

@@ -13,7 +13,7 @@ The chain starts at the origin and continues into positive x-direction.
 * `a`: Spin-spin distance.
 * `N`: Number of spins
 """
-chain(a::Real, N::Int) = [i*Float64[a, 0, 0] for i=0:N-1]
+chain(a::T, N::Int) where T<:Real = [[i*a, zero(T), zero(T)] for i=0:N-1]
 
 """
     geometry.triangle(a)
@@ -22,7 +22,7 @@ Positions of spins on a equilateral triangle in the xy-plane with edge length `a
 
 The positions are: (0,0,0), (a,0,0), (a/2, h, 0)
 """
-triangle(a::Real) = Vector{Float64}[[0, 0, 0], [a, 0, 0], [a/2, a*sqrt(3)/2, 0]]
+triangle(a::T) where T<:Real = Vector{float(T)}[[0, 0, 0], [a, 0, 0], [a/2, a*sqrt(3)/2, 0]]
 
 """
     geometry.rectangle(a, b; Nx=2, Ny=2)
@@ -37,7 +37,7 @@ The lattice starts at the origin and continues into positive x and y direction.
 * `Nx=2`: Number of spins into x direction.
 * `Ny=2`: Number of spins into y direction.
 """
-rectangle(a::Real, b::Real; Nx::Int=2, Ny::Int=2) = vec([i*Float64[a,0.,0.]+j*Float64[0.,b,0.] for i=0:Nx-1, j=0:Ny-1])
+rectangle(a::S, b::T; Nx::Int=2, Ny::Int=2) where {S<:Real,T<:Real} = vec([[i*a,zero(S),zero(S)]+[zero(T),j*b,zero(T)] for i=0:Nx-1, j=0:Ny-1])
 
 """
     geometry.square(a; Nx=2, Ny=2)
@@ -55,8 +55,8 @@ Positions of spins on a hexagonal lattice in the xy-plane.
 
 The hexagonal lattice consists of `Nr` rings.
 """
-function hexagonal(a::Real; Nr::Int=1)
-    positions = Vector{Float64}[]
+function hexagonal(a::T; Nr::Int=1) where T<:Real
+    positions = Vector{float(T)}[]
     ax = sqrt(3.0/4)*a
     for ix=-Nr:Nr
         if isodd(ix)
@@ -82,7 +82,7 @@ Positions of spins on a orthorhombic lattice.
 The lattice starts at the origin and continues into
 positive x, y and z direction.
 """
-box(a::Real, b::Real, c::Real; Nx::Int=2, Ny::Int=2, Nz::Int=2) = vec([i*Float64[a,0.,0.] + j*Float64[0.,b,0.] + k*Float64[0.,0.,c] for i=0:Nx-1, j=0:Ny-1, k=0:Nz-1])
+box(a::S, b::T, c::U; Nx::Int=2, Ny::Int=2, Nz::Int=2) where {S<:Real,T<:Real,U<:Real}= vec([[i*a,zero(S),zero(S)] + [zero(T),j*b,zero(T)] + [zero(U),zero(U),k*c] for i=0:Nx-1, j=0:Ny-1, k=0:Nz-1])
 
 """
     geometry.cube(a; Nx=2, Ny=2, Nz=2)

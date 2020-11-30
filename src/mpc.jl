@@ -1,7 +1,7 @@
 module mpc
 
 using QuantumOpticsBase, LinearAlgebra
-using ..interaction, ..system, ..quantum
+using ..interaction, ..CollectiveSpins, ..quantum
 
 import ..integrate
 
@@ -55,7 +55,7 @@ end
 
 MPC state with all Pauli expectation values and correlations equal to zero.
 """
-MPCState(N::Int) = MPCState(N, zeros(Float64, (3*N)*(2*N+1)))
+MPCState(N::T) where T<:Int = MPCState(N, zeros(float(T), (3*N)*(2*N+1)))
 
 """
     mpc.MPCState(data)
@@ -176,13 +176,13 @@ Returns sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz.
 """
 function splitstate(N::Int, data::Vector{<:Real})
     data = reshape(data, 3*N, 2*N+1)
-    sx = view(data, 0*N+1:1*N, 2*N+1)
+    sx = view(data, 1:1*N, 2*N+1)
     sy = view(data, 1*N+1:2*N, 2*N+1)
     sz = view(data, 2*N+1:3*N, 2*N+1)
-    Cxx = view(data, 0*N+1:1*N, 0*N+1:1*N)
-    Cyy = view(data, 1*N+1:2*N, 0*N+1:1*N)
-    Czz = view(data, 2*N+1:3*N, 0*N+1:1*N)
-    Cxy = view(data, 0*N+1:1*N, 1*N+1:2*N)
+    Cxx = view(data, 1:1*N, 1:1*N)
+    Cyy = view(data, 1*N+1:2*N, 1:1*N)
+    Czz = view(data, 2*N+1:3*N, 1:1*N)
+    Cxy = view(data, 1:1*N, 1*N+1:2*N)
     Cxz = view(data, 1*N+1:2*N, 1*N+1:2*N)
     Cyz = view(data, 2*N+1:3*N, 1*N+1:2*N)
     return sx, sy, sz, Cxx, Cyy, Czz, Cxy, Cxz, Cyz
@@ -356,7 +356,7 @@ MPC time evolution.
 * `fout` (optional): Function with signature fout(t, state) that is called
     whenever output should be generated.
 """
-function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothing, kwargs...)
+function timeevolution(T, S::SpinCollection, state0::MPCState; fout=nothing, kwargs...)
     N = length(S.spins)
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
@@ -425,9 +425,9 @@ function timeevolution(T, S::system.SpinCollection, state0::MPCState; fout=nothi
     end
 
     if isa(fout, Nothing)
-      fout_(t, state::MPCState) = deepcopy(state)
+        fout_ = (t, state) -> deepcopy(state)
     else
-    fout_ = fout
+        fout_ = fout
     end
 
     return integrate(T, f, state0, fout_; kwargs...)
@@ -438,7 +438,7 @@ function axisangle2rotmatrix(axis::Vector{T}, angle::Real) where T<:Real
     c = cos(angle)
     s = sin(angle)
     t = 1-c
-    R = zeros(Float64, 3, 3)
+    R = zeros(T, 3, 3)
     R[1,1] = t*x^2 + c
     R[1,2] = t*x*y - z*s
     R[1,3] = t*x*z + y*s
@@ -632,7 +632,7 @@ function squeeze(axis::Vector{T}, χT::Real, state0::MPCState) where T<:Real
     @assert length(axis)==3
     axis = axis/norm(axis)
     # Rotation into sigma_x
-    w = Float64[0., axis[3], -axis[2]]
+    w = float(T)[0., axis[3], -axis[2]]
     if norm(w)<1e-5
         state_squeezed = squeeze_sx(χT, state0)
     else

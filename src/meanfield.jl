@@ -5,7 +5,7 @@ export ProductState, densityoperator
 import ..integrate
 
 using QuantumOpticsBase, LinearAlgebra
-using ..interaction, ..system
+using ..interaction, ..CollectiveSpins
 
 # Define Spin 1/2 operators
 const spinbasis = SpinBasis(1//2)
@@ -35,7 +35,7 @@ end
 
 Meanfield state with all Pauli expectation values equal to zero.
 """
-ProductState(N::Int) = ProductState(N, zeros(Float64, 3*N))
+ProductState(N::T) where T<:Int = ProductState(N, zeros(float(T), 3*N))
 
 """
     meanfield.ProductState(data)
@@ -111,7 +111,7 @@ end
 
 Split state into sx, sy and sz parts.
 """
-splitstate(N::Int, data::Vector{<:Real}) = view(data, 0*N+1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
+splitstate(N::Int, data::Vector{<:Real}) = view(data, 1:1*N), view(data, 1*N+1:2*N), view(data, 2*N+1:3*N)
 splitstate(state::ProductState) = splitstate(state.N, state.data)
 
 
@@ -167,7 +167,7 @@ Meanfield time evolution.
 * `fout` (optional): Function with signature `fout(t, state)` that is called whenever output
     should be generated.
 """
-function timeevolution(T, S::system.SpinCollection, state0::ProductState; fout=nothing, kwargs...)
+function timeevolution(T, S::SpinCollection, state0::ProductState; fout=nothing, kwargs...)
     N = length(S.spins)
     @assert N==state0.N
     Ω = interaction.OmegaMatrix(S)
@@ -227,7 +227,7 @@ function timeevolution_symmetric(T, state0::ProductState, Ωeff::Real, Γeff::Re
     end
 
     if isa(fout, Nothing)
-        fout_(t, state::ProductState) = deepcopy(state)
+        fout_ = (t, state) -> deepcopy(state)
     else
         fout_ = fout
     end
@@ -254,7 +254,7 @@ function rotate(axis::Vector{T1}, angles::Vector{T2}, state::ProductState) where
     sx, sy, sz = splitstate(state)
     state_rot = ProductState(state.N)
     sx_rot, sy_rot, sz_rot = splitstate(state_rot)
-    v = zeros(Float64, 3)
+    v = zeros(T1, 3)
     for i=1:state.N
         v[1], v[2], v[3] = sx[i], sy[i], sz[i]
         θ = angles[i]
@@ -263,8 +263,6 @@ function rotate(axis::Vector{T1}, angles::Vector{T2}, state::ProductState) where
     return state_rot
 end
 
-rotate(axis::Vector{T}, angle::Real, state::ProductState) where {T<:Real} = rotate(axis, ones(Float64, state.N)*angle, state)
-
-Base.@pure pure_inference(fout,T) = Core.Compiler.return_type(fout, T)
+rotate(axis::Vector{T}, angle::Real, state::ProductState) where {T<:Real} = rotate(axis, ones(T, state.N)*angle, state)
 
 end # module

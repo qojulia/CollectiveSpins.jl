@@ -1,14 +1,14 @@
 module effective_interaction_simple
 
-using ..system, ..interaction
+using ..CollectiveSpins
 
-const origin = zeros(Float64, 3)
-const e_z = Float64[0.,0.,1.]
-const gamma = 1.
+const e_z = [0,0,1]
+const gamma = 1
 
-function effective_interactions(S::SpinCollection)
-    omega_eff::Float64 = 0.
-    gamma_eff::Float64 = 0.
+function effective_interactions(S::SpinCollection{T,P,G}) where {T,P,G}
+    omega_eff::float(G) = 0.
+    gamma_eff::float(G) = 0.
+    origin = zeros(3)
     for spin = S.spins
         omega_eff += interaction.Omega(origin, spin.position, S.polarizations[1], S.polarizations[1], gamma, gamma)
         gamma_eff += interaction.Gamma(origin, spin.position, S.polarizations[1], S.polarizations[1], gamma, gamma)
@@ -19,40 +19,40 @@ end
 
 # Finite symmetric systems
 
-function triangle_orthogonal(a::Float64)
-    positions = Vector{Float64}[[a,0,0], [a/2, sqrt(3. /4)*a,0]]
+function triangle_orthogonal(a::T) where T<:Real
+    positions = Vector{float(T)}[[a,0,0], [a/2, sqrt(3. /4)*a,0]]
     S = SpinCollection(positions, e_z; gammas=gamma)
     return effective_interactions(S)
 end
 
-function square_orthogonal(a::Float64)
-    positions = Vector{Float64}[[a,0,0], [0,a,0], [a,a,0]]
+function square_orthogonal(a::T) where T<:Real
+    positions = Vector{float(T)}[[a,0,0], [0,a,0], [a,a,0]]
     S = SpinCollection(positions, e_z; gammas=gamma)
     return effective_interactions(S)
 end
 
-function polygon_orthogonal(N::Int, a::Float64)
+function polygon_orthogonal(N::Int, a::T) where T<:Real
     @assert N>2
     dα = 2*pi/N
     R = a/(2*sin(dα/2))
-    positions = Vector{Float64}[]
+    positions = Vector{float(T)}[]
     for i=1:(N-1)
         x = R*cos(i*dα)
         y = R*sin(i*dα)
-        push!(positions, Float64[x-R,y,0])
+        push!(positions, float(T)[x-R,y,0])
     end
     S = SpinCollection(positions, e_z; gammas=gamma)
     return effective_interactions(S)
 end
 
-function rectangle_orthogonal(a::Float64, b::Float64)
-    positions = Vector{Float64}[[a,0,0], [0,b,0], [a,b,0]]
+function rectangle_orthogonal(a::U, b::T) where {U<:Real,T<:Real}
+    positions = Vector{float(T)}[[a,0,0], [0,b,0], [a,b,0]]
     S = SpinCollection(positions, e_z; gammas=gamma)
     return effective_interactions(S)
 end
 
-function cube_orthogonal(a::Float64)
-    positions = Vector{Float64}[]
+function cube_orthogonal(a::T) where T<:Real
+    positions = Vector{float(T)}[]
     for ix=0:1, iy=0:1, iz=0:1
         if ix==0 && iy==0 && iz==0
             continue
@@ -63,8 +63,8 @@ function cube_orthogonal(a::Float64)
     return effective_interactions(S)
 end
 
-function box_orthogonal(a::Float64, b::Float64, c::Float64)
-   positions = Vector{Float64}[]
+function box_orthogonal(a::T, b::U, c::V) where {T<:Real,U<:Real,V<:Real}
+   positions = Vector{float(T)}[]
     for ix=0:1, iy=0:1, iz=0:1
         if ix==0 && iy==0 && iz==0
             continue
@@ -78,8 +78,8 @@ end
 
 # Infinite 1D symmetric systems
 
-function chain(a::Float64, Θ, N::Int)
-    positions = Vector{Float64}[]
+function chain(a::T, Θ, N::Int) where T<:Real
+    positions = Vector{float(T)}[]
     for ix=-N:N
         if ix==0
             continue
@@ -90,8 +90,8 @@ function chain(a::Float64, Θ, N::Int)
     return effective_interactions(S)
 end
 
-function chain_orthogonal(a::Float64, N::Int)
-    positions = Vector{Float64}[]
+function chain_orthogonal(a::T, N::Int) where T<:Real
+    positions = Vector{float(T)}[]
     for ix=-N:N
         if ix==0
             continue
@@ -105,8 +105,8 @@ end
 
 # Infinite 2D symmetric systems
 
-function squarelattice_orthogonal(a::Float64, N::Int)
-    positions = Vector{Float64}[]
+function squarelattice_orthogonal(a::T, N::Int) where {T<:Real}
+    positions = Vector{float(T)}[]
     for ix=-N:N, iy=-N:N
         if ix==0 && iy==0
             continue
@@ -117,8 +117,8 @@ function squarelattice_orthogonal(a::Float64, N::Int)
     return effective_interactions(S)
 end
 
-function hexagonallattice_orthogonal(a::Float64, N::Int)
-    positions = Vector{Float64}[]
+function hexagonallattice_orthogonal(a::T, N::Int) where {T<:Real}
+    positions = Vector{float(T)}[]
     ax = sqrt(3.0/4)*a
     for iy=1:N
         push!(positions, [0, iy*a, 0])
@@ -146,8 +146,8 @@ end
 
 # Infinite 3D symmetric systems
 
-function cubiclattice_orthogonal(a::Float64, N::Int)
-    positions = Vector{Float64}[]
+function cubiclattice_orthogonal(a::T, N::Int) where {T<:Real}
+    positions = Vector{float(T)}[]
     for ix=-N:N, iy=-N:N, iz=-N:N
         if ix==0 && iy==0 && iz==0
             continue
@@ -158,8 +158,8 @@ function cubiclattice_orthogonal(a::Float64, N::Int)
     return effective_interactions(S)
 end
 
-function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
-    positions = Vector{Float64}[]
+function tetragonallattice_orthogonal(a::T, b::U, N::Int) where {T<:Real,U<:Real}
+    positions = Vector{float(T)}[]
     for ix=-N:N, iy=-N:N, iz=-N:N
         if ix==0 && iy==0 && iz==0
             continue
@@ -170,8 +170,8 @@ function tetragonallattice_orthogonal(a::Float64, b::Float64, N::Int)
     return effective_interactions(S)
 end
 
-function hexagonallattice3d_orthogonal(a::Float64, b::Float64, N::Int)
-    positions = Vector{Float64}[]
+function hexagonallattice3d_orthogonal(a::T, b::U, N::Int) where {T<:Real,U<:Real}
+    positions = Vector{float(T)}[]
     ax = sqrt(3.0/4)*a
     for iz=-N:N
         for iy=1:N
