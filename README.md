@@ -7,17 +7,15 @@
 
   * Current build: [![Travis build status][travis-img]][travis-url]
   * Documentation: [![Latest documentation][docs-img]][docs-url]
-  * Test coverage:
-        [![Test coverage status on coveralls][coveralls-img]][coveralls-url]
-        [![Test coverage status on codecov][codecov-img]][codecov-url]
+  * Test coverage: [![Test coverage status on codecov][codecov-img]][codecov-url]
 
 
 ## Installation
 
-**CollectiveSpins.jl** is not an officially registered package but it nevertheless can be installed using julia's package manager:
+**CollectiveSpins.jl** can be installed using Julia's package manager:
 
 ```julia
-|pkg> add https://github.com/qojulia/CollectiveSpins.jl.git
+|pkg> add CollectiveSpins
 ```
 
 ## Documentation and Examples
