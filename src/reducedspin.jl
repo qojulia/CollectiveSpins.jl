@@ -302,7 +302,7 @@ function timeevolution(T, S::SpinCollection, psi0::Union{Ket{B}, DenseOpType{B, 
 end
 
 """
-    Hamiltonian_nh(S::SpinCollection)
+    Hamiltonian_nh(S::SpinCollection,  M::Int=1)
 
 Non-Hermitian Hamiltonian
 
