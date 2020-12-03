@@ -335,7 +335,7 @@ end
     Time evolution of the non-Hermitian Hamiltonian in the single excitation manifold (M=1) via the Schrödinger equation.
 """
 function schroedinger_nh(T, S::SpinCollection, psi0::Ket{B}; kwargs...) where B <: ReducedSpinBasis
-    @assert psi0.basis.M==psi0.basis.MS==1
+    @assert psi0.basis.M == 1
     H = Hamiltonian_nh(S,1)
 
     return QuantumOptics.timeevolution.schroedinger(T, psi0, H; kwargs...)
