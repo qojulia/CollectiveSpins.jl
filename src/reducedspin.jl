@@ -304,7 +304,7 @@ end
 """
     Hamiltonian_nh(S::SpinCollection)
 
-Non-Hermitian Hamiltonian (only usefull for a single excitation N=1)
+Non-Hermitian Hamiltonian
 
 # Argument
 * S: SpinCollection
@@ -322,23 +322,19 @@ function Hamiltonian_nh(S::SpinCollection)
         end
     end
     for i=1:N, j=1:N
-        if i != j
             H += (OmegaM[i, j] - 0.5im*GammaM[i, j])*sigmap_sigmam(b,i,j)
-        else
-            H += -0.5im*GammaM[i, i]*sigmap_sigmam(b,i,i)
-        end
     end
 
     return H
 end
 
 """
-    timeevolution_nh(T, S::SpinCollection, psi0; kwargs...)
+    schroedinger_nh(T, S::SpinCollection, psi0; kwargs...)
 
-    Time evolution calculated via evolving the Schrödinger equation with the non-Hermitian Hamiltonian
+    Time evolution calculated via evolving the Schrödinger equation with the non-Hermitian Hamiltonian.
+    (This is only usefull for a single excitation N=1.)
 """
-function timeevolution_nh(T, S::SpinCollection, psi0::Ket{B}; kwargs...) where B <: ReducedSpinBasis
-    M = isa(psi0, Ket) ? psi0.basis.M : psi0.basis_l.M
+function schroedinger_nh(T, S::SpinCollection, psi0::Ket{B}; kwargs...) where B <: ReducedSpinBasis
     H = Hamiltonian_nh(S)
 
     return QuantumOptics.timeevolution.schroedinger(T, psi0, H; kwargs...)
