@@ -310,7 +310,7 @@ Non-Hermitian Hamiltonian
 * S: SpinCollection
 * M: Number of excitations.
 """
-function Hamiltonian_nh(S::SpinCollection, M::Int=1, MS::Int=0)
+function Hamiltonian_nh(S::SpinCollection, M::Int=1, MS::Int=1)
     N = length(S.spins)
     b = ReducedSpinBasis(N, M, MS)
     OmegaM = interaction.OmegaMatrix(S)
@@ -336,7 +336,7 @@ end
 """
 function schroedinger_nh(T, S::SpinCollection, psi0::Ket{B}; kwargs...) where B <: ReducedSpinBasis
     @assert psi0.basis.M == psi0.basis.MS == 1
-    H = Hamiltonian_nh(S, psi0.basis.M, psi0.basis.MS)
+    H = Hamiltonian_nh(S, 1, 1)
 
     return QuantumOptics.timeevolution.schroedinger(T, psi0, H; kwargs...)
 end
