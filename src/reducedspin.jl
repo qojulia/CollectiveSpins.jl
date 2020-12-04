@@ -310,9 +310,9 @@ Non-Hermitian Hamiltonian
 * S: SpinCollection
 * M: Number of excitations.
 """
-function Hamiltonian_nh(S::SpinCollection, M::Int=1)
+function Hamiltonian_nh(S::SpinCollection, M::Int=1, MS::Int=0)
     N = length(S.spins)
-    b = ReducedSpinBasis(N, M)
+    b = ReducedSpinBasis(N, M, MS)
     OmegaM = interaction.OmegaMatrix(S)
     GammaM = interaction.GammaMatrix(S)
 
@@ -335,8 +335,8 @@ end
     Time evolution of the non-Hermitian Hamiltonian in the single excitation manifold (M=1) via the Schrödinger equation.
 """
 function schroedinger_nh(T, S::SpinCollection, psi0::Ket{B}; kwargs...) where B <: ReducedSpinBasis
-    @assert psi0.basis.M == 1
-    H = Hamiltonian_nh(S,1)
+    @assert psi0.basis.M == psi0.basis.MS == 1
+    H = Hamiltonian_nh(S, psi0.basis.M, psi0.basis.MS)
 
     return QuantumOptics.timeevolution.schroedinger(T, psi0, H; kwargs...)
 end
