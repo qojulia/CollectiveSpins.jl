@@ -332,7 +332,7 @@ function Hamiltonian_nh(S::SpinCollection, M::Int=1, MS::Int=1)
         end
     end
     for i=1:N, j=1:N
-            H += (OmegaM[i, j] - 0.5im*GammaM[i, j])*sigmap_sigmam(b,i,j)
+            H += (OmegaM[i, j] - 0.5im*GammaM[i, j])*reducedsigmapsigmam(b,i,j)
     end
 
     return H
