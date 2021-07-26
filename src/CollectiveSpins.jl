@@ -2,7 +2,7 @@ module CollectiveSpins
 
 export System, Spin, SpinCollection, CavityMode, CavitySpinCollection,
         geometry,
-        interaction, GreenTensor, OmegaMatrix, GammaMatrix,
+        interaction, field, GreenTensor, OmegaMatrix, GammaMatrix,
         reducedspin, ReducedSpinBasis, reducedspintransition, reducedspinstate,
                 reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay,
                 reducedsigmaz, reducedsigmapsigmam,

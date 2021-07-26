@@ -1,6 +1,6 @@
 module geometry
 
-export chain, triangle, rectangle, square, hexagonal, box, cube
+export chain, triangle, rectangle, square, hexagonal, box, cube, ring, excitation_phases, lhc1, lhc1_p
 
 """
     geometry.chain(a, N)
