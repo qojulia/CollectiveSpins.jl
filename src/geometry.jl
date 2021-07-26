@@ -106,4 +106,72 @@ function ring(a::Real, N::Int; distance = false)
     return [[x*cos(2*pi*j/N), x*sin(2*pi*j/N), 0] for j=0:(N-1)]
 end
 
+"""
+
+    geometry.ring_rd(a, N)
+    
+    Calculate the radius of a ring when the distance between particles is a.
+    
+"""
+ring_rd(a::Real, N::Int) = 0.5*a/sin(pi/N)
+
+"""
+    geometry.ring_p_tangential(N)
+    
+    Return tangential polarization vectors for a ring of N atoms in the xy-plane created by ring(a, N).
+    
+    Arguments:
+    * `N`: Number of emitters.
+"""
+ring_p_tangential(N::Int) = [[-sin(2*pi*j/N), cos(2*pi*j/N), 0.] for j=0:(N-1)]
+
+"""
+    geometry.excitation_phases(k, pos)
+    
+    Calculate the excitation phases created in a geometry by an incident plane wave with wave vector k.
+    
+    Arguments:
+    * `k`: Wave vector of the incident plane wave.
+    * `pos`: List of atomic positions.
+"""
+function excitation_phases(k::Vector, pos::Vector)
+    @assert length(k) == 3
+    
+    PHI = Float64[]
+    
+    for p=pos
+        @assert length(p) == 3
+        phi = (dot(normalize!(k), p) * 2*pi) % (2*pi)
+        push!(PHI, phi)
+    end
+    
+    return PHI
+end
+
+"""
+
+    geometry.lhc1()
+    
+    Geometry of the LHC-I light harvesting complex in the xy-plane centered around `z=0` with a mean interatomic distance of `1.0`. Positions `1` to `32` constitute the outer ring, while the inner ring comprises positions `33` to `38`.
+"""
+function lhc1()
+    R = [[4.84223, -1.36377, 0.0],[5.10879, -0.398266, 0.0214459],[4.99561, 0.593013, 0.0],[4.87235, 1.58711, 0.0214459],[4.3883, 2.45968, 0.0],[3.89406, 3.33084, 0.0214459],[3.11302, 3.95179, 0.0],[2.32309, 4.56744, 0.0214459],[1.36377, 4.84223, 0.0],[0.398266, 5.10879, 0.0214459],[-0.593013, 4.99561, 0.0],[-1.58711, 4.87235, 0.0214459],[-2.45968, 4.3883, 0.0],[-3.33084, 3.89406, 0.0214459],[-3.95179, 3.11302, 0.0],[-4.56744, 2.32309, 0.0214459],[-4.84223, 1.36377, 0.0],[-5.10879, 0.398266, 0.0214459],[-4.99561, -0.593013, 0.0],[-4.87235, -1.58711, 0.0214459],[-4.3883, -2.45968, 0.0],[-3.89406, -3.33084, 0.0214459],[-3.11302, -3.95179, 0.0],[-2.32309, -4.56744, 0.0214459],[-1.36377, -4.84223, 0.0],[-0.398266, -5.10879, 0.0214459],[0.593013, -4.99561, 0.0],[1.58711, -4.87235, 0.0214459],[2.45968, -4.3883, 0.0],[3.33084, -3.89406, 0.0214459],[3.95179, -3.11302, 0.0],[4.56744, -2.32309, 0.0214459],[0.359274, 0.249228, -0.403357],[-0.36848, -0.221933, -0.376279],[-0.308908, 1.14151, -0.119144],[0.364906, -1.07327, 0.0079068],[0.108506, 1.35747, 1.00961],[0.0429294, -1.1805, 1.16267]]
+    
+    return R
+end
+
+"""
+
+    geometry.lhc1_p()
+    
+    Normalized polarization vectors in an LHC-I light harvesting complex. Entries `1` to `32` pertain to the outer ring, while entries `33` to `38` give the inner ring's dipole orientations.
+    
+    Note: This function does not return a geometry, butrather te polarizations of dipoles in the LHC-I complex.
+
+"""
+function lhc1_p()
+    p = [[0.634, 0.76, 0.147],[0.452, 0.886, 0.098],[0.295, 0.944, 0.147],[0.079, 0.992, 0.098],[-0.089, 0.985, 0.147],[-0.307, 0.947, 0.098],[-0.459, 0.876, 0.147],[-0.646, 0.757, 0.098],[-0.76, 0.634, 0.147],[-0.886, 0.452, 0.098],[-0.944, 0.295, 0.147],[-0.992, 0.079, 0.098],[-0.985, -0.089, 0.147],[-0.947, -0.307, 0.098],[-0.876, -0.459, 0.147],[-0.757, -0.646, 0.098],[-0.634, -0.76, 0.147],[-0.452, -0.886, 0.098],[-0.295, -0.944, 0.147],[-0.079, -0.992, 0.098],[0.089, -0.985, 0.147],[0.307, -0.947, 0.098],[0.459, -0.876, 0.147],[0.646, -0.757, 0.098],[0.76, -0.634, 0.147],[0.886, -0.452, 0.098],[0.944, -0.295, 0.147],[0.992, -0.079, 0.098],[0.985, 0.089, 0.147],[0.947, 0.307, 0.098],[0.876, 0.459, 0.147],[0.757, 0.646, 0.098],[0.371, 0.871, -0.321],[-0.379, -0.86, -0.342],[-0.3, -0.87, -0.391],[0.208, 0.855, -0.476],[0.53, 0.019, 0.848],[-0.367, -0.053, 0.929]]
+    
+    return p
+end
 end # module
