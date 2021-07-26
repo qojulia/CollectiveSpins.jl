@@ -22,6 +22,7 @@ include("independent.jl")
 include("meanfield.jl")
 include("mpc.jl")
 include("collective_modes.jl")
+include("field.jl")
 
 using .quantum
 using .meanfield
@@ -29,5 +30,6 @@ using .mpc
 using .reducedspin
 using .interaction
 using .collective_modes
+using .field
 
 end # module
