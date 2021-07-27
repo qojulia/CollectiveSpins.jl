@@ -1,26 +1,7 @@
 module field
 
 using QuantumOpticsBase, LinearAlgebra
-using ..meanfield, ..mpc, ..quantum, ..reducedspin, ..CollectiveSpins
-
-"""
-    field.greenstensor(r)
-    
-    Calculate the (scaled) free-space Green's Tensor at a position in R3.
-    
-    Arguments:
-    * `r`: vector in R3
-"""
-function greenstensor(r::Vector)
-    @assert length(r)== 3 # 3D vectors
-    n = normalize(r)
-    x = 2*pi*norm(r) # Everything in units of lambda
-    
-    G = exp(1.0im*x)*((1.0/x + 1.0im/x^2 - 1.0/x^3)*Matrix(1.0I, 3, 3)
-            - kron(transpose(n), n)*(1.0/x + 3.0im/x^2 - 3.0/x^3))
-    
-    return G
-end
+using ..interaction, ..meanfield, ..mpc, ..quantum, ..reducedspin, ..CollectiveSpins
 
 """
     field.intensity(r, S, state)
@@ -41,7 +22,7 @@ function intensity(r::Vector{Float64}, S::SpinCollection, state::Union{Vector, P
     elseif isa(state, MPCState)
         @assert N == state.N
         SM = 0.5*(mpc.sx(state) - 1im*mpc.sy(state))
-        return norm(sum(greenstensor(r-S.spins[i].position)*S.polarizations[i]*SM[i] for i=1:N))^2
+        return norm(sum(GreenTensor(r-S.spins[i].position)*S.polarizations[i]*SM[i] for i=1:N))^2
     elseif (isa(state, StateVector) || isa(state, DenseOpType))
         # Check which Basis is used
         # ReducedSpinBasis and tensor(Spin(1/2), N) are handeled automatically
@@ -72,7 +53,7 @@ function intensity(r::Vector{Float64}, S::SpinCollection, state::Union{Vector, P
             end
         end
             
-        e(r, i) = greenstensor(r - S.spins[i].position) * S.polarizations[i]
+        e(r, i) = GreenTensor(r - S.spins[i].position) * S.polarizations[i]
                    
         if reduced
             b = isa(state, StateVector) ? state.basis : state.basis_l
@@ -103,7 +84,7 @@ function intensity(r::Vector{Float64}, S::SpinCollection, state::Union{StateVect
     N = length(S.spins)
     @assert length(r) == 3
 
-    e(r, i) = greenstensor(r - S.spins[i].position) * S.polarizations[i]
+    e(r, i) = GreenTensor(r - S.spins[i].position) * S.polarizations[i]
     intensity = sum(dot(e(r, i), e(r, j))*dagger(sm(i))*sm(j) for i=1:N, j=1:N)
      return expect(intensity, state)
 end
