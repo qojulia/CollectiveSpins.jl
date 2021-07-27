@@ -134,14 +134,15 @@ ring_p_tangential(N::Int) = [[-sin(2*pi*j/N), cos(2*pi*j/N), 0.] for j=0:(N-1)]
     * `k`: Wave vector of the incident plane wave.
     * `pos`: List of atomic positions.
 """
-function excitation_phases(k::Vector, pos::Vector)
+function excitation_phases(k::Vector{T}, pos::Vector) where T
     @assert length(k) == 3
-    
-    PHI = Float64[]
+    k_ = normalize(k)
+
+    PHI = T[]
     
     for p=pos
         @assert length(p) == 3
-        phi = (dot(normalize!(k), p) * 2*pi) % (2*pi)
+        phi = (dot(k_, p) * 2*pi) % (2*pi)
         push!(PHI, phi)
     end
     
