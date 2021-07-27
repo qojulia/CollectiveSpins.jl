@@ -2,7 +2,7 @@ module CollectiveSpins
 
 export System, Spin, SpinCollection, CavityMode, CavitySpinCollection,
         geometry,
-        interaction, GreenTensor, OmegaMatrix, GammaMatrix,
+        interaction, field, GreenTensor, OmegaMatrix, GammaMatrix,
         reducedspin, ReducedSpinBasis, reducedspintransition, reducedspinstate,
                 reducedsigmap, reducedsigmam, reducedsigmax, reducedsigmay,
                 reducedsigmaz, reducedsigmapsigmam,
@@ -22,6 +22,7 @@ include("independent.jl")
 include("meanfield.jl")
 include("mpc.jl")
 include("collective_modes.jl")
+include("field.jl")
 
 using .quantum
 using .meanfield
@@ -29,5 +30,6 @@ using .mpc
 using .reducedspin
 using .interaction
 using .collective_modes
+using .field
 
 end # module
