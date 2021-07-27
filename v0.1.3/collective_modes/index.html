@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Collective Modes · CollectiveSpins.jl</title><link rel="canonical" href="https://github.io/qojulia/CollectiveSpins.jl/collective_modes/"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.png" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">CollectiveSpins.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../installation/">Installation</a></li><li><a class="tocitem" href="../geometry/">Geometry</a></li><li><a class="tocitem" href="../interaction/">Dipole-Dipole interaction</a></li><li><a class="tocitem" href="../effective_interaction/">Effective Interactions</a></li><li><a class="tocitem" href="../system/">System</a></li><li class="is-active"><a class="tocitem" href>Collective Modes</a><ul class="internal"><li><a class="tocitem" href="#One-dimensional-case"><span>One-dimensional case</span></a></li><li><a class="tocitem" href="#Two-dimensional-case"><span>Two-dimensional case</span></a></li></ul></li><li><a class="tocitem" href="../reducedspin/">Reduced Spin</a></li><li><a class="tocitem" href="../descriptions/">Theoretical Descriptions</a></li><li><a class="tocitem" href="../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Collective Modes</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Collective Modes</a></li></ul></nav><div class="docs-right"><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Collective-Modes"><a class="docs-heading-anchor" href="#Collective-Modes">Collective Modes</a><a id="Collective-Modes-1"></a><a class="docs-heading-anchor-permalink" href="#Collective-Modes" title="Permalink"></a></h1><p>A module that calculates the band structure and decay rates of different collective modes of quasimomentum k with functions:</p><ul><li><a href="../api/#CollectiveSpins.collective_modes.Omega_k_chain"><code>Omega_k_chain</code></a></li><li><a href="../api/#CollectiveSpins.collective_modes.Gamma_k_chain"><code>Gamma_k_chain</code></a></li><li><a href="../api/#CollectiveSpins.collective_modes.Omega_k_2D"><code>Omega_k_2D</code></a></li><li><a href="../api/#CollectiveSpins.collective_modes.Gamma_k_2D"><code>Gamma_k_2D</code></a></li></ul><p>It is probably best to illustrate the functionality using some examples.</p><h2 id="One-dimensional-case"><a class="docs-heading-anchor" href="#One-dimensional-case">One-dimensional case</a><a id="One-dimensional-case-1"></a><a class="docs-heading-anchor-permalink" href="#One-dimensional-case" title="Permalink"></a></h2><p>The following code reproduces the band strucuture and decay plots from A. Asenjo-Garcia <em>et al</em>, <a href="https://doi.org/10.1103/PhysRevX.7.031024">10.1103/PhysRevX.7.031024</a> (Figs. 1b and 1c).</p><pre><code class="language-julia">using CollectiveSpins
+
+# Define chain parameters
+a = 0.2   # spin-spin distance
+polarization_par = [1, 0, 0]
+polarization_perp = [0, 1, 1]
+
+k_max = 10000
+k_list = [iii*pi/(a*k_max) for iii=-k_max:k_max]
+
+band_structure_par = []
+band_structure_perp = []
+decay_par = []
+decay_perp = []
+for k in k_list
+    append!(band_structure_par, Omega_k_chain(k, a, polarization_par))
+    append!(band_structure_perp, Omega_k_chain(k, a, polarization_perp))
+    append!(decay_par, Gamma_k_chain(k, a, polarization_par))
+    append!(decay_perp, Gamma_k_chain(k, a, polarization_perp))
+end
+
+using PyPlot
+
+figure()
+subplot(211)
+plot(k_list*a/pi, band_structure_par)
+plot(k_list*a/pi, band_structure_perp, color=&quot;red&quot;)
+xlabel(&quot;k d/pi&quot;)
+ylabel(&quot;Omega(k)/gamma0&quot;)
+
+subplot(212)
+plot(k_list*a/pi, decay_par)
+plot(k_list*a/pi, decay_perp, color=&quot;red&quot;)
+xlabel(&quot;k d/pi&quot;)
+ylabel(&quot;Gamma(k)/gamma0&quot;)
+
+tight_layout()</code></pre><pre class="documenter-example-output">┌ Warning: No working GUI backend found for matplotlib
+└ @ PyPlot ~/.julia/packages/PyPlot/XHEG0/src/init.jl:165</pre><p><img src="../band_structure_decay_1D.svg" alt/></p><h2 id="Two-dimensional-case"><a class="docs-heading-anchor" href="#Two-dimensional-case">Two-dimensional case</a><a id="Two-dimensional-case-1"></a><a class="docs-heading-anchor-permalink" href="#Two-dimensional-case" title="Permalink"></a></h2><p>For the two-dimensional case, consider the following two examples. The first example reproduces the band structure for a 2D square lattice with in-plane circularly polarized and perpendicular (x-axis) polarized atoms, which can be found in E. Shahmoon <em>et al</em> <a href="https://doi.org/10.1103/PhysRevLett.118.113601">10.1103/PhysRevLett.118.113601</a> (Fig. 4a).</p><p>For a particularly elegant derivation of collective frequency shifts and decay rates in 2D atomic arrays, see the thesis of Dominik Wild, <a href="https://dash.harvard.edu/handle/1/37365537">&quot;Algorithms and Platforms for Quantum Science and Technology&quot;</a>.</p><pre><code class="language-julia">using CollectiveSpins
+using PyPlot
+
+polarization_par = [0, 1, im]
+polarization_perp = [1, 0, 0]
+a_vec1 = [0.2, 0]
+a_vec2 = [0, 0.2]
+k_max = 200
+
+k_listy = [iii*pi/(a_vec1[1]*k_max) for iii=k_max:-1:0]
+k_listz = copy(k_listy)
+k_listy = append!(k_listy, [iii*pi/(a_vec1[1]*k_max) for iii=0:k_max])
+k_listz = append!(k_listz, zeros(k_max+1))
+k_listy = append!(k_listy, ones(k_max+1)*pi/a_vec1[1])
+k_listz = append!(k_listz, [iii*pi/(a_vec1[1]*k_max) for iii=0:k_max])
+k_dim = length(k_listy)
+
+bandstructure_par = zeros(k_dim)
+bandstructure_perp = zeros(k_dim)
+for iii=1:k_dim
+    k = [k_listy[iii], k_listz[iii]]
+    bandstructure_par[iii] = Omega_k_2D(k, a_vec1, a_vec2, polarization_par)
+    bandstructure_perp[iii] = Omega_k_2D(k, a_vec1, a_vec2, polarization_perp)
+end
+
+positions = [0, k_max, 2*k_max, 3*k_max]
+labels = [&quot;M&quot;, &quot;Gamma&quot;, &quot;X&quot;, &quot;M&quot;]
+
+figure(figsize=(6,4))
+plot(collect(1:k_dim), bandstructure_par, &quot;k--&quot;)
+plot(collect(1:k_dim), bandstructure_perp, color=&quot;gold&quot;)
+xticks(positions, labels)
+ylim([-5.2, 5.2])
+
+tight_layout()</code></pre><p><img src="../band_structure_2D.svg" alt/></p><p>The next example shows how one can compute the decay rates for a 2 square lattices with atoms polarized in-plane (y-axis) and perpendicularly (x-axis). This can be found in A. Asenjo-Garcia <em>et al</em>, <a href="https://doi.org/10.1103/PhysRevX.7.031024">10.1103/PhysRevX.7.031024</a> (Figs. 2c and 2d).</p><pre><code class="language-julia">polarization_par = [0, 1, 0]
+polarization_perp = [1, 0, 0]
+a_vec1 = [0.2, 0]
+a_vec2 = [0, 0.2]
+k_max = 200
+
+k_list = [iii*pi/(a_vec1[1]*k_max) for iii=-k_max:k_max]
+k_dim = length(k_list)
+decay_par = zeros(k_dim, k_dim)
+decay_perp = zeros(k_dim, k_dim)
+y = 1
+for ky in k_list
+    z = 1
+    for kz in k_list
+        k = [ky, kz]
+        decay_par[z, y] = Gamma_k_2D(k, a_vec1, a_vec2, polarization_par)
+        decay_perp[z, y] = Gamma_k_2D(k, a_vec1, a_vec2, polarization_perp)
+        z += 1
+    end
+    global y += 1
+end
+
+
+positions = [0, k_max, 2*k_max]
+labels = [-1, 0, 1]
+
+figure(figsize=(10,4))
+subplot(121)
+imshow(decay_par, cmap=&quot;jet&quot;)
+colorbar()
+clim(0, 22)
+xlabel(&quot;k_y d/pi&quot;)
+ylabel(&quot;k_z d/pi&quot;)
+plt.xticks(positions, labels)
+plt.yticks(positions, labels)
+
+subplot(122)
+imshow(decay_perp, cmap=&quot;jet&quot;)
+colorbar()
+clim(0, 22)
+xlabel(&quot;k_y d/pi&quot;)
+ylabel(&quot;k_z d/pi&quot;)
+plt.xticks(positions, labels)
+plt.yticks(positions, labels)
+
+tight_layout()</code></pre><p><img src="../decay_2D.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../system/">« System</a><a class="docs-footer-nextpage" href="../reducedspin/">Reduced Spin »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 27 July 2021 13:53">Tuesday 27 July 2021</span>. Using Julia version 1.6.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
