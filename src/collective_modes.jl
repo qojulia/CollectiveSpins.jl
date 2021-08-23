@@ -228,8 +228,8 @@ function Green_Tensor_k_2D(k_vec::Array{<:Number, 1}, a_vec1::Array{<:Number, 1}
     V = abs(a_vec1[1]*a_vec2[2] - a_vec1[2]*a_vec2[1]) #BZ volume
 
     #reciprocal lattice vectors
-    b1 = 2π * Rot90*a_vec2 / dot(a_vec1, Rot90*a_vec2)
-    b2 = 2π * Rot90*a_vec1 / dot(a_vec2, Rot90*a_vec1)
+    b1 = 2π * Rot90*a_vec2 / la.dot(a_vec1, Rot90*a_vec2)
+    b2 = 2π * Rot90*a_vec1 / la.dot(a_vec2, Rot90*a_vec1)
 
     #cutoff parameters
     Lambda = 10/sqrt(V)
