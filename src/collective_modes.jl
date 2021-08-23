@@ -233,8 +233,8 @@ function Green_Tensor_k_2D(k_vec::Array{<:Number, 1}, a_vec1::Array{<:Number, 1}
 
     #cutoff parameters
     Lambda = 10/sqrt(V)
-    N1 = Int(ceil(5*Lambda/norm(b1))) #number of terms in momentum space sum
-    N2 = Int(ceil(5*Lambda/norm(b2))) #number of terms in momentum space sum
+    N1 = Int(ceil(5*Lambda/la.norm(b1))) #number of terms in momentum space sum
+    N2 = Int(ceil(5*Lambda/la.norm(b2))) #number of terms in momentum space sum
 
     G_tensor = zeros(ComplexF64,3,3)
 
@@ -247,15 +247,15 @@ function Green_Tensor_k_2D(k_vec::Array{<:Number, 1}, a_vec1::Array{<:Number, 1}
     for n1 = -N1:N1
         for n2 =-N2:N2
             k_eff = k_vec + n1*b1 + n2*b2
-            kz = sqrt(Complex(k0^2 - norm(k_eff)^2))
+            kz = sqrt(Complex(k0^2 - la.norm(k_eff)^2))
             if abs(kz) > 0
-                cutoff = 1im*exp(-(norm(k_eff)/Lambda)^2) / (2*kz)
+                cutoff = 1im*exp(-(la.norm(k_eff)/Lambda)^2) / (2*kz)
             else
                 cutoff = 0
             end
             G_sum_xx += (k0^2 - k_eff[1]^2)/k0^2 * cutoff
             G_sum_yy += (k0^2 - k_eff[2]^2)/k0^2 * cutoff
-            G_sum_zz += norm(k_eff)^2/k0^2 * cutoff
+            G_sum_zz += la.norm(k_eff)^2/k0^2 * cutoff
 
             G_sum_xy += -k_eff[1]*k_eff[2]/k0^2 * cutoff
             G_sum_yx += -k_eff[1]*k_eff[2]/k0^2 * cutoff
