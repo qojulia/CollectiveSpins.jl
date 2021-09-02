@@ -128,13 +128,13 @@ keyword arguments not specified.
 * `N2`: Number of terms in a_vec2 reciprocal lattice direction.
 """
 function renorm_consts(V, b1, b2, Lambda, N1, N2)
-    if Lambda == nothing
+    if Lambda === nothing
         Lambda = 10/sqrt(V)
     end
-    if N1 == nothing
+    if N1 === nothing
         N1 = Int(ceil(5*Lambda/la.norm(b1)))
     end
-    if N2 == nothing
+    if N2 === nothing
         N2 = Int(ceil(5*Lambda/la.norm(b2)))
     end
     return Lambda, N1, N2
@@ -279,7 +279,7 @@ function Green_Tensor_k_2D(k_vec::Array{<:Number, 1}, a_vec1::Array{<:Number, 1}
 
     G_tensor[1,2] = G_xy
     G_tensor[2,1] = G_yx
-
+ 
     return G_tensor
 end
 
