@@ -153,7 +153,7 @@ Returns a 3×3 complex Matrix.
 function GreenTensor(r::Vector{<:Number},k::Real=2π)
     n = norm(r)
     rn = r./n
-    return exp(im*k*n)*(
+    return exp(im*k*n)*0.5*(
         (1/(k*n) + im/(k*n)^2 - 1/(k*n)^3).*Matrix(I,3,3) +
         -(1/(k*n) + 3im/(k*n)^2 - 3/(k*n)^3).*(rn*rn')
     )
