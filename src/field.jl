@@ -53,7 +53,7 @@ function intensity(r::Vector{Float64}, S::SpinCollection, state::Union{Vector, P
             end
         end
             
-        e(r, i) = GreenTensor(r - S.spins[i].position) * S.polarizations[i]
+        e(r, i) = 3pi/(2pi)*GreenTensor(r - S.spins[i].position) * S.polarizations[i]
                    
         if reduced
             b = isa(state, StateVector) ? state.basis : state.basis_l
@@ -84,7 +84,7 @@ function intensity(r::Vector{Float64}, S::SpinCollection, state::Union{StateVect
     N = length(S.spins)
     @assert length(r) == 3
 
-    e(r, i) = GreenTensor(r - S.spins[i].position) * S.polarizations[i]
+    e(r, i) = 3pi/(2pi)*GreenTensor(r - S.spins[i].position) * S.polarizations[i]
     intensity = sum(dot(e(r, i), e(r, j))*dagger(sm(i))*sm(j) for i=1:N, j=1:N)
      return expect(intensity, state)
 end
