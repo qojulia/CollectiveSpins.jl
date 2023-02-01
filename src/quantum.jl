@@ -172,7 +172,7 @@ function JumpOperators_diagonal(S::SpinCollection)
     for i = 1:N
         op = DenseOperator(b)
         for j = 1:N
-            op += M[j, i] * embed(b, j, σm)
+            op += M[j, i] * embed(b, j, sigmam_)
         end
         if λ[i] > 0.0
             push!(J, sqrt(λ[i]) * op)
