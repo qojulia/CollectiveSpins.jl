@@ -218,7 +218,7 @@ end
 
 """
     Green_Tensor_k_2D(k_vec, a_vec1, a_vec2)
-Green's Tensor in reciprocal space for in-plane mode k_vec for an 2D array of atoms in xy-plane.
+Green's Tensor in reciprocal space for in-plane mode k_vec for a 2D array of atoms in xy-plane.
 WLOG, this calculation scales natural atomic frequency wavelength lambda0=1 and decay rate gamma0=1.
 # Arguments
 * `k_vec`: xy-axis quasimomentum of collective mode in first BZ
