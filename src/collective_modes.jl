@@ -128,13 +128,13 @@ keyword arguments not specified.
 * `N2`: Number of terms in a_vec2 reciprocal lattice direction.
 """
 function renorm_consts(V, b1, b2, Lambda, N1, N2)
-    if Lambda == nothing
+    if Lambda === nothing
         Lambda = 10/sqrt(V)
     end
-    if N1 == nothing
+    if N1 === nothing
         N1 = Int(ceil(5*Lambda/la.norm(b1)))
     end
-    if N2 == nothing
+    if N2 === nothing
         N2 = Int(ceil(5*Lambda/la.norm(b2)))
     end
     return Lambda, N1, N2
@@ -214,6 +214,73 @@ function Gamma_k_2D(k_vec::Array{<:Number, 1}, a_vec1::Array{<:Number, 1}, a_vec
         end
     end
     return 3pi/(k0^3*V) * (x_comp*Gamma_sum_x + Gamma_sum_yz)
+end
+
+"""
+    Green_Tensor_k_2D(k_vec, a_vec1, a_vec2)
+Green's Tensor in reciprocal space for in-plane mode k_vec for a 2D array of atoms in xy-plane.
+WLOG, this calculation scales natural atomic frequency wavelength lambda0=1 and decay rate gamma0=1.
+# Arguments
+* `k_vec`: xy-axis quasimomentum of collective mode in first BZ
+* `a_vec1, a_vec2`: 2D Bravais lattice vectors (real-space).
+"""
+function Green_Tensor_k_2D(k_vec::Array{<:Number, 1}, a_vec1::Array{<:Number, 1}, a_vec2::Array{<:Number, 1}; Lambda=nothing, N1=nothing, N2=nothing)
+    V = abs(a_vec1[1]*a_vec2[2] - a_vec1[2]*a_vec2[1]) #BZ volume
+
+    #reciprocal lattice vectors
+    b1 = 2π * Rot90*a_vec2 / la.dot(a_vec1, Rot90*a_vec2)
+    b2 = 2π * Rot90*a_vec1 / la.dot(a_vec2, Rot90*a_vec1)
+
+    #cutoff parameters
+    Lambda = 10/sqrt(V)
+    N1 = Int(ceil(5*Lambda/la.norm(b1))) #number of terms in momentum space sum
+    N2 = Int(ceil(5*Lambda/la.norm(b2))) #number of terms in momentum space sum
+
+    G_tensor = zeros(ComplexF64,3,3)
+
+    G_sum_xx = 0
+    G_sum_yy = 0
+    G_sum_zz = 0
+
+    G_sum_xy = 0
+    G_sum_yx = 0
+    for n1 = -N1:N1
+        for n2 =-N2:N2
+            k_eff = k_vec + n1*b1 + n2*b2
+            kz = sqrt(Complex(k0^2 - la.norm(k_eff)^2))
+            if abs(kz) > 0
+                cutoff = 1im*exp(-(la.norm(k_eff)/Lambda)^2) / (2*kz)
+            else
+                cutoff = 0
+            end
+            G_sum_xx += (k0^2 - k_eff[1]^2)/k0^2 * cutoff
+            G_sum_yy += (k0^2 - k_eff[2]^2)/k0^2 * cutoff
+            G_sum_zz += la.norm(k_eff)^2/k0^2 * cutoff
+
+            G_sum_xy += -k_eff[1]*k_eff[2]/k0^2 * cutoff
+            G_sum_yx += -k_eff[1]*k_eff[2]/k0^2 * cutoff
+        end
+    end
+
+    Re_G0_xx = -(Lambda/(32*sqrt(pi)*k0^2)) * exp(-(k0/Lambda)^2) * (Lambda^2 - 2*k0^2)
+    Re_G0_yy = Re_G0_xx
+    Re_G0_zz = -(Lambda/(32*sqrt(pi)*k0^2)) * exp(-(k0/Lambda)^2) * (-2*Lambda^2 - 4*k0^2)
+
+    Gxx = 1/V*G_sum_xx - Re_G0_xx
+    Gyy = 1/V*G_sum_yy - Re_G0_yy
+    Gzz = 1/V*G_sum_zz - Re_G0_zz
+
+    G_xy = 1/V*G_sum_xy
+    G_yx = G_xy
+
+    G_tensor[1,1] = Gxx
+    G_tensor[2,2] = Gyy
+    G_tensor[3,3] = Gzz
+
+    G_tensor[1,2] = G_xy
+    G_tensor[2,1] = G_yx
+ 
+    return G_tensor
 end
 
 end # module

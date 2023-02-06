@@ -165,16 +165,20 @@ the jump operators are changed accordingly.
 function JumpOperators_diagonal(S::SpinCollection)
     spins = S.spins
     N = length(spins)
-    b = basis(S)
-    Γ = [interaction.Gamma(spins[i].position, spins[j].position, S.polarizations[i], S.polarizations[j], S.gammas[i], S.gammas[j]) for i=1:N, j=1:N]
-    λ, M = eig(Γ)
+    b = CollectiveSpins.quantum.basis(S)
+    Γ = [CollectiveSpins.interaction.Gamma(spins[i].position, spins[j].position, S.polarizations[i], S.polarizations[j], S.gammas[i], S.gammas[j]) for i = 1:N, j = 1:N]
+    λ, M = eigen(Γ)
     J = Any[]
-    for i=1:N
-        op = Operator(b)
-        for j=1:N
-            op += M[j,i]*embed(b, j, sigmam_)
+    for i = 1:N
+        op = DenseOperator(b)
+        for j = 1:N
+            op += M[j, i] * embed(b, j, sigmam_)
         end
-        push!(J, sqrt(λ[i])*op)
+        if λ[i] > 0.0
+            push!(J, sqrt(λ[i]) * op)
+        else
+            push!(J, 0.0 * op)
+        end
     end
     return J
 end
