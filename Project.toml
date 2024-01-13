@@ -1,6 +1,6 @@
 name = "CollectiveSpins"
 uuid = "abf2e61e-3022-5fcf-a868-69d409dee72b"
-version = "0.1.5"
+version = "0.1.6"
 
 [deps]
 ClausenFunctions = "1cc96f36-ef02-40ef-a648-5e2c13df3076"
