@@ -3,6 +3,7 @@ uuid = "abf2e61e-3022-5fcf-a868-69d409dee72b"
 version = "0.1.5"
 
 [deps]
+ClausenFunctions = "1cc96f36-ef02-40ef-a648-5e2c13df3076"
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 DiffEqCallbacks = "459566f4-90b8-5000-8ac3-15dfb0a30def"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -10,17 +11,16 @@ Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 QuantumOptics = "6e0679c1-51ea-5a7c-ac74-d61b76210b0c"
 QuantumOpticsBase = "4f57444f-1401-5e15-980d-4471b28d5678"
-Polylogarithms = "43cc4a2f-1a2b-4fbb-87e3-95c794af13de"
 
 [compat]
+ClausenFunctions = "1"
 Combinatorics = "1"
 DiffEqCallbacks = "2"
 Optim = "1"
 OrdinaryDiffEq = "6"
 QuantumOptics = "1"
-QuantumOpticsBase = "0.3"
-Polylogarithms = "0.1"
-julia = "1.4"
+QuantumOpticsBase = "0.4"
+julia = "1.6"
 
 [extras]
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
