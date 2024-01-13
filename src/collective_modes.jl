@@ -6,10 +6,9 @@ export Omega_k_chain, Gamma_k_chain, Omega_k_2D, Gamma_k_2D
 # atomic chains, see Asenjo-Garcia et al 10.1103/PhysRevX.7.031024.
 
 import LinearAlgebra
-import Polylogarithms
+using ClausenFunctions: cl2, cl3
 
 const la = LinearAlgebra
-const pl = Polylogarithms
 const k0 = 2pi
 const Rot90 = [0 -1; 1 0]
 
@@ -58,11 +57,9 @@ WLOG, this calculation scales natural atomic frequency wavelength lambda0=1 and 
 """
 function Omega_k_chain(k::Real, a::Real, polarization::Array{<:Number, 1})  
     polarization, x_comp, yz_comp = polarization_renorm(polarization)
-    exp_sum = exp(im*(k0+k)*a)
-    exp_diff = exp(im*(k0-k)*a)
-    diag = pl.polylog(3, exp_sum) + pl.polylog(3, exp_diff) - im*k0*a*(pl.polylog(2, exp_sum) + pl.polylog(2, exp_diff))
-    perp = (k0*a)^2*(log(1-exp_sum) + log(1-exp_diff))
-    return 3/(4*(k0*a)^3) * (-2*x_comp*real(diag) + yz_comp*real(diag+perp))
+    diag = cl3((k0 + k)*a) + cl3((k0 - k)*a) + k0*a*(cl2((k0 + k)*a) + cl2((k0 - k)*a))
+    perp = (k0*a)^2*(log(1 - exp(im*(k0+k)*a)) + log(1 - exp(im*(k0-k)*a)))
+    return 3/(4*(k0*a)^3) * (-2*x_comp*diag + yz_comp*(diag+real(perp)))
 end
 
 

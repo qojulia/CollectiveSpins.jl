@@ -54,6 +54,21 @@ geometry.box
 geometry.cube
 ```
 
+```@docs
+geometry.ring
+```
+
+```@docs
+geometry.lhc1
+```
+
+```@docs
+geometry.lhc1_p
+```
+
+```@docs
+geometry.excitation_phases
+```
 
 ## [Dipole-Dipole Interaction](@id API: Dipole-Dipole Interaction)
 

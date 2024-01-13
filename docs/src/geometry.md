@@ -9,6 +9,7 @@ In order to simplify creation of various particle distributions, a few helper fu
 * [`geometry.hexagonal`](@ref)
 * [`geometry.box`](@ref)
 * [`geometry.cube`](@ref)
+* [`geometry.ring`](@ref)
 
 They can be used directly to create a [`SpinCollection`](@ref):
 
