@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Theoretical Descriptions · CollectiveSpins.jl</title><meta name="title" content="Theoretical Descriptions · CollectiveSpins.jl"/><meta property="og:title" content="Theoretical Descriptions · CollectiveSpins.jl"/><meta property="twitter:title" content="Theoretical Descriptions · CollectiveSpins.jl"/><meta name="description" content="Documentation for CollectiveSpins.jl."/><meta property="og:description" content="Documentation for CollectiveSpins.jl."/><meta property="twitter:description" content="Documentation for CollectiveSpins.jl."/><meta property="og:url" content="https://github.io/qojulia/CollectiveSpins.jl/descriptions/"/><meta property="twitter:url" content="https://github.io/qojulia/CollectiveSpins.jl/descriptions/"/><link rel="canonical" href="https://github.io/qojulia/CollectiveSpins.jl/descriptions/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.png" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">CollectiveSpins.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../installation/">Installation</a></li><li><a class="tocitem" href="../geometry/">Geometry</a></li><li><a class="tocitem" href="../interaction/">Dipole-Dipole interaction</a></li><li><a class="tocitem" href="../effective_interaction/">Effective Interactions</a></li><li><a class="tocitem" href="../system/">System</a></li><li><a class="tocitem" href="../collective_modes/">Collective Modes</a></li><li><a class="tocitem" href="../reducedspin/">Reduced Spin</a></li><li class="is-active"><a class="tocitem" href>Theoretical Descriptions</a><ul class="internal"><li><a class="tocitem" href="#descriptions-quantum"><span>Quantum</span></a></li><li><a class="tocitem" href="#descriptions-cumulant0"><span>0th order: Independent spins</span></a></li><li><a class="tocitem" href="#descriptions-cumulant1"><span>1st order: Meanfield</span></a></li><li><a class="tocitem" href="#descriptions-cumulant2"><span>2nd order: Meanfield plus Correlations (MPC)</span></a></li></ul></li><li><a class="tocitem" href="../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Theoretical Descriptions</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Theoretical Descriptions</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/CollectiveSpins.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Theoretical-Descriptions"><a class="docs-heading-anchor" href="#Theoretical-Descriptions">Theoretical Descriptions</a><a id="Theoretical-Descriptions-1"></a><a class="docs-heading-anchor-permalink" href="#Theoretical-Descriptions" title="Permalink"></a></h1><p><strong>CollectiveSpins.jl</strong> provides several different possibilities to simulate multi-spin systems. A full quantum description is available but only possible for small numbers of spins. Additionally, approximations of different orders are implemented using a cumulant expansion approach:</p><ul><li><code>quantum</code> - <a href="#descriptions-quantum">descriptions-quantum</a></li><li><code>independent</code> - <a href="#descriptions-cumulant0">descriptions-cumulant0</a></li><li><code>meanfield</code> - <a href="#descriptions-cumulant1">descriptions-cumulant1</a></li><li><code>mpc</code> - <a href="#descriptions-cumulant2">descriptions-cumulant2</a></li></ul><p>All variants provide a unified interface wherever possible:</p><ul><li><p><code>blochstate(phi, theta)</code></p></li><li><p><code>densityoperator(state)</code></p></li><li><p><code>sx(state)</code></p></li><li><p><code>sy(state)</code></p></li><li><p><code>sz(state)</code></p></li><li><p><code>timeevolution(T, system, state0; fout=nothing)</code></p></li><li><p><code>rotate(axis, angles, state)</code></p></li><li><p><code>squeeze(axis, χT, state)</code></p></li><li><p><code>squeezingparameter(state)</code></p></li></ul><p>The following example should give a first idea how these implementations are used:</p><pre><code class="language-julia hljs">using QuantumOptics, CollectiveSpins
+const cs = CollectiveSpins
+
+# System parameters
+const a = 0.18
+const γ = 1.
+const e_dipole = [0,0,1.]
+const T = [0:0.05:5;]
+const N = 5
+const Ncenter = 3
+
+const system = SpinCollection(cs.geometry.chain(a, N), e_dipole, γ)
+
+
+# Define Spin 1/2 operators
+spinbasis = SpinBasis(1//2)
+sx = sigmax(spinbasis)
+sy = sigmay(spinbasis)
+sz = sigmaz(spinbasis)
+sp = sigmap(spinbasis)
+sm = sigmam(spinbasis)
+I_spin = identityoperator(spinbasis)
+
+# Initial state (Bloch state)
+const phi = 0.
+const theta = pi/2.
+
+# Time evolution
+
+# Independent
+state0 = cs.independent.blochstate(phi, theta, N)
+tout, state_ind_t = cs.independent.timeevolution(T, system, state0)
+
+# Meanfield
+state0 = cs.meanfield.blochstate(phi, theta, N)
+tout, state_mf_t = cs.meanfield.timeevolution(T, system, state0)
+
+# Meanfield + Correlations
+state0 = cs.mpc.blochstate(phi, theta, N)
+tout, state_mpc_t = cs.mpc.timeevolution(T, system, state0)
+
+# Quantum: master equation
+sx_master = Float64[]
+sy_master = Float64[]
+sz_master = Float64[]
+
+td_ind = Float64[]
+td_mf  = Float64[]
+td_mpc = Float64[]
+
+embed(op::Operator) = QuantumOptics.embed(cs.quantum.basis(system), Ncenter, op)
+
+function fout(t, rho)
+    i = findfirst(isequal(t), T)
+    rho_ind = cs.independent.densityoperator(state_ind_t[i])
+    rho_mf  = cs.meanfield.densityoperator(state_mf_t[i])
+    rho_mpc = cs.mpc.densityoperator(state_mpc_t[i])
+    push!(td_ind, tracedistance(rho, rho_ind))
+    push!(td_mf,  tracedistance(rho, rho_mf))
+    push!(td_mpc, tracedistance(rho, rho_mpc))
+    push!(sx_master, real(expect(embed(sx), rho)))
+    push!(sy_master, real(expect(embed(sy), rho)))
+    push!(sz_master, real(expect(embed(sz), rho)))
+    return nothing
+end
+
+Ψ₀ = cs.quantum.blochstate(phi,theta,N)
+ρ₀ = Ψ₀⊗dagger(Ψ₀)
+cs.quantum.timeevolution(T, system, ρ₀, fout=fout)
+
+# Expectation values
+mapexpect(op, states) = map(s-&gt;(op(s)[Ncenter]), states)
+
+sx_ind = mapexpect(cs.independent.sx, state_ind_t)
+sy_ind = mapexpect(cs.independent.sy, state_ind_t)
+sz_ind = mapexpect(cs.independent.sz, state_ind_t)
+
+sx_mf = mapexpect(cs.meanfield.sx, state_mf_t)
+sy_mf = mapexpect(cs.meanfield.sy, state_mf_t)
+sz_mf = mapexpect(cs.meanfield.sz, state_mf_t)
+
+sx_mpc = mapexpect(cs.mpc.sx, state_mpc_t)
+sy_mpc = mapexpect(cs.mpc.sy, state_mpc_t)
+sz_mpc = mapexpect(cs.mpc.sz, state_mpc_t)</code></pre><h2 id="descriptions-quantum"><a class="docs-heading-anchor" href="#descriptions-quantum">Quantum</a><a id="descriptions-quantum-1"></a><a class="docs-heading-anchor-permalink" href="#descriptions-quantum" title="Permalink"></a></h2><p>The time evolution of the <span>$N$</span> spins in a rotating frame corresponding to <span>$\sum_i \omega_0 \sigma^z_i$</span> is then governed by a master equation</p><p class="math-container">\[\dot{\rho} = -\frac{i}{\hbar} \big[H, \rho\big] + \mathcal{L}[\rho]\]</p><p>with the Hamiltonian</p><p class="math-container">\[H = \sum_{ij;i \neq j} \hbar \Omega_{ij} \sigma_i^+ \sigma_j^-\]</p><p>and Lindblad-term</p><p class="math-container">\[\mathcal{L}[\rho] = \frac{1}{2} \sum_{i,j} \Gamma_{ij}
+                    (2\sigma_i^- \rho \sigma_j^+
+                    - \sigma_i^+ \sigma_j^- \rho
+                    - \rho \sigma_i^+ \sigma_j^-).\]</p><p>The dipole-dipole interaction <span>$\Omega_{ij} = \frac{3}{4} \gamma G(k_0 r_{ij})$</span> and the collective decay <span>$\Gamma_{ij} = \frac{3}{2} \gamma F(k_0 r_{ij})$</span> can be obtained analytically with</p><p class="math-container">\[\begin{aligned}
+F(\xi) &amp;= \alpha \frac{\sin \xi}{\xi}
+        + \beta \left(
+              \frac{\cos \xi}{\xi^2} - \frac{\sin \xi}{\xi^3}
+        \right)
+\\
+G(\xi) &amp;= -\alpha \frac{\cos \xi}{\xi} + \beta \left(
+            \frac{\sin \xi}{\xi^2} + \frac{\cos \xi}{\xi^3}
+        \right)
+\end{aligned}\]</p><p>with <span>$\alpha = 1 -\cos^2 \theta$</span> and <span>$\beta = 1-3 \cos^2 \theta$</span>, where <span>$\theta$</span> represents the angle between the line connecting atoms <span>$i$</span> and <span>$j$</span> and the common atomic dipole orientation.</p><h2 id="descriptions-cumulant0"><a class="docs-heading-anchor" href="#descriptions-cumulant0">0th order: Independent spins</a><a id="descriptions-cumulant0-1"></a><a class="docs-heading-anchor-permalink" href="#descriptions-cumulant0" title="Permalink"></a></h2><p>Each spin evolves independently according to</p><p class="math-container">\[\begin{aligned}
+\langle\dot{\sigma_k^x}\rangle  &amp;=
+  -\frac{1}{2} \gamma \langle\sigma_k^x\rangle
+\\
+\langle\dot{\sigma_k^y}\rangle  &amp;=
+  -\frac{1}{2} \gamma \langle\sigma_k^y\rangle
+\\
+\langle\dot{\sigma_k^z}\rangle &amp;=
+    \gamma \big(1 - \langle\sigma_k^z\rangle\big)
+\end{aligned}\]</p><h2 id="descriptions-cumulant1"><a class="docs-heading-anchor" href="#descriptions-cumulant1">1st order: Meanfield</a><a id="descriptions-cumulant1-1"></a><a class="docs-heading-anchor-permalink" href="#descriptions-cumulant1" title="Permalink"></a></h2><p class="math-container">\[\begin{aligned}
+\langle\dot{\sigma_k^x}\rangle  &amp;=
+  \sum_{i;i \neq k} \Omega_{ki} \langle\sigma_i^y\sigma_k^z\rangle
+  -\frac{1}{2} \gamma \langle\sigma_k^x\rangle
+  -\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \langle\sigma_i^x\sigma_k^z\rangle
+\\
+\langle\dot{\sigma_k^y}\rangle  &amp;=
+  -\sum_{i;i \neq k} \Omega_{ki} \langle\sigma_i^x\sigma_k^z\rangle
+  -\frac{1}{2} \gamma \langle\sigma_k^y\rangle
+  -\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \langle\sigma_i^y\sigma_k^z\rangle
+\\
+\langle\dot{\sigma_k^z}\rangle &amp;=
+    - \sum_{i;i \neq k} \Omega_{ki} \Big(\langle\sigma_k^x\sigma_i^y\rangle - \langle\sigma_i^x\sigma_k^y\rangle\Big)
+    +\gamma \big(1 - \langle\sigma_k^z\rangle\big)
+    +\frac{1}{2} \sum_{i;i \neq k} \Gamma_{ki} \Big(\langle\sigma_k^x\sigma_i^x\rangle + \langle\sigma_i^y\sigma_k^y\rangle\Big)
+  \end{aligned}\]</p><h2 id="descriptions-cumulant2"><a class="docs-heading-anchor" href="#descriptions-cumulant2">2nd order: Meanfield plus Correlations (MPC)</a><a id="descriptions-cumulant2-1"></a><a class="docs-heading-anchor-permalink" href="#descriptions-cumulant2" title="Permalink"></a></h2><p class="math-container">\[\begin{aligned}
+\langle\dot{\sigma_k^x\sigma_l^x}\rangle &amp;=
+  \sum_{j;j \neq k,l} \Omega_{kj} \langle\sigma_k^z\sigma_l^x\sigma_j^y\rangle
+   + \sum_{j;j \neq k,l} \Omega_{lj} \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+\\&amp;\qquad
+  - \gamma \langle\sigma_k^x\sigma_l^x\rangle
+  + \Gamma_{kl} \Big(
+          \langle\sigma_k^z\sigma_l^z\rangle
+          - \frac{1}{2} \langle\sigma_k^z\rangle
+          - \frac{1}{2} \langle\sigma_l^z\rangle
+    \Big)
+\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^x\sigma_j^x\rangle
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+\\
+\langle\dot{\sigma_k^y\sigma_l^y}\rangle
+&amp;= - \sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+    - \sum_{j;j \neq k,l} \Omega_{lj}
+      \langle\sigma_k^y\sigma_l^z\sigma_j^x\rangle
+\\&amp;\qquad
+    - \gamma \langle\sigma_k^y\sigma_l^y\rangle
+    + \Gamma_{kl}\Big(
+          \langle\sigma_k^z\sigma_l^z\rangle
+        -\frac{1}{2} \langle\sigma_k^z\rangle
+        -\frac{1}{2} \langle\sigma_l^z\rangle
+    \Big)
+\\&amp;\quad
+    -\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+    -\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^y\sigma_l^z\sigma_j^y\rangle
+\\
+\langle\dot{\sigma_k^z\sigma_l^z}\rangle
+&amp;= \sum_{j;j \neq k,l} \Omega_{kj} \Big(
+      \langle\sigma_k^y\sigma_l^z\sigma_j^x\rangle
+      - \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+    \Big)
+\\&amp;\qquad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^z\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\\&amp;\quad
+    - 2 \gamma \langle\sigma_k^z\sigma_l^z\rangle
+    + \gamma \big(\langle\sigma_l^z\rangle + \langle\sigma_k^z\rangle\big)
+\\&amp;\quad
+    +\Gamma_{kl}\Big(
+          \langle\sigma_k^y\sigma_l^y\rangle
+          + \langle\sigma_k^x\sigma_l^x\rangle
+    \Big)
+\\&amp;\quad
+    +\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj} \Big(
+          \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+          +\langle\sigma_k^y\sigma_l^z\sigma_j^y\rangle
+    \Big)
+\\&amp;\qquad
+    +\frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^z\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+    \Big)
+\end{aligned}\]</p><p class="math-container">\[\begin{aligned}
+\langle\dot{\sigma_k^x\sigma_l^y}\rangle
+&amp;= \Omega_{kl}\Big(
+      \langle\sigma_k^z\rangle
+      - \langle\sigma_l^z\rangle
+    \Big)
+    +\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^y\sigma_j^y\rangle
+\\&amp;\qquad
+    -\sum_{j;j \neq k,l} \Omega_{lj}
+      \langle\sigma_k^x\sigma_l^z\sigma_j^x\rangle
+    - \gamma \langle\sigma_k^x\sigma_l^y\rangle
+\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^y\sigma_j^x\rangle
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj}
+          \langle\sigma_k^x\sigma_l^z\sigma_j^y\rangle
+\\
+\langle\dot{\sigma_k^x\sigma_l^z}\rangle
+&amp;= \Omega_{kl}
+      \langle\sigma_l^y\rangle
+    +\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^z\sigma_j^y\rangle
+\\&amp;\quad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^x\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^x\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\\&amp;\quad
+- \frac{3}{2} \gamma \langle\sigma_k^x\sigma_l^z\rangle
+  + \gamma \langle\sigma_k^x\rangle
+  - \Gamma_{kl}\Big(
+        \langle\sigma_k^z\sigma_l^x\rangle
+        -\frac{1}{2} \langle\sigma_l^x\rangle
+    \Big)
+\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^z\sigma_j^x\rangle
+\\&amp;\quad
+    + \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^x\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^x\sigma_l^y\sigma_j^y\rangle
+    \Big)
+\end{aligned}\]</p><p class="math-container">\[\begin{aligned}
+\langle\dot{\sigma_k^y\sigma_l^z}\rangle
+&amp;= -\Omega_{kl} \langle\sigma_l^x\rangle
+    -\sum_{j;j \neq k,l} \Omega_{kj}
+      \langle\sigma_k^z\sigma_l^z\sigma_j^x\rangle
+\\&amp;\quad
+    +\sum_{j;j \neq k,l} \Omega_{lj} \Big(
+      \langle\sigma_k^y\sigma_l^y\sigma_j^x\rangle
+      -\langle\sigma_k^y\sigma_l^x\sigma_j^y\rangle
+    \Big)
+\\&amp;\quad
+  - \frac{3}{2} \gamma \langle\sigma_k^y\sigma_l^z\rangle
+  + \gamma \langle\sigma_k^y\rangle
+  - \Gamma_{kl}\Big(
+          \langle\sigma_k^z\sigma_l^y\rangle
+        - \frac{1}{2}\langle\sigma_l^y\rangle
+    \Big)
+\\&amp;\quad
+    - \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{kj}
+          \langle\sigma_k^z\sigma_l^z\sigma_j^y\rangle
+\\&amp;\quad
+    + \frac{1}{2} \sum_{j;j \neq k,l} \Gamma_{lj} \Big(
+          \langle\sigma_k^y\sigma_l^x\sigma_j^x\rangle
+          +\langle\sigma_k^y\sigma_l^y\sigma_j^y\rangle
+    \Big)
+\end{aligned}\]</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../reducedspin/">« Reduced Spin</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Saturday 13 January 2024 18:11">Saturday 13 January 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Reduced Spin · CollectiveSpins.jl</title><meta name="title" content="Reduced Spin · CollectiveSpins.jl"/><meta property="og:title" content="Reduced Spin · CollectiveSpins.jl"/><meta property="twitter:title" content="Reduced Spin · CollectiveSpins.jl"/><meta name="description" content="Documentation for CollectiveSpins.jl."/><meta property="og:description" content="Documentation for CollectiveSpins.jl."/><meta property="twitter:description" content="Documentation for CollectiveSpins.jl."/><meta property="og:url" content="https://github.io/qojulia/CollectiveSpins.jl/reducedspin/"/><meta property="twitter:url" content="https://github.io/qojulia/CollectiveSpins.jl/reducedspin/"/><link rel="canonical" href="https://github.io/qojulia/CollectiveSpins.jl/reducedspin/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.png" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">CollectiveSpins.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../installation/">Installation</a></li><li><a class="tocitem" href="../geometry/">Geometry</a></li><li><a class="tocitem" href="../interaction/">Dipole-Dipole interaction</a></li><li><a class="tocitem" href="../effective_interaction/">Effective Interactions</a></li><li><a class="tocitem" href="../system/">System</a></li><li><a class="tocitem" href="../collective_modes/">Collective Modes</a></li><li class="is-active"><a class="tocitem" href>Reduced Spin</a><ul class="internal"><li><a class="tocitem" href="#Example"><span>Example</span></a></li></ul></li><li><a class="tocitem" href="../descriptions/">Theoretical Descriptions</a></li><li><a class="tocitem" href="../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Reduced Spin</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Reduced Spin</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/CollectiveSpins.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Reduced-Spin"><a class="docs-heading-anchor" href="#Reduced-Spin">Reduced Spin</a><a id="Reduced-Spin-1"></a><a class="docs-heading-anchor-permalink" href="#Reduced-Spin" title="Permalink"></a></h1><p>A common approach to treating many spins quantum mechanically is to truncate the Hilbert space at a specific number of excitations. This widely reduces the number of possible states. <strong>CollectiveSpins.jl</strong> offers generic functionality to truncate a system of spins at an arbitrary number of excitations. The following functions can be used, and are largely equivalent to the <code>SpinBasis</code> implemented in <strong>QuantumOptics.jl</strong>.</p><ul><li><a href="../api/#CollectiveSpins.reducedspin.ReducedSpinBasis"><code>ReducedSpinBasis</code></a></li><li><a href="../api/#CollectiveSpins.reducedspin.reducedspintransition"><code>reducedspintransition</code></a></li><li><a href="../api/#CollectiveSpins.reducedspin.reducedsigmap"><code>reducedsigmap</code></a></li><li><a href="../api/#CollectiveSpins.reducedspin.reducedsigmam"><code>reducedsigmam</code></a></li><li><a href="../api/#CollectiveSpins.reducedspin.reducedsigmax"><code>reducedsigmax</code></a></li><li><a href="../api/#CollectiveSpins.reducedspin.reducedsigmay"><code>reducedsigmay</code></a></li><li><a href="../api/#CollectiveSpins.reducedspin.reducedsigmaz"><code>reducedsigmaz</code></a></li><li><a href="../api/#CollectiveSpins.reducedspin.reducedsigmapsigmam"><code>reducedsigmapsigmam</code></a></li><li><a href="../api/#CollectiveSpins.reducedspin.reducedspinstate"><code>reducedspinstate</code></a></li></ul><h2 id="Example"><a class="docs-heading-anchor" href="#Example">Example</a><a id="Example-1"></a><a class="docs-heading-anchor-permalink" href="#Example" title="Permalink"></a></h2><p>Let us illustrate how to work with the <code>reducedspin</code> submodule. In the following example, we will compute the intensity radiation pattern of a regular chain of atoms in a subradiant state from A. Asenjo-Garcia <em>et al</em>, <a href="https://doi.org/10.1103/PhysRevX.7.031024">10.1103/PhysRevX.7.031024</a> (Fig. 3b).</p><pre><code class="language-julia hljs">using CollectiveSpins
+using QuantumOptics
+using PyPlot
+
+# Parameters
+N = 50
+M = 1 # Number of excitations
+d = 0.33
+pos = geometry.chain(d,N)
+μ = [[1.0,0,0] for i=1:N]
+S = SpinCollection(pos,μ)
+
+# Collective effects
+Ωmat = OmegaMatrix(S)
+Γmat = GammaMatrix(S)
+
+# Hilbert space
+b = ReducedSpinBasis(N,M,M) # Basis from M excitations up to M excitations
+
+# Effective Hamiltonian
+spsm = [reducedsigmapsigmam(b, i, j) for i=1:N, j=1:N]
+H_eff = dense(sum((Ωmat[i,j] - 0.5im*Γmat[i,j])*spsm[i, j] for i=1:N, j=1:N))
+
+# Find the most subradiant eigenstate
+λ, states = eigenstates(H_eff; warning=false)
+γ = -2 .* imag.(λ)
+s_ind = findmin(γ)[2]
+ψ = states[s_ind]
+
+# Compute the radiation pattern
+function G(r,i,j) # Green&#39;s Tensor overlap
+    G_i = GreenTensor(r-pos[i])
+    G_j = GreenTensor(r-pos[j])
+    return μ[i]&#39; * (G_i&#39;*G_j) * μ[j]
+end
+function intensity(r) # The intensity ⟨E⁻(r)⋅E⁺(r)⟩
+    real(sum(expect(spsm[i,j], ψ)*G(r,i,j) for i=1:N, j=1:N))
+end
+
+y = -50d:2d:50d
+z = 5d
+x = y .+ 0.5d*(N-1)
+I = zeros(length(x), length(y))
+for i=1:length(x), j=1:length(y)
+    I[i,j] = intensity([x[i],y[j],z])
+end
+
+# Plot
+figure(figsize=(9,4))
+contourf(x./d,y./d,I&#39;,30)
+for p in pos
+    plot(p[1]./d,p[2],&quot;o&quot;,color=&quot;w&quot;,ms=2)
+end
+xlabel(&quot;x/d&quot;)
+ylabel(&quot;y/d&quot;)
+colorbar(label=&quot;Intensity&quot;,ticks=[])
+tight_layout()</code></pre><p><img src="../radiation-pattern.png" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../collective_modes/">« Collective Modes</a><a class="docs-footer-nextpage" href="../descriptions/">Theoretical Descriptions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Saturday 13 January 2024 18:11">Saturday 13 January 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
