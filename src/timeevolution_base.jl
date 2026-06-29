@@ -1,10 +1,10 @@
-import OrdinaryDiffEq, DiffEqCallbacks
+import OrdinaryDiffEqCore, OrdinaryDiffEqLowOrderRK, DiffEqCallbacks, DiffEqBase
 
 """
 integrate()
 """
 function integrate(T::Vector, f:: Function, state0::S, fout::Function;
-                    alg::OrdinaryDiffEq.OrdinaryDiffEqAlgorithm = OrdinaryDiffEq.DP5(),
+                    alg = OrdinaryDiffEqLowOrderRK.DP5(),
                     callback = nothing, kwargs...) where S
 
     if isa(state0, Vector{<:Real})
@@ -23,11 +23,11 @@ function integrate(T::Vector, f:: Function, state0::S, fout::Function;
                                         save_everystep=false,
                                         save_start = false)
 
-    prob = OrdinaryDiffEq.ODEProblem(f, x0, (T[1], T[end]))
+    prob = OrdinaryDiffEqCore.ODEProblem(f, x0, (T[1], T[end]))
 
-    full_cb = OrdinaryDiffEq.CallbackSet(callback, scb)
+    full_cb = OrdinaryDiffEqCore.CallbackSet(callback, scb)
 
-    sol = OrdinaryDiffEq.solve(prob, alg;
+    sol = OrdinaryDiffEqCore.solve(prob, alg;
             reltol=1.0e-6,
             abstol=1.0e-8,
             save_everystep = false,
