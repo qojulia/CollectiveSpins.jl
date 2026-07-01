@@ -1,4 +1,4 @@
-import OrdinaryDiffEqCore, OrdinaryDiffEqLowOrderRK, DiffEqCallbacks, DiffEqBase
+import OrdinaryDiffEqCore, OrdinaryDiffEqLowOrderRK, DiffEqCallbacks
 
 """
 integrate()
