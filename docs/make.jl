@@ -26,4 +26,7 @@ makedocs(
 
 deploydocs(
     repo = "github.com/qojulia/CollectiveSpins.jl.git",
-    )
+    devbranch = "master",
+    deploy_config = Documenter.Buildkite(),
+    push_preview = true,
+)
